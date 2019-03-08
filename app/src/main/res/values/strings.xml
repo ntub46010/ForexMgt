@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ForexMgt</string>
+    <string name="facebook_application_id">776315792727800</string>
+    <string name="facebook_app_id">776315792727800</string>
 </resources>
