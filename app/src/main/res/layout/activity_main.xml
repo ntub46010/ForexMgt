@@ -4,18 +4,21 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="10dp"
         tools:context=".MainActivity">
 
     <Button
             android:id="@+id/btnSignOut"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="登出"/>
 
-    <TextView
-            android:id="@+id/txtExchangeRate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btnSignOut"/>
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/lst_exchange_rate"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_below="@id/btnSignOut"
+            android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

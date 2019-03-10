@@ -4,7 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -14,12 +15,11 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import org.jsoup.Jsoup
-import org.jsoup.select.Elements
-import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity() {
+    // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
 
-    @BindView(R.id.txtExchangeRate) lateinit var txtExchangeRate: TextView
+    @BindView(R.id.lst_exchange_rate) lateinit var lstExchangeRate: RecyclerView
 
     private var firebaseUser: FirebaseUser? = null
 
@@ -29,8 +29,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ButterKnife.bind(this)
-
         prepareAuth()
+
+        lstExchangeRate.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -77,22 +78,34 @@ class MainActivity : AppCompatActivity() {
             override fun run() {
                 super.run()
                 val response = Jsoup.connect("https://www.findrate.tw/bank/8/#.XHv2PKBS8dU").execute()
-                val body = response.body()
-                val data: Elements = Jsoup.parse(body)
+                val webContent = response.body()
+                val tableRows = Jsoup.parse(webContent)
                     .select("div[id=right]")
                     .select("table>tbody>tr")
 
-                val sb = StringBuilder()
+                val rowCount = tableRows.size
+                tableRows.removeAt(rowCount - 1)
+                tableRows.removeAt(rowCount - 2)
+                tableRows.removeAt(0)
 
-                for (i in 1..14) {
-                    val cur = data.get(i).select("td")
-                    sb.append(cur.get(0).select("a").text()).append("\t")
-                    sb.append(cur.get(4).text()).append("\t")
-                    sb.append(cur.get(3).text()).append("\n").append("\n")
+                val rates = mutableListOf<ExchangeRate>()
+
+                for (row in tableRows) {
+                    val tableCells = row.select("td")
+                    val currencyTitle = tableCells.get(0).select("a").text()
+                    val currencyType = CurrencyType.fromCurrencyTitle(currencyTitle)
+
+                    rates.add(
+                        ExchangeRate(
+                            currencyType?.iconRes ?: R.drawable.flag_usd,
+                            currencyTitle,
+                            tableCells.get(4).text().toDouble(),
+                            tableCells.get(3).text().toDouble())
+                    )
                 }
 
                 runOnUiThread {
-                    txtExchangeRate.text = sb.toString()
+                    lstExchangeRate.adapter = ExchangeRateAdapter(rates)
                 }
             }
         }.start()
