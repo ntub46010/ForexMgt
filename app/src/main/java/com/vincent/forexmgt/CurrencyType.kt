@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils
 enum class CurrencyType(
     val title: String,
     val iconRes: Int) {
+    // https://www.flaticon.com/free-icon/question_189665#term=question&page=1&position=8
+    // https://www.flaticon.com/free-icon/question_391038#term=question&page=4&position=57
 
     USD("美金 USD", R.drawable.flag_usd),
     CNY("人民幣 CNY", R.drawable.flag_cny),

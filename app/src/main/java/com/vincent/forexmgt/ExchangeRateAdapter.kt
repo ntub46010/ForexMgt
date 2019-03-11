@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 
-class ExchangeRateAdapter(private val exchangeRates: List<ExchangeRate>) : RecyclerView.Adapter<ExchangeRateAdapter.ViewHolder>() {
+class ExchangeRateAdapter(
+     var exchangeRates: List<ExchangeRate>)
+    : RecyclerView.Adapter<ExchangeRateAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exchange_rate, parent, false)
@@ -32,9 +34,12 @@ class ExchangeRateAdapter(private val exchangeRates: List<ExchangeRate>) : Recyc
         fun bindValue(rate: ExchangeRate) {
             imgCurrencyIcon.setImageResource(rate.iconRes)
             txtCurrencyName.text = rate.name
-            txtCredit.text = rate.credit.toString()
-            txtDebit.text = rate.debit.toString()
+            txtCredit.text = formatNumber(rate.credit)
+            txtDebit.text = formatNumber(rate.debit)
         }
     }
+
+
+    private fun formatNumber(num: Double) = java.lang.String.format("%.4f", num)
 
 }

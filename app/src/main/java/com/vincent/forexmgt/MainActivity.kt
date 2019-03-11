@@ -4,8 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.ResultReceiver
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -14,12 +19,14 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import org.jsoup.Jsoup
 
 class MainActivity : AppCompatActivity() {
     // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
+    // http://givemepass.blogspot.com/2015/11/title.html
 
-    @BindView(R.id.lst_exchange_rate) lateinit var lstExchangeRate: RecyclerView
+    @BindView(R.id.lstExchangeRate) lateinit var lstExchangeRate: RecyclerView
+    @BindView(R.id.refreshLayout) lateinit var refreshLayout: SwipeRefreshLayout
+    @BindView(R.id.prgBar) lateinit var prgBar: ProgressBar
 
     private var firebaseUser: FirebaseUser? = null
 
@@ -31,7 +38,10 @@ class MainActivity : AppCompatActivity() {
         ButterKnife.bind(this)
         prepareAuth()
 
+        prgBar.visibility = View.VISIBLE
         lstExchangeRate.layoutManager = LinearLayoutManager(this)
+        refreshLayout.setColorSchemeColors(resources.getColor(R.color.colorPrimary))
+        refreshLayout.setOnRefreshListener { loadExchangeRate() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -56,59 +66,49 @@ class MainActivity : AppCompatActivity() {
                 val firebaseUser = auth.currentUser
                 if (firebaseUser == null) {
                     val intent = AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(authProvider)
-                            .setLogo(R.drawable.logo)
-                            .setTheme(R.style.LoginTheme)
-                            .setAlwaysShowSignInMethodScreen(true)
-                            .setIsSmartLockEnabled(false)
-                            .build()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(authProvider)
+                        .setLogo(R.drawable.logo)
+                        .setTheme(R.style.LoginTheme)
+                        .setAlwaysShowSignInMethodScreen(true)
+                        .setIsSmartLockEnabled(false)
+                        .build()
                     startActivityForResult(intent, this.RC_SIGN_IN)
                 } else {
                     this.firebaseUser = firebaseUser
-                    displayExchangeRate()
+                    loadExchangeRate()
                 }
             }
 
         FirebaseAuth.getInstance().addAuthStateListener(authListener)
     }
 
-    private fun displayExchangeRate() {
-        object : Thread() {
-            override fun run() {
-                super.run()
-                val response = Jsoup.connect("https://www.findrate.tw/bank/8/#.XHv2PKBS8dU").execute()
-                val webContent = response.body()
-                val tableRows = Jsoup.parse(webContent)
-                    .select("div[id=right]")
-                    .select("table>tbody>tr")
+    private fun loadExchangeRate() {
+        val receiver = object : ResultReceiver(Handler()) {
+            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                refreshLayout.isRefreshing = false
+                prgBar.visibility = View.INVISIBLE
 
-                val rowCount = tableRows.size
-                tableRows.removeAt(rowCount - 1)
-                tableRows.removeAt(rowCount - 2)
-                tableRows.removeAt(0)
-
-                val rates = mutableListOf<ExchangeRate>()
-
-                for (row in tableRows) {
-                    val tableCells = row.select("td")
-                    val currencyTitle = tableCells.get(0).select("a").text()
-                    val currencyType = CurrencyType.fromCurrencyTitle(currencyTitle)
-
-                    rates.add(
-                        ExchangeRate(
-                            currencyType?.iconRes ?: R.drawable.flag_usd,
-                            currencyTitle,
-                            tableCells.get(4).text().toDouble(),
-                            tableCells.get(3).text().toDouble())
-                    )
+                if (resultData == null) {
+                    Toast.makeText(this@MainActivity, "沒有網路連線", Toast.LENGTH_SHORT).show()
+                    return
                 }
 
-                runOnUiThread {
+                val rates = resultData.getSerializable(Constants.KEY_RATE) as List<ExchangeRate>
+                val adapter = lstExchangeRate.adapter
+
+                if (adapter == null) {
                     lstExchangeRate.adapter = ExchangeRateAdapter(rates)
+                } else {
+                    (adapter as ExchangeRateAdapter).exchangeRates = rates
+                    adapter.notifyDataSetChanged()
                 }
             }
-        }.start()
+        }
+
+        val intent = Intent(this, LoadingExchangeRateService::class.java)
+        intent.putExtra(Constants.KEY_RECEIVER, receiver)
+        startService(intent)
     }
 
     @OnClick(R.id.btnSignOut)

@@ -14,11 +14,23 @@
             android:visibility="gone"
             android:text="登出"/>
 
-    <android.support.v7.widget.RecyclerView
-            android:id="@+id/lst_exchange_rate"
-            android:layout_width="300dp"
+    <ProgressBar
+            android:id="@+id/prgBar"
+            style="@style/PrgBarNormal"
+            android:layout_centerInParent="true"/>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
+            android:layout_width="270dp"
             android:layout_height="match_parent"
             android:layout_below="@id/btnSignOut"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true">
+
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/lstExchangeRate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
