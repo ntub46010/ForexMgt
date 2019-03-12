@@ -1,11 +1,13 @@
 package com.vincent.forexmgt
 
 import android.app.Activity
+import android.app.Fragment
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -23,10 +25,12 @@ import com.google.firebase.auth.FirebaseUser
 class MainActivity : AppCompatActivity() {
     // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
     // http://givemepass.blogspot.com/2015/11/title.html
+    // https://android.devdon.com/archives/149
 
-    @BindView(R.id.lstExchangeRate) lateinit var lstExchangeRate: RecyclerView
-    @BindView(R.id.refreshLayout) lateinit var refreshLayout: SwipeRefreshLayout
-    @BindView(R.id.prgBar) lateinit var prgBar: ProgressBar
+//    @BindView(R.id.lstExchangeRate) lateinit var lstExchangeRate: RecyclerView
+//    @BindView(R.id.refreshLayout) lateinit var refreshLayout: SwipeRefreshLayout
+//    @BindView(R.id.prgBar) lateinit var prgBar: ProgressBar
+    @BindView(R.id.navBar) lateinit var navBar: BottomNavigationView
 
     private var firebaseUser: FirebaseUser? = null
 
@@ -38,10 +42,12 @@ class MainActivity : AppCompatActivity() {
         ButterKnife.bind(this)
         prepareAuth()
 
-        prgBar.visibility = View.VISIBLE
-        lstExchangeRate.layoutManager = LinearLayoutManager(this)
-        refreshLayout.setColorSchemeColors(resources.getColor(R.color.colorPrimary))
-        refreshLayout.setOnRefreshListener { loadExchangeRate() }
+//        prgBar.visibility = View.VISIBLE
+//        lstExchangeRate.layoutManager = LinearLayoutManager(this)
+//        refreshLayout.setColorSchemeColors(resources.getColor(R.color.colorPrimary))
+//        refreshLayout.setOnRefreshListener { loadExchangeRate() }
+
+        setupNavigationBar()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -83,32 +89,55 @@ class MainActivity : AppCompatActivity() {
         FirebaseAuth.getInstance().addAuthStateListener(authListener)
     }
 
-    private fun loadExchangeRate() {
-        val receiver = object : ResultReceiver(Handler()) {
-            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                refreshLayout.isRefreshing = false
-                prgBar.visibility = View.INVISIBLE
+    private fun setupNavigationBar() {
+        navBar.setOnNavigationItemSelectedListener { item ->
+            val transaction = supportFragmentManager.beginTransaction()
 
-                if (resultData == null) {
-                    Toast.makeText(this@MainActivity, "沒有網路連線", Toast.LENGTH_SHORT).show()
-                    return
+            when(item.itemId) {
+                R.id.navHome -> {
+                    transaction.replace(R.id.frameLayout, ExchangeRateFragment())
                 }
+                R.id.navBook -> {
 
-                val rates = resultData.getSerializable(Constants.KEY_RATE) as List<ExchangeRate>
-                val adapter = lstExchangeRate.adapter
+                }
+                R.id.navThird -> {
 
-                if (adapter == null) {
-                    lstExchangeRate.adapter = ExchangeRateAdapter(rates)
-                } else {
-                    (adapter as ExchangeRateAdapter).exchangeRates = rates
-                    adapter.notifyDataSetChanged()
                 }
             }
+
+            transaction.addToBackStack(null)
+            transaction.commit()
+            true
         }
 
-        val intent = Intent(this, LoadingExchangeRateService::class.java)
-        intent.putExtra(Constants.KEY_RECEIVER, receiver)
-        startService(intent)
+    }
+
+    private fun loadExchangeRate() {
+//        val receiver = object : ResultReceiver(Handler()) {
+//            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+//                refreshLayout.isRefreshing = false
+//                prgBar.visibility = View.INVISIBLE
+//
+//                if (resultData == null) {
+//                    Toast.makeText(this@MainActivity, "沒有網路連線", Toast.LENGTH_SHORT).show()
+//                    return
+//                }
+//
+//                val rates = resultData.getSerializable(Constants.KEY_RATE) as List<ExchangeRate>
+//                val adapter = lstExchangeRate.adapter
+//
+//                if (adapter == null) {
+//                    lstExchangeRate.adapter = ExchangeRateAdapter(rates)
+//                } else {
+//                    (adapter as ExchangeRateAdapter).exchangeRates = rates
+//                    adapter.notifyDataSetChanged()
+//                }
+//            }
+//        }
+//
+//        val intent = Intent(this, LoadingExchangeRateService::class.java)
+//        intent.putExtra(Constants.KEY_RECEIVER, receiver)
+//        startService(intent)
     }
 
     @OnClick(R.id.btnSignOut)
