@@ -19,7 +19,7 @@
                 android:layout_height="40dp"/>
 
         <TextView
-                android:id="@+id/txtCurrencyName"
+                android:id="@+id/txtCurrencyTitle"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:layout_toEndOf="@id/imgCurrency"
@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:orientation="horizontal"
-                android:layout_alignStart="@id/txtCurrencyName"
+                android:layout_alignStart="@id/txtCurrencyTitle"
                 android:layout_alignBottom="@id/imgCurrency">
 
             <TextView

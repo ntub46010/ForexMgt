@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/navHome"
+            android:icon="@drawable/icon_home"
+            android:title="匯率表"/>
+
+    <item
+            android:id="@+id/navBook"
+            android:icon="@drawable/icon_book"
+            android:title="帳簿"/>
+
+    <item
+            android:id="@+id/navThird"
+            android:icon="@drawable/icon_third"
+            android:title="功能三"/>
+
+</menu>

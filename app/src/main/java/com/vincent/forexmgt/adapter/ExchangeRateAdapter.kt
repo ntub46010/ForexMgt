@@ -1,4 +1,4 @@
-package com.vincent.forexmgt
+package com.vincent.forexmgt.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -6,6 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import butterknife.BindView
+import butterknife.ButterKnife
+import com.vincent.forexmgt.R
+import com.vincent.forexmgt.entity.ExchangeRate
+import java.util.*
 
 class ExchangeRateAdapter(
      var exchangeRates: List<ExchangeRate>)
@@ -26,20 +31,23 @@ class ExchangeRateAdapter(
     }
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        private val imgCurrencyIcon = v.findViewById<ImageView>(R.id.imgCurrency)
-        private val txtCurrencyName = v.findViewById<TextView>(R.id.txtCurrencyName)
-        private val txtCredit = v.findViewById<TextView>(R.id.txtCredit)
-        private val txtDebit = v.findViewById<TextView>(R.id.txtDebit)
+        @BindView(R.id.imgCurrency) lateinit var imgCurrencyIcon: ImageView
+        @BindView(R.id.txtCurrencyTitle) lateinit var txtCurrencyTitle: TextView
+        @BindView(R.id.txtCredit) lateinit var txtCredit: TextView
+        @BindView(R.id.txtDebit) lateinit var txtDebit: TextView
+
+        init {
+            ButterKnife.bind(this, v)
+        }
 
         fun bindValue(rate: ExchangeRate) {
             imgCurrencyIcon.setImageResource(rate.iconRes)
-            txtCurrencyName.text = rate.name
+            txtCurrencyTitle.text = rate.name
             txtCredit.text = formatNumber(rate.credit)
             txtDebit.text = formatNumber(rate.debit)
         }
     }
 
-
-    private fun formatNumber(num: Double) = java.lang.String.format("%.4f", num)
+    private fun formatNumber(num: Double) = java.lang.String.format(Locale.US, "%.4f", num)
 
 }
