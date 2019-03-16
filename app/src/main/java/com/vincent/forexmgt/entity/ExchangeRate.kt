@@ -1,4 +1,4 @@
-package com.vincent.forexmgt
+package com.vincent.forexmgt.entity
 
 data class ExchangeRate(
     var iconRes: Int = 0,

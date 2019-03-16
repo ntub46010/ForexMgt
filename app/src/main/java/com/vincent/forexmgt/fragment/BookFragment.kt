@@ -1,4 +1,4 @@
-package com.vincent.forexmgt
+package com.vincent.forexmgt.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -8,18 +8,22 @@ import android.view.ViewGroup
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.vincent.forexmgt.R
 
-class ExchangeRateFragment : Fragment() {
+class BookFragment : Fragment() {
 
     @BindView(R.id.textView) lateinit var textView: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val view = inflater.inflate(R.layout.fragment_exchange_rate, container, false)
+        val view = inflater.inflate(R.layout.fragment_book_home, container, false)
         ButterKnife.bind(this, view)
 
-        textView.text = "AAA"
-
         return view
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        textView.text = System.currentTimeMillis().toString()
     }
 }

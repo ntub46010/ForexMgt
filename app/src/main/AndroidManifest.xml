@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".LoadingExchangeRateService"/>
+        <service android:name=".service.LoadingExchangeRateService"/>
     </application>
 
 </manifest>

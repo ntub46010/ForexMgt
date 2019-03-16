@@ -1,18 +1,12 @@
 package com.vincent.forexmgt
 
 import android.app.Activity
-import android.app.Fragment
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.ResultReceiver
 import android.support.design.widget.BottomNavigationView
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.View
-import android.widget.ProgressBar
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
+import android.support.v4.app.FragmentManager
 import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -21,18 +15,23 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.vincent.forexmgt.fragment.BookFragment
+import com.vincent.forexmgt.fragment.ExchangeRateFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : FragmentActivity() {
     // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
     // http://givemepass.blogspot.com/2015/11/title.html
     // https://android.devdon.com/archives/149
 
-//    @BindView(R.id.lstExchangeRate) lateinit var lstExchangeRate: RecyclerView
-//    @BindView(R.id.refreshLayout) lateinit var refreshLayout: SwipeRefreshLayout
-//    @BindView(R.id.prgBar) lateinit var prgBar: ProgressBar
     @BindView(R.id.navBar) lateinit var navBar: BottomNavigationView
 
     private var firebaseUser: FirebaseUser? = null
+
+    private lateinit var manager: FragmentManager
+    private var currentFragment: Fragment? = null
+    private var homeFragment: ExchangeRateFragment? = null
+    private var bookFragment: BookFragment? = null
+    private var thirdFragment: BookFragment? = null
 
     private val RC_SIGN_IN = 0
 
@@ -40,14 +39,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ButterKnife.bind(this)
-        prepareAuth()
-
-//        prgBar.visibility = View.VISIBLE
-//        lstExchangeRate.layoutManager = LinearLayoutManager(this)
-//        refreshLayout.setColorSchemeColors(resources.getColor(R.color.colorPrimary))
-//        refreshLayout.setOnRefreshListener { loadExchangeRate() }
+        prepareAuthentication()
+        manager = supportFragmentManager
 
         setupNavigationBar()
+
+        homeFragment = ExchangeRateFragment()
+        switchContent(homeFragment!!)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -56,12 +54,12 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == this.RC_SIGN_IN) {
             if (resultCode != Activity.RESULT_OK) {
                 val response = IdpResponse.fromResultIntent(data)
-                Toast.makeText(applicationContext, response?.error?.errorCode.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, response?.error?.errorCode.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun prepareAuth() {
+    private fun prepareAuthentication() {
         val authProvider = listOf(
             AuthUI.IdpConfig.FacebookBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build()
@@ -82,7 +80,6 @@ class MainActivity : AppCompatActivity() {
                     startActivityForResult(intent, this.RC_SIGN_IN)
                 } else {
                     this.firebaseUser = firebaseUser
-                    loadExchangeRate()
                 }
             }
 
@@ -91,53 +88,59 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupNavigationBar() {
         navBar.setOnNavigationItemSelectedListener { item ->
-            val transaction = supportFragmentManager.beginTransaction()
-
             when(item.itemId) {
                 R.id.navHome -> {
-                    transaction.replace(R.id.frameLayout, ExchangeRateFragment())
+                    if (homeFragment == null) {
+                        homeFragment = ExchangeRateFragment()
+                    }
+                    switchContent(homeFragment!!)
                 }
                 R.id.navBook -> {
-
+                    if (bookFragment == null) {
+                        bookFragment = BookFragment()
+                    }
+                    switchContent(bookFragment!!)
                 }
                 R.id.navThird -> {
-
+                    if (thirdFragment == null) {
+                        thirdFragment = BookFragment()
+                    }
+                    switchContent(thirdFragment!!)
                 }
             }
-
-            transaction.addToBackStack(null)
-            transaction.commit()
             true
         }
 
-    }
-
-    private fun loadExchangeRate() {
-//        val receiver = object : ResultReceiver(Handler()) {
-//            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-//                refreshLayout.isRefreshing = false
-//                prgBar.visibility = View.INVISIBLE
-//
-//                if (resultData == null) {
-//                    Toast.makeText(this@MainActivity, "沒有網路連線", Toast.LENGTH_SHORT).show()
-//                    return
+        navBar.setOnNavigationItemReselectedListener { item ->
+//            when(item.itemId) {
+//                R.id.navHome -> {
+//                    Toast.makeText(this@MainActivity, "reselectHome", Toast.LENGTH_SHORT).show()
 //                }
-//
-//                val rates = resultData.getSerializable(Constants.KEY_RATE) as List<ExchangeRate>
-//                val adapter = lstExchangeRate.adapter
-//
-//                if (adapter == null) {
-//                    lstExchangeRate.adapter = ExchangeRateAdapter(rates)
-//                } else {
-//                    (adapter as ExchangeRateAdapter).exchangeRates = rates
-//                    adapter.notifyDataSetChanged()
+//                R.id.navBook -> {
+//                    Toast.makeText(this@MainActivity, "reselectBook", Toast.LENGTH_SHORT).show()
+//                }
+//                R.id.navThird -> {
+//                    Toast.makeText(this@MainActivity, "reselectThird", Toast.LENGTH_SHORT).show()
 //                }
 //            }
-//        }
-//
-//        val intent = Intent(this, LoadingExchangeRateService::class.java)
-//        intent.putExtra(Constants.KEY_RECEIVER, receiver)
-//        startService(intent)
+        }
+    }
+
+    private fun switchContent(fragment: Fragment) {
+        val transaction = manager.beginTransaction()
+
+        if (currentFragment != null) {
+            if (fragment.isAdded) {
+                transaction.hide(currentFragment).show(fragment)
+            } else {
+                transaction.hide(currentFragment).add(R.id.frameLayout, fragment)
+            }
+        } else {
+            transaction.add(R.id.frameLayout, fragment)
+        }
+
+        transaction.commit()
+        currentFragment = fragment
     }
 
     @OnClick(R.id.btnSignOut)

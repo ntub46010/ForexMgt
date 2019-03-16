@@ -10,7 +10,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-    <!--
+    <ProgressBar
+            android:id="@+id/prgBar"
+            style="@style/PrgBarNormal"
+            android:layout_centerInParent="true"/>
+
     <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="270dp"
@@ -25,6 +29,5 @@
                 android:layout_height="match_parent"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
-    -->
 
 </RelativeLayout>

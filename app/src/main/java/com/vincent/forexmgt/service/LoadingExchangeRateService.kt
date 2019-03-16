@@ -1,9 +1,13 @@
-package com.vincent.forexmgt
+package com.vincent.forexmgt.service
 
 import android.app.IntentService
 import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
+import com.vincent.forexmgt.Constants
+import com.vincent.forexmgt.CurrencyType
+import com.vincent.forexmgt.R
+import com.vincent.forexmgt.entity.ExchangeRate
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.io.IOException
@@ -44,7 +48,8 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
                     currencyType?.iconRes ?: R.drawable.flag_unknown,
                     currencyTitle,
                     tableCells.get(4).text().toDouble(),
-                    tableCells.get(3).text().toDouble())
+                    tableCells.get(3).text().toDouble()
+                )
             )
         }
 
