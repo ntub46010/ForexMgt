@@ -10,13 +10,13 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.vincent.forexmgt.R
 
-class BookFragment : Fragment() {
+class TempFragment : Fragment() {
 
     @BindView(R.id.textView) lateinit var textView: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val view = inflater.inflate(R.layout.fragment_book_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_temp, container, false)
         ButterKnife.bind(this, view)
 
         return view
@@ -24,6 +24,6 @@ class BookFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        textView.text = System.currentTimeMillis().toString() + " BookFragment"
+        textView.text = System.currentTimeMillis().toString() + " TempFragment"
     }
 }
