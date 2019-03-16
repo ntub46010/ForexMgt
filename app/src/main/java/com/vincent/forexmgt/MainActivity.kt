@@ -23,6 +23,7 @@ class MainActivity : FragmentActivity() {
     // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
     // http://givemepass.blogspot.com/2015/11/title.html
     // https://android.devdon.com/archives/149
+    // https://www.jianshu.com/p/47ffaac11e06
 
     @BindView(R.id.navBar) lateinit var navBar: BottomNavigationView
 

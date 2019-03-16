@@ -32,7 +32,7 @@ class ExchangeRateFragment : Fragment() {
         ButterKnife.bind(this, view)
 
         prgBar.visibility = View.VISIBLE
-        lstExchangeRate.layoutManager = LinearLayoutManager(activity)
+        lstExchangeRate.layoutManager = LinearLayoutManager(context)
         refreshLayout.setColorSchemeColors(resources.getColor(R.color.colorPrimary))
         refreshLayout.setOnRefreshListener { loadExchangeRate() }
 
