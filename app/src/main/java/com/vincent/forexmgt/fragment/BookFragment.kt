@@ -13,11 +13,18 @@ import android.view.ViewGroup
 import android.widget.*
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.CurrencyType
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.adapter.BookListAdapter
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.util.DialogUtils
+import org.apache.commons.lang3.StringUtils
+import java.util.*
 
 class BookFragment : Fragment() {
 
@@ -25,6 +32,9 @@ class BookFragment : Fragment() {
     @BindView(R.id.fabCreateBook) lateinit var fabCreateBook: FloatingActionButton
 
     private lateinit var dlgCreateBook: AlertDialog
+
+    private lateinit var db: FirebaseFirestore
+    private lateinit var currentLoginUser: FirebaseUser
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -37,22 +47,18 @@ class BookFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val books = listOf(
-            Book("帳簿一", "日幣 JPY"),
-            Book("帳簿二", "歐元 EUR"),
-            Book("帳簿三", "港幣 HKD"),
-            Book("帳簿四", "澳幣 AUD"),
-            Book("帳簿五", "南非幣 ZAR")
-        )
+        db = FirebaseFirestore.getInstance()
+        currentLoginUser = FirebaseAuth.getInstance().currentUser!!
 
         lstBook.layoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL,false)
-        lstBook.adapter = BookListAdapter(books)
 
         fabCreateBook.setOnClickListener {
             dlgCreateBook.show()
         }
 
         prepareCreateDialog()
+
+        loadBooks()
     }
 
     private fun prepareCreateDialog() {
@@ -72,10 +78,54 @@ class BookFragment : Fragment() {
         dlgCreateBook = DialogUtils.getPlainDialog(context!!, getString(R.string.title_create_book), getString(R.string.desc_create_book))
             .setView(layout)
             .setPositiveButton(getString(R.string.ok)) { dialogInterface, i ->
+                createBook(Book(
+                    edtBookName.text.toString(),
+                    spnCurrencyType.selectedItem.toString(),
+                    StringUtils.EMPTY,
+                    Date()
+                ))
+
                 edtBookName.text = null
                 spnCurrencyType.setSelection(0)
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .create()
+    }
+
+    private fun createBook(book: Book) {
+        if (StringUtils.isEmpty(book.name)) {
+            Toast.makeText(context, "未輸入帳簿名稱", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (StringUtils.isEmpty(book.creator)) {
+            book.creator = currentLoginUser.uid
+        }
+
+        db.collection(Constants.COLLECTION_BOOK)
+            .add(book)
+            .addOnSuccessListener {
+                Toast.makeText(context, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun loadBooks() {
+        db.collection(Constants.COLLECTION_BOOK)
+            .whereEqualTo(Constants.PROPERTY_CREATOR, currentLoginUser.uid)
+            .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
+            .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                val books = querySnapshot?.toObjects(Book::class.java)?.toList()!!
+
+                val adapter = lstBook.adapter
+                if (adapter == null) {
+                    lstBook.adapter = BookListAdapter(books)
+                } else {
+                    (adapter as BookListAdapter).books = books
+                    adapter.notifyDataSetChanged()
+                }
+            }
     }
 }
