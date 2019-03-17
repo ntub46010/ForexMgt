@@ -40,7 +40,7 @@ class BookListAdapter(
         }
 
         fun bindValue(book: Book) {
-            val currencyType = CurrencyType.fromCurrencyTitle(book.currencyType)
+            val currencyType = CurrencyType.fromTitle(book.currencyType)
 
             imgBookIcon.setImageResource(R.drawable.icon_default_book)
             imgCurrencyType.setImageResource(currencyType?.iconRes ?: R.drawable.flag_unknown)

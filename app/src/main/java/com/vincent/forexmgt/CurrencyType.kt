@@ -24,11 +24,19 @@ enum class CurrencyType(
     THB("泰幣 THB", R.drawable.flag_thb);
 
     companion object {
-        fun fromCurrencyTitle(title: String): CurrencyType? {
+
+        fun fromTitle(title: String): CurrencyType? {
             return values().firstOrNull { type ->
                 StringUtils.equals(type.title, title)
             }
         }
+
+        fun fromTitleContains(keyword: String): CurrencyType? {
+            return values().firstOrNull { type ->
+                StringUtils.containsIgnoreCase(type.title, keyword)
+            }
+        }
+
     }
 
 

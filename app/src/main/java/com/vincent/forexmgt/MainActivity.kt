@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -19,7 +19,7 @@ import com.vincent.forexmgt.fragment.BookFragment
 import com.vincent.forexmgt.fragment.ExchangeRateFragment
 import com.vincent.forexmgt.fragment.TempFragment
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
     // http://givemepass.blogspot.com/2015/11/title.html
     // https://android.devdon.com/archives/149
@@ -140,7 +140,7 @@ class MainActivity : FragmentActivity() {
         AuthUI.getInstance()
             .signOut(this)
             .addOnSuccessListener {
-                Toast.makeText(applicationContext, "您已登出", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, getString(R.string.sign_out_successfully), Toast.LENGTH_SHORT).show()
             }
     }
 
