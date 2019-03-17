@@ -5,12 +5,13 @@
 
     <string name="ok">確定</string>
     <string name="cancel">取消</string>
+    <string name="mandatory_field">必填欄位</string>
 
     <string name="sign_out_successfully">登出成功</string>
 
     <string name="book_name">帳本名稱</string>
     <string name="title_create_book">建立帳本</string>
-    <string name="desc_create_book">請輸入帳本名稱並選擇幣別。</string>
+    <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
 
     <string name="create_successfully">新增成功</string>
     <string name="create_failed">新增失敗</string>

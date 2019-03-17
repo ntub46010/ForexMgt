@@ -2,6 +2,7 @@ package com.vincent.forexmgt.fragment
 
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
@@ -63,6 +64,7 @@ class BookFragment : Fragment() {
 
     private fun prepareCreateDialog() {
         val layout = LayoutInflater.from(context).inflate(R.layout.dialog_create_book, null) as RelativeLayout
+        val tilBookName = layout.findViewById<TextInputLayout>(R.id.tilBookName)
         val edtBookName = layout.findViewById<EditText>(R.id.edtBookName)
         val spnCurrencyType = layout.findViewById<Spinner>(R.id.spnCurrencyType)
 
@@ -77,27 +79,33 @@ class BookFragment : Fragment() {
 
         dlgCreateBook = DialogUtils.getPlainDialog(context!!, getString(R.string.title_create_book), getString(R.string.desc_create_book))
             .setView(layout)
-            .setPositiveButton(getString(R.string.ok)) { dialogInterface, i ->
-                createBook(Book(
-                    edtBookName.text.toString(),
-                    spnCurrencyType.selectedItem.toString(),
-                    StringUtils.EMPTY,
-                    Date()
-                ))
-
-                edtBookName.text = null
-                spnCurrencyType.setSelection(0)
-            }
             .setNegativeButton(getString(R.string.cancel), null)
             .create()
+
+        dlgCreateBook.setOnShowListener {
+            tilBookName.error = null
+            edtBookName.text = null
+            spnCurrencyType.setSelection(0)
+
+            dlgCreateBook.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener {
+                    if (StringUtils.isEmpty(edtBookName.text)) {
+                        tilBookName.error = getString(R.string.mandatory_field)
+                    } else {
+                        createBook(Book(
+                            edtBookName.text.toString(),
+                            spnCurrencyType.selectedItem.toString(),
+                            StringUtils.EMPTY,
+                            Date()
+                        ))
+
+                        dlgCreateBook.dismiss()
+                    }
+                }
+        }
     }
 
     private fun createBook(book: Book) {
-        if (StringUtils.isEmpty(book.name)) {
-            Toast.makeText(context, "未輸入帳簿名稱", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         if (StringUtils.isEmpty(book.creator)) {
             book.creator = currentLoginUser.uid
         }
