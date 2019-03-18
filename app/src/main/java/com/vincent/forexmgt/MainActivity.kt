@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -17,11 +17,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.vincent.forexmgt.fragment.BookFragment
 import com.vincent.forexmgt.fragment.ExchangeRateFragment
+import com.vincent.forexmgt.fragment.TempFragment
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
     // http://givemepass.blogspot.com/2015/11/title.html
     // https://android.devdon.com/archives/149
+    // https://www.jianshu.com/p/47ffaac11e06
 
     @BindView(R.id.navBar) lateinit var navBar: BottomNavigationView
 
@@ -31,7 +33,7 @@ class MainActivity : FragmentActivity() {
     private var currentFragment: Fragment? = null
     private var homeFragment: ExchangeRateFragment? = null
     private var bookFragment: BookFragment? = null
-    private var thirdFragment: BookFragment? = null
+    private var thirdFragment: TempFragment? = null
 
     private val RC_SIGN_IN = 0
 
@@ -103,7 +105,7 @@ class MainActivity : FragmentActivity() {
                 }
                 R.id.navThird -> {
                     if (thirdFragment == null) {
-                        thirdFragment = BookFragment()
+                        thirdFragment = TempFragment()
                     }
                     switchContent(thirdFragment!!)
                 }
@@ -111,32 +113,22 @@ class MainActivity : FragmentActivity() {
             true
         }
 
-        navBar.setOnNavigationItemReselectedListener { item ->
-//            when(item.itemId) {
-//                R.id.navHome -> {
-//                    Toast.makeText(this@MainActivity, "reselectHome", Toast.LENGTH_SHORT).show()
-//                }
-//                R.id.navBook -> {
-//                    Toast.makeText(this@MainActivity, "reselectBook", Toast.LENGTH_SHORT).show()
-//                }
-//                R.id.navThird -> {
-//                    Toast.makeText(this@MainActivity, "reselectThird", Toast.LENGTH_SHORT).show()
-//                }
-//            }
+        navBar.setOnNavigationItemReselectedListener {
+
         }
     }
 
     private fun switchContent(fragment: Fragment) {
         val transaction = manager.beginTransaction()
 
-        if (currentFragment != null) {
+        if (currentFragment == null) {
+            transaction.add(R.id.frameLayout, fragment)
+        } else {
             if (fragment.isAdded) {
                 transaction.hide(currentFragment).show(fragment)
             } else {
                 transaction.hide(currentFragment).add(R.id.frameLayout, fragment)
             }
-        } else {
-            transaction.add(R.id.frameLayout, fragment)
         }
 
         transaction.commit()
@@ -148,7 +140,7 @@ class MainActivity : FragmentActivity() {
         AuthUI.getInstance()
             .signOut(this)
             .addOnSuccessListener {
-                Toast.makeText(applicationContext, "您已登出", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, getString(R.string.sign_out_successfully), Toast.LENGTH_SHORT).show()
             }
     }
 
