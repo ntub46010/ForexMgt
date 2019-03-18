@@ -1,6 +1,11 @@
 package com.vincent.forexmgt.fragment
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
@@ -14,15 +19,12 @@ import android.view.ViewGroup
 import android.widget.*
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.CurrencyType
+import com.vincent.forexmgt.Operator
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.adapter.BookListAdapter
 import com.vincent.forexmgt.entity.Book
+import com.vincent.forexmgt.service.BookService
 import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -34,8 +36,7 @@ class BookFragment : Fragment() {
 
     private lateinit var dlgCreateBook: AlertDialog
 
-    private lateinit var db: FirebaseFirestore
-    private lateinit var currentLoginUser: FirebaseUser
+    private lateinit var bookService: BookService
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -47,9 +48,7 @@ class BookFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        db = FirebaseFirestore.getInstance()
-        currentLoginUser = FirebaseAuth.getInstance().currentUser!!
+        context?.bindService(Intent(activity, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
 
         lstBook.layoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL,false)
 
@@ -58,8 +57,11 @@ class BookFragment : Fragment() {
         }
 
         prepareCreateDialog()
+    }
 
-        loadBooks()
+    override fun onDestroy() {
+        super.onDestroy()
+        context?.unbindService(bookServiceConn)
     }
 
     private fun prepareCreateDialog() {
@@ -106,26 +108,13 @@ class BookFragment : Fragment() {
     }
 
     private fun createBook(book: Book) {
-        if (StringUtils.isEmpty(book.creator)) {
-            book.creator = currentLoginUser.uid
-        }
-
-        db.collection(Constants.COLLECTION_BOOK)
-            .add(book)
-            .addOnSuccessListener {
-                Toast.makeText(context, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(context, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        bookService.createBook(book)
     }
 
     private fun loadBooks() {
-        db.collection(Constants.COLLECTION_BOOK)
-            .whereEqualTo(Constants.PROPERTY_CREATOR, currentLoginUser.uid)
-            .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
-            .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                val books = querySnapshot?.toObjects(Book::class.java)?.toList()!!
+        val operator = object : Operator {
+            override fun execute(result: Any?) {
+                val books = result as List<Book>
 
                 val adapter = lstBook.adapter
                 if (adapter == null) {
@@ -135,5 +124,18 @@ class BookFragment : Fragment() {
                     adapter.notifyDataSetChanged()
                 }
             }
+        }
+        bookService.loadBooks(operator)
+    }
+
+    private val bookServiceConn = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            bookService = (service as BookService.CollectionBinder).getService()
+            loadBooks()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+
+        }
     }
 }

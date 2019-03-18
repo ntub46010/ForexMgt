@@ -28,6 +28,8 @@
         </activity>
 
         <service android:name=".service.LoadingExchangeRateService"/>
+        <service android:name=".service.BookService"/>
+
     </application>
 
 </manifest>
