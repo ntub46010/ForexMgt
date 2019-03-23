@@ -26,7 +26,7 @@ class ExchangeRateAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val rate = exchangeRates.get(position)
+        val rate = exchangeRates[position]
         holder.bindValue(rate)
     }
 

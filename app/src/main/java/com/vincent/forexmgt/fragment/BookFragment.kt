@@ -120,7 +120,7 @@ class BookFragment : Fragment() {
                     adapter = BookListAdapter(books)
                     adapter.setOnItemClickListener(object : RecyclerViewOnItemClickListener {
                         override fun onItemClick(view: View?, position: Int) {
-                            goBookHomePage(books.get(position))
+                            goBookHomePage(books[position])
                         }
                     })
                     lstBook.adapter = adapter

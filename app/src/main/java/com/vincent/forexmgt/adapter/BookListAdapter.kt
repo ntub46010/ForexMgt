@@ -30,7 +30,7 @@ class BookListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val book = books.get(position)
+        val book = books[position]
         holder.itemView.tag = position
         holder.bindValue(book)
     }
