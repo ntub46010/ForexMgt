@@ -93,6 +93,7 @@ class BookFragment : Fragment() {
                         tilBookName.error = getString(R.string.mandatory_field)
                     } else {
                         createBook(Book(
+                            StringUtils.EMPTY,
                             edtBookName.text.toString(),
                             spnCurrencyType.selectedItem.toString(),
                             StringUtils.EMPTY,
@@ -135,7 +136,7 @@ class BookFragment : Fragment() {
     fun goBookHomePage(book: Book) {
         val intent = Intent(context, BookHomeActivity::class.java)
         val bundle = Bundle()
-        bundle.putString(Constants.KEY_ID, "bookId")
+        bundle.putString(Constants.KEY_ID, book.id)
         bundle.putString(Constants.KEY_NAME, book.name)
         intent.putExtras(bundle)
         startActivity(intent)

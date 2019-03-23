@@ -14,6 +14,7 @@ import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.Operator
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
+import com.vincent.forexmgt.util.DocumentConverter
 import org.apache.commons.lang3.StringUtils
 
 class BookService : Service() {
@@ -45,7 +46,7 @@ class BookService : Service() {
             .whereEqualTo(Constants.PROPERTY_CREATOR, currentLoginUser.uid)
             .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
             .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-                val books = querySnapshot?.toObjects(Book::class.java)?.toList()!!
+                val books = DocumentConverter.toObject(querySnapshot, Book::class.java)
                 operator.execute(books)
             }
     }
