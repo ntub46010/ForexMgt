@@ -10,5 +10,7 @@ class Constants {
 
         val KEY_RECEIVER = "receiver"
         val KEY_RATE = "rate"
+        val KEY_ID = "id"
+        val KEY_NAME = "name"
     }
 }

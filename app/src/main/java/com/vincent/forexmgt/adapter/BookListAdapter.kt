@@ -9,15 +9,19 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.vincent.forexmgt.CurrencyType
+import com.vincent.forexmgt.RecyclerViewOnItemClickListener
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
 
 class BookListAdapter(
     var books: List<Book>)
-    : RecyclerView.Adapter<BookListAdapter.ViewHolder>() {
+    : RecyclerView.Adapter<BookListAdapter.ViewHolder>(), View.OnClickListener {
+
+    private var onItemClickListener: RecyclerViewOnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_book, parent, false)
+        view.setOnClickListener(this)
         return ViewHolder(view)
     }
 
@@ -27,7 +31,18 @@ class BookListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val book = books.get(position)
+        holder.itemView.tag = position
         holder.bindValue(book)
+    }
+
+    fun setOnItemClickListener(listener: RecyclerViewOnItemClickListener?) {
+        onItemClickListener = listener
+    }
+
+    override fun onClick(v: View?) {
+        if (onItemClickListener != null) {
+            onItemClickListener?.onItemClick(v, v?.getTag() as Int)
+        }
     }
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {

@@ -19,9 +19,7 @@ import android.view.ViewGroup
 import android.widget.*
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.vincent.forexmgt.CurrencyType
-import com.vincent.forexmgt.Operator
-import com.vincent.forexmgt.R
+import com.vincent.forexmgt.*
 import com.vincent.forexmgt.adapter.BookListAdapter
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.service.BookService
@@ -115,10 +113,16 @@ class BookFragment : Fragment() {
         val operator = object : Operator {
             override fun execute(result: Any?) {
                 val books = result as List<Book>
+                var adapter = lstBook.adapter
 
-                val adapter = lstBook.adapter
                 if (adapter == null) {
-                    lstBook.adapter = BookListAdapter(books)
+                    adapter = BookListAdapter(books)
+                    adapter.setOnItemClickListener(object : RecyclerViewOnItemClickListener {
+                        override fun onItemClick(view: View?, position: Int) {
+                            goBookHomePage(books.get(position))
+                        }
+                    })
+                    lstBook.adapter = adapter
                 } else {
                     (adapter as BookListAdapter).books = books
                     adapter.notifyDataSetChanged()
@@ -126,6 +130,15 @@ class BookFragment : Fragment() {
             }
         }
         bookService.loadBooks(operator)
+    }
+
+    fun goBookHomePage(book: Book) {
+        val intent = Intent(context, BookHomeActivity::class.java)
+        val bundle = Bundle()
+        bundle.putString(Constants.KEY_ID, "bookId")
+        bundle.putString(Constants.KEY_NAME, book.name)
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 
     private val bookServiceConn = object : ServiceConnection {
