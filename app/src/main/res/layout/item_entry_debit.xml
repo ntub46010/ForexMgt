@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+    <TextView
+            android:id="@+id/txtDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/black4"
+            android:text="03/23"/>
+
+    <TextView
+            android:id="@+id/txtDebitLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/txtFCYAmt"
+            android:textSize="15sp"
+            android:textColor="@color/black3"
+            android:text="@string/label_debit"/>
+
+    <TextView
+            android:id="@+id/txtFCYAmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtDate"
+            android:layout_alignEnd="@id/txtTwdAmt"
+            android:textSize="24sp"
+            android:textColor="@color/amount_debit"
+            android:text="3,000"/>
+
+    <TextView
+            android:id="@+id/txtCurrencyType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtDate"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="8dp"
+            android:textSize="24sp"
+            android:textColor="@color/amount_debit"
+            android:text="USD"/>
+
+    <TextView
+            android:id="@+id/txtTwdAmtLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/txtTwdAmt"
+            android:textSize="15sp"
+            android:textColor="@color/black3"
+            android:text="@string/label_twd_value"/>
+
+    <TextView
+            android:id="@+id/txtTwdAmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/txtTwdLabel"
+            android:layout_toStartOf="@id/txtTwdLabel"
+            android:textSize="24sp"
+            android:textColor="@color/black2"
+            android:text="91,000 / 90,000"/>
+
+    <TextView
+            android:id="@+id/txtTwdLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtFCYAmt"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="8dp"
+            android:textSize="24sp"
+            android:textColor="@color/black2"
+            android:text="@string/label_twd"/>
+
+    <TextView
+            android:id="@+id/txtExRateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/black3"
+            android:layout_alignBottom="@id/txtExRateValue"
+            android:layout_toStartOf="@id/txtExRateValue"
+            android:text="@string/label_exchange_rate"/>
+
+    <TextView
+            android:id="@+id/txtExRateValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/black3"
+            android:layout_below="@id/txtTwdLabel"
+            android:layout_alignParentEnd="true"
+            android:text="30.1234"/>
+
+</RelativeLayout>

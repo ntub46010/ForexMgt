@@ -16,6 +16,7 @@ import com.vincent.forexmgt.entity.Book
 class BookListAdapter(
     var books: List<Book>)
     : RecyclerView.Adapter<BookListAdapter.ViewHolder>(), View.OnClickListener {
+    // http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0327/2647.html
 
     private var onItemClickListener: RecyclerViewOnItemClickListener? = null
 

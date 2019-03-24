@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ForexMgt</string>
+    <string name="app_name">ForExMgt</string>
     <string name="facebook_application_id">776315792727800</string>
     <string name="facebook_app_id">776315792727800</string>
 
@@ -8,11 +8,15 @@
     <string name="mandatory_field">必填欄位</string>
 
     <string name="sign_out_successfully">登出成功</string>
+    <string name="create_successfully">新增成功</string>
+    <string name="create_failed">新增失敗</string>
 
     <string name="book_name">帳本名稱</string>
     <string name="title_create_book">建立帳本</string>
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
 
-    <string name="create_successfully">新增成功</string>
-    <string name="create_failed">新增失敗</string>
+    <string name="label_debit">轉出</string>
+    <string name="label_exchange_rate">匯率：</string>
+    <string name="label_twd_value">實領 / 帳面價值</string>
+    <string name="label_twd">TWD</string>
 </resources>

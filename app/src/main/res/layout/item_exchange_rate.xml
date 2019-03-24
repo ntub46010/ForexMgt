@@ -25,6 +25,7 @@
                 android:layout_toEndOf="@id/imgCurrency"
                 android:layout_marginStart="15dp"
                 android:textSize="16sp"
+                android:textColor="@color/black3"
                 android:includeFontPadding="false"/>
 
         <LinearLayout
@@ -37,12 +38,12 @@
             <TextView
                     android:id="@+id/txtCredit"
                     style="@style/ExchangeRateAmount"
-                    android:textColor="#4444ff"/>
+                    android:textColor="@color/amount_credit"/>
 
             <TextView
                     android:id="@+id/txtDebit"
                     style="@style/ExchangeRateAmount"
-                    android:textColor="#ff4444"/>
+                    android:textColor="@color/amount_debit"/>
 
         </LinearLayout>
 
