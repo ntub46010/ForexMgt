@@ -9,4 +9,6 @@ data class Book(
     var currencyType: String = "",
     var creator: String = "",
     var createdTime: Date? = null)
-    : Entity(id)
+    : Entity(id) {
+
+}

@@ -47,7 +47,7 @@
             android:layout_alignBottom="@id/txtTwdAmt"
             android:textSize="13sp"
             android:textColor="@color/black3"
-            android:text="@string/label_amount_and_book_value"/>
+            android:text="@string/label_twd_value"/>
 
     <TextView
             android:id="@+id/txtTwdAmt"

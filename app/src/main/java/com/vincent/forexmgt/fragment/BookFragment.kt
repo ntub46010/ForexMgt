@@ -20,6 +20,7 @@ import android.widget.*
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.vincent.forexmgt.*
+import com.vincent.forexmgt.activity.BookHomeActivity
 import com.vincent.forexmgt.adapter.BookListAdapter
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.service.BookService

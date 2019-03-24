@@ -1,4 +1,4 @@
-package com.vincent.forexmgt
+package com.vincent.forexmgt.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -8,8 +8,13 @@ import android.support.v7.widget.Toolbar
 import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.vincent.forexmgt.Constants
+import com.vincent.forexmgt.EntryType
+import com.vincent.forexmgt.R
 import com.vincent.forexmgt.adapter.EntryPagerAdapter
+import com.vincent.forexmgt.fragment.EntryFragment
 import com.vincent.forexmgt.fragment.TempFragment
+import com.vincent.forexmgt.util.BundleUtils
 
 class BookHomeActivity : AppCompatActivity() {
 
@@ -37,10 +42,13 @@ class BookHomeActivity : AppCompatActivity() {
     }
 
     private fun prepareFragments() {
+        val creditFragment = EntryFragment()
+        creditFragment.arguments = BundleUtils.getBundle(Constants.KEY_TYPE, EntryType.CREDIT.name)
+
         val adapter = EntryPagerAdapter(supportFragmentManager)
-        adapter.addFragment("轉入", TempFragment())
-        adapter.addFragment("轉出", TempFragment())
-        adapter.addFragment("結餘", TempFragment())
+        adapter.addFragment(getString(R.string.tab_credit), creditFragment)
+        adapter.addFragment(getString(R.string.tab_debit), TempFragment())
+        adapter.addFragment(getString(R.string.tab_balance), TempFragment())
         vpgEntry.adapter = adapter
     }
 }
