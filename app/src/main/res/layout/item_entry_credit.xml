@@ -28,7 +28,7 @@
             android:layout_below="@id/txtDate"
             android:layout_alignEnd="@id/txtTwdAmt"
             android:textSize="20sp"
-            android:textColor="@color/amount_debit"/>
+            android:textColor="@color/amount_credit"/>
 
     <TextView
             android:id="@+id/txtFcyType"
@@ -38,7 +38,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="8dp"
             android:textSize="20sp"
-            android:textColor="@color/amount_debit"/>
+            android:textColor="@color/amount_credit"/>
 
     <TextView
             android:id="@+id/txtTwdAmtLabel"
