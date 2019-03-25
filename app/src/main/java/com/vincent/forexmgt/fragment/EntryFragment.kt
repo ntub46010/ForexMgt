@@ -11,7 +11,9 @@ import butterknife.ButterKnife
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.R
+import com.vincent.forexmgt.adapter.EntryCreditListAdapter
 import com.vincent.forexmgt.adapter.EntryDebitListAdapter
+import com.vincent.forexmgt.entity.EntryCredit
 import com.vincent.forexmgt.entity.EntryDebit
 import java.util.*
 
@@ -39,7 +41,39 @@ class EntryFragment : Fragment() {
     }
 
     private fun displayCreditList() {
+        val entry1 = EntryCredit(
+            "id1",
+            "bookId",
+            Date(1),
+            "EUR",
+            3000.0,
+            90000,
+            35.1234
+        )
 
+        val entry2 = EntryCredit(
+            "id2",
+            "bookId",
+            Date(1),
+            "EUR",
+            2000.0,
+            60000,
+            35.2345
+        )
+
+        val entry3 = EntryCredit(
+            "id3",
+            "bookId",
+            Date(3),
+            "EUR",
+            1000.0,
+            30000,
+            35.3456
+        )
+
+        val entries = mutableListOf(entry1, entry2, entry3)
+
+        lstEntry.adapter = EntryCreditListAdapter(context!!, entries)
     }
 
     private fun displayDebitList() {
