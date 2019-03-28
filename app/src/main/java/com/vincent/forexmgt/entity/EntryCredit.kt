@@ -1,15 +1,14 @@
 package com.vincent.forexmgt.entity
 
-import com.vincent.forexmgt.Entity
 import java.util.*
 
-data class EntryCredit(
-    override var id: String,
-    var bookId: String,
-    var createdTime: Date? = null,
-    var fcyType: String,
-    var fcyAmt: Double,
-    var twdAmt: Int,
-    var twdCost: Int,
-    var exchangeRate: Double)
-    : Entity(id)
+class EntryCredit(
+    id: String,
+    bookId: String,
+    createdTime: Date? = null,
+    fcyType: String,
+    fcyAmt: Double,
+    twdAmt: Int,
+    exchangeRate: Double,
+    var twdCost: Int)
+    : Entry(id, bookId, createdTime, fcyType, fcyAmt, twdAmt, exchangeRate)

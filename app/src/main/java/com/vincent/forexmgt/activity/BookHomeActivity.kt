@@ -48,10 +48,13 @@ class BookHomeActivity : AppCompatActivity() {
         val debitFragment = EntryFragment()
         debitFragment.arguments = BundleUtils.getBundle(Constants.KEY_TYPE, EntryType.DEBIT.name)
 
+        val balanceFragment = EntryFragment()
+        balanceFragment.arguments = BundleUtils.getBundle(Constants.KEY_TYPE, EntryType.BALANCE.name)
+
         val adapter = EntryPagerAdapter(supportFragmentManager)
         adapter.addFragment(getString(R.string.tab_credit), creditFragment)
         adapter.addFragment(getString(R.string.tab_debit), debitFragment)
-        adapter.addFragment(getString(R.string.tab_balance), TempFragment())
+        adapter.addFragment(getString(R.string.tab_balance), balanceFragment)
         vpgEntry.adapter = adapter
     }
 }

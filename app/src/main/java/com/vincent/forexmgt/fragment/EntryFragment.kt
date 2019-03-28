@@ -11,8 +11,8 @@ import butterknife.ButterKnife
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.R
-import com.vincent.forexmgt.adapter.EntryCreditListAdapter
-import com.vincent.forexmgt.adapter.EntryDebitListAdapter
+import com.vincent.forexmgt.adapter.EntryListAdapter
+import com.vincent.forexmgt.entity.EntryBalance
 import com.vincent.forexmgt.entity.EntryCredit
 import com.vincent.forexmgt.entity.EntryDebit
 import java.util.*
@@ -48,7 +48,8 @@ class EntryFragment : Fragment() {
             "EUR",
             3000.0,
             90000,
-            35.1234
+        30.0,
+            90000
         )
 
         val entry2 = EntryCredit(
@@ -58,7 +59,8 @@ class EntryFragment : Fragment() {
             "EUR",
             2000.0,
             60000,
-            35.2345
+            30.0,
+            60000
         )
 
         val entry3 = EntryCredit(
@@ -68,12 +70,13 @@ class EntryFragment : Fragment() {
             "EUR",
             1000.0,
             30000,
-            35.3456
+            30.0,
+            30000
         )
 
         val entries = mutableListOf(entry1, entry2, entry3)
 
-        lstEntry.adapter = EntryCreditListAdapter(context!!, entries)
+        lstEntry.adapter = EntryListAdapter(context!!, entries, EntryType.CREDIT)
     }
 
     private fun displayDebitList() {
@@ -84,8 +87,8 @@ class EntryFragment : Fragment() {
             "USD",
             3000.0,
             91000,
-            90000,
-            30.1234
+            30.1234,
+            90000
         )
 
         val entry2 = EntryDebit(
@@ -95,8 +98,8 @@ class EntryFragment : Fragment() {
             "USD",
             2000.0,
             61000,
-            60000,
-            30.2345
+            30.2345,
+            60000
         )
 
         val entry3 = EntryDebit(
@@ -106,17 +109,52 @@ class EntryFragment : Fragment() {
             "USD",
             1000.0,
             31000,
-            30000,
-            30.3456
+            30.3456,
+            30000
         )
 
         val entries = mutableListOf(entry1, entry2, entry3)
 
-        lstEntry.adapter = EntryDebitListAdapter(context!!, entries)
+        lstEntry.adapter = EntryListAdapter(context!!, entries, EntryType.DEBIT)
     }
 
     private fun displayBalanceList() {
+        val entry1 = EntryBalance(
+            "id1",
+            "bookId",
+            Date(1),
+            "SEK",
+            3000.0,
+            9000,
+            3.1234,
+            450
+        )
 
+        val entry2 = EntryBalance(
+            "id2",
+            "bookId",
+            Date(1),
+            "SEK",
+            2000.0,
+            6000,
+            3.2345,
+            300
+        )
+
+        val entry3 = EntryBalance(
+            "id3",
+            "bookId",
+            Date(3),
+            "SEK",
+            1000.0,
+            3000,
+            3.3456,
+            -150
+        )
+
+        val entries = mutableListOf(entry1, entry2, entry3)
+
+        lstEntry.adapter = EntryListAdapter(context!!, entries, EntryType.BALANCE)
     }
 
 }

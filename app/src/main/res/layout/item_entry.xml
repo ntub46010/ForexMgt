@@ -13,7 +13,7 @@
             android:textColor="@color/black4"/>
 
     <TextView
-            android:id="@+id/txtDebitLabel"
+            android:id="@+id/txtAmountLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/txtFcyAmt"
@@ -28,7 +28,7 @@
             android:layout_below="@id/txtDate"
             android:layout_alignEnd="@id/txtTwdAmt"
             android:textSize="20sp"
-            android:textColor="@color/amount_debit"/>
+            android:textColor="@color/colorPrimary"/>
 
     <TextView
             android:id="@+id/txtFcyType"
@@ -38,7 +38,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="8dp"
             android:textSize="20sp"
-            android:textColor="@color/amount_debit"/>
+            android:textColor="@color/colorPrimary"/>
 
     <TextView
             android:id="@+id/txtTwdAmtLabel"
@@ -47,7 +47,7 @@
             android:layout_alignBottom="@id/txtTwdAmt"
             android:textSize="13sp"
             android:textColor="@color/black3"
-            android:text="@string/label_amount_and_book_value"/>
+            android:text="@string/label_twd_value_and_profit"/>
 
     <TextView
             android:id="@+id/txtTwdAmt"
