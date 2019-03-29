@@ -124,7 +124,7 @@ class EntryFragment : Fragment() {
             "bookId",
             Date(1),
             "SEK",
-            3000.0,
+            3000.333,
             9000,
             3.1234,
             450
@@ -135,7 +135,7 @@ class EntryFragment : Fragment() {
             "bookId",
             Date(1),
             "SEK",
-            2000.0,
+            2000.22,
             6000,
             3.2345,
             300
@@ -146,7 +146,7 @@ class EntryFragment : Fragment() {
             "bookId",
             Date(3),
             "SEK",
-            1000.0,
+            1000.1,
             3000,
             3.3456,
             -150
