@@ -1,4 +1,4 @@
-package com.vincent.forexmgt
+package com.vincent.forexmgt.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -15,6 +15,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.vincent.forexmgt.R
 import com.vincent.forexmgt.fragment.BookFragment
 import com.vincent.forexmgt.fragment.ExchangeRateFragment
 import com.vincent.forexmgt.fragment.TempFragment

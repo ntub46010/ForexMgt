@@ -40,15 +40,15 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
 
         for (row in tableRows) {
             val tableCells = row.select("td")
-            val currencyTitle = tableCells.get(0).select("a").text()
+            val currencyTitle = tableCells[0].select("a").text()
             val currencyType = CurrencyType.fromTitle(currencyTitle)
 
             rates.add(
                 ExchangeRate(
                     currencyType?.iconRes ?: R.drawable.flag_unknown,
                     currencyTitle,
-                    tableCells.get(4).text().toDouble(),
-                    tableCells.get(3).text().toDouble()
+                    tableCells[4].text().toDouble(),
+                    tableCells[3].text().toDouble()
                 )
             )
         }

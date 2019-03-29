@@ -4,7 +4,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:foreground="?android:attr/selectableItemBackground">
 
     <RelativeLayout
             android:id="@+id/layBookIcon"
@@ -35,7 +36,7 @@
             android:layout_marginTop="5dp"
             android:gravity="center_horizontal"
             android:textSize="16sp"
-            android:textColor="#444"
+            android:textColor="@color/black3"
             android:maxLines="2"
             android:ellipsize="end"/>
 
