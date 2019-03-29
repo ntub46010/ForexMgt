@@ -1,14 +1,21 @@
 package com.vincent.forexmgt.entity
 
 import com.vincent.forexmgt.Entity
+import com.vincent.forexmgt.EntryType
 import java.util.*
 
-abstract class Entry(
+class Entry(
     id: String,
-    open var bookId: String,
-    open var createdTime: Date? = null,
-    open var fcyType: String,
-    open var fcyAmt: Double,
-    open var twdAmt: Int,
-    open var exchangeRate: Double)
-    : Entity (id)
+    var bookId: String = "",
+    var createdTime: Date? = null,
+    val type: EntryType? = null,
+    var fcyType: String = "",
+    var fcyAmt: Double = 0.0,
+    var twdAmt: Int = 0,
+    var exchangeRate: Double = 0.0,
+    var twdCost: Int = 0,
+    var twdBV: Int = 0,
+    var twdProfit: Int = 0)
+    : Entity(id) {
+
+}
