@@ -24,7 +24,7 @@ import com.vincent.forexmgt.activity.BookHomeActivity
 import com.vincent.forexmgt.adapter.BookListAdapter
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.service.BookService
-import com.vincent.forexmgt.util.BundleUtils
+import com.vincent.forexmgt.util.BundleBuilder
 import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -151,9 +151,10 @@ class BookListFragment : Fragment() {
     }
 
     private fun goBookHomePage(book: Book) {
-        val intent = Intent(context, BookHomeActivity::class.java)
-        val bundle = BundleUtils.getBundle(Constants.KEY_BOOK, book)
-        intent.putExtras(bundle)
+        val intent = BundleBuilder()
+            .putSerializable(Constants.KEY_BOOK, book)
+            .appendToIntent(Intent(context, BookHomeActivity::class.java))
+
         startActivity(intent)
     }
 

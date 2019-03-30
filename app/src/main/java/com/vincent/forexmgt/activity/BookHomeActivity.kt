@@ -15,7 +15,7 @@ import com.vincent.forexmgt.R
 import com.vincent.forexmgt.adapter.EntryPagerAdapter
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.fragment.EntryListFragment
-import com.vincent.forexmgt.util.BundleUtils
+import com.vincent.forexmgt.util.BundleBuilder
 
 class BookHomeActivity : AppCompatActivity() {
 
@@ -50,38 +50,45 @@ class BookHomeActivity : AppCompatActivity() {
     }
 
     private fun goEntryEditPage() {
+        val bundleBuilder = BundleBuilder()
+
         when(vpgEntry.currentItem) {
             0 -> {
-                val intent = Intent(this, EntryEditActivity::class.java)
-                val bundle = BundleUtils.getBundle(Constants.KEY_BOOK, book)
-                bundle.putString(Constants.KEY_ENTRY_TYPE, EntryType.CREDIT.name)
-                intent.putExtras(bundle)
+                val intent = bundleBuilder
+                    .putString(Constants.KEY_TITLE, getString(R.string.title_create_credit_entry))
+                    .putString(Constants.KEY_ENTRY_TYPE, EntryType.CREDIT.name)
+                    .putSerializable(Constants.KEY_BOOK, book)
+                    .appendToIntent(Intent(this, EntryEditActivity::class.java))
+
                 startActivity(intent)
             }
 
             1 -> {
-                val intent = Intent(this, EntryEditActivity::class.java)
-                val bundle = BundleUtils.getBundle(Constants.KEY_BOOK, book)
-                bundle.putString(Constants.KEY_ENTRY_TYPE, EntryType.DEBIT.name)
-                intent.putExtras(bundle)
+                val intent = bundleBuilder
+                    .putString(Constants.KEY_TITLE, getString(R.string.title_create_debit_entry))
+                    .putString(Constants.KEY_ENTRY_TYPE, EntryType.DEBIT.name)
+                    .putSerializable(Constants.KEY_BOOK, book)
+                    .appendToIntent(Intent(this, EntryEditActivity::class.java))
+
                 startActivity(intent)
-            }
-
-            2 -> {
-
             }
         }
     }
 
     private fun prepareFragments() {
-        val creditFragment = EntryListFragment()
-        creditFragment.arguments = BundleUtils.getBundle(Constants.KEY_ENTRY_TYPE, EntryType.CREDIT.name)
+        val bundleBuilder = BundleBuilder()
 
-        val debitFragment = EntryListFragment()
-        debitFragment.arguments = BundleUtils.getBundle(Constants.KEY_ENTRY_TYPE, EntryType.DEBIT.name)
+        val creditFragment = bundleBuilder
+            .putString(Constants.KEY_ENTRY_TYPE, EntryType.CREDIT.name)
+            .appendToFragment(EntryListFragment())
 
-        val balanceFragment = EntryListFragment()
-        balanceFragment.arguments = BundleUtils.getBundle(Constants.KEY_ENTRY_TYPE, EntryType.BALANCE.name)
+        val debitFragment = bundleBuilder
+            .putString(Constants.KEY_ENTRY_TYPE, EntryType.DEBIT.name)
+            .appendToFragment(EntryListFragment())
+
+        val balanceFragment = bundleBuilder
+            .putString(Constants.KEY_ENTRY_TYPE, EntryType.BALANCE.name)
+            .appendToFragment(EntryListFragment())
 
         val adapter = EntryPagerAdapter(supportFragmentManager)
         adapter.addFragment(getString(R.string.tab_credit), creditFragment)

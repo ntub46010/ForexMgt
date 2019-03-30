@@ -6,7 +6,7 @@ import com.vincent.forexmgt.entity.Entity
 class DocumentConverter {
 
     companion object {
-        fun <T: Entity> toObject(querySnapshot: QuerySnapshot?, clz: Class<T>): List<T> {
+        fun <T: Entity> toObjects(querySnapshot: QuerySnapshot?, clz: Class<T>): List<T> {
             val results = mutableListOf<T>()
 
             for (document in querySnapshot?.documents!!) {

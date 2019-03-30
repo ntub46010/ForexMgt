@@ -48,7 +48,7 @@ class BookService : Service() {
             .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val books = DocumentConverter.toObject(querySnapshot, Book::class.java)
+                val books = DocumentConverter.toObjects(querySnapshot, Book::class.java)
                 operator.execute(books)
             }
     }
