@@ -2,5 +2,7 @@
 <resources>
 
     <dimen name="screen_default_padding">10dp</dimen>
+    <dimen name="tab_bar_elevation">4dp</dimen>
+    <dimen name="default_widget_spacing">8dp</dimen>
 
 </resources>

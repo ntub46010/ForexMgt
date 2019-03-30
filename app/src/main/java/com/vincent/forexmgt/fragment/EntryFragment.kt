@@ -12,9 +12,7 @@ import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.adapter.EntryListAdapter
-import com.vincent.forexmgt.entity.EntryBalance
-import com.vincent.forexmgt.entity.EntryCredit
-import com.vincent.forexmgt.entity.EntryDebit
+import com.vincent.forexmgt.entity.*
 import java.util.*
 
 class EntryFragment : Fragment() {
@@ -41,120 +39,147 @@ class EntryFragment : Fragment() {
     }
 
     private fun displayCreditList() {
-        val entry1 = EntryCredit(
+        val entry1 = Entry(
             "id1",
             "bookId",
             Date(1),
-            "EUR",
+            EntryType.CREDIT,
+            "USD",
             3000.0,
             90000,
         30.0,
-            90000
+            90000,
+            null,
+            null
         )
 
-        val entry2 = EntryCredit(
+        val entry2 = Entry(
             "id2",
             "bookId",
             Date(1),
-            "EUR",
+            EntryType.CREDIT,
+            "USD",
             2000.0,
             60000,
             30.0,
-            60000
+            60000,
+            null,
+            null
         )
 
-        val entry3 = EntryCredit(
+        val entry3 = Entry(
             "id3",
             "bookId",
-            Date(3),
-            "EUR",
+            Date(1),
+            EntryType.CREDIT,
+            "USD",
             1000.0,
             30000,
             30.0,
-            30000
+            30000,
+            null,
+            null
         )
 
         val entries = mutableListOf(entry1, entry2, entry3)
 
-        lstEntry.adapter = EntryListAdapter(context!!, entries, EntryType.CREDIT)
+        lstEntry.adapter = EntryListAdapter(context!!, entries)
     }
 
     private fun displayDebitList() {
-        val entry1 = EntryDebit(
-            "id1",
+        val entry1 = Entry(
+            "id4",
             "bookId",
             Date(1),
-            "USD",
+            EntryType.DEBIT,
+            "EUR",
             3000.0,
             91000,
-            30.1234,
-            90000
+            35.1234,
+            null,
+            90000,
+            null
         )
 
-        val entry2 = EntryDebit(
-            "id2",
+        val entry2 = Entry(
+            "id5",
             "bookId",
             Date(1),
-            "USD",
+            EntryType.DEBIT,
+            "EUR",
             2000.0,
             61000,
-            30.2345,
-            60000
+            35.2345,
+            null,
+            60000,
+            null
         )
 
-        val entry3 = EntryDebit(
-            "id3",
+        val entry3 = Entry(
+            "id6",
             "bookId",
-            Date(3),
-            "USD",
+            Date(1),
+            EntryType.DEBIT,
+            "EUR",
             1000.0,
             31000,
-            30.3456,
-            30000
+            35.3456,
+            null,
+            30000,
+            null
         )
 
         val entries = mutableListOf(entry1, entry2, entry3)
 
-        lstEntry.adapter = EntryListAdapter(context!!, entries, EntryType.DEBIT)
+        lstEntry.adapter = EntryListAdapter(context!!, entries)
     }
 
     private fun displayBalanceList() {
-        val entry1 = EntryBalance(
-            "id1",
+        val entry1 = Entry(
+            "id7",
             "bookId",
             Date(1),
+            EntryType.BALANCE,
             "SEK",
             3000.333,
             9000,
             3.1234,
+            null,
+            null,
             450
         )
 
-        val entry2 = EntryBalance(
-            "id2",
+        val entry2 = Entry(
+            "id8",
             "bookId",
             Date(1),
+            EntryType.BALANCE,
             "SEK",
             2000.22,
             6000,
             3.2345,
+            null,
+            null,
             300
         )
 
-        val entry3 = EntryBalance(
-            "id3",
+        val entry3 = Entry(
+            "id9",
             "bookId",
-            Date(3),
+            Date(1),
+            EntryType.BALANCE,
             "SEK",
             1000.1,
             3000,
             3.3456,
+            null,
+            null,
             -150
         )
 
         val entries = mutableListOf(entry1, entry2, entry3)
 
-        lstEntry.adapter = EntryListAdapter(context!!, entries, EntryType.BALANCE)
+        lstEntry.adapter = EntryListAdapter(context!!, entries)
     }
 
 }
