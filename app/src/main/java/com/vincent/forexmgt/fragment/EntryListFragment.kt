@@ -15,7 +15,7 @@ import com.vincent.forexmgt.adapter.EntryListAdapter
 import com.vincent.forexmgt.entity.*
 import java.util.*
 
-class EntryFragment : Fragment() {
+class EntryListFragment : Fragment() {
 
     @BindView(R.id.lstEntry) lateinit var lstEntry: ListView
 
@@ -29,7 +29,7 @@ class EntryFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val entryType = EntryType.fromName(arguments?.getString(Constants.KEY_TYPE))
+        val entryType = EntryType.fromName(arguments?.getString(Constants.KEY_ENTRY_TYPE))
 
         when (entryType) {
             EntryType.CREDIT -> displayCreditList()

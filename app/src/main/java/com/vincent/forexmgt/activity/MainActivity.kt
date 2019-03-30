@@ -15,8 +15,10 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.vincent.forexmgt.R
-import com.vincent.forexmgt.fragment.BookFragment
+import com.vincent.forexmgt.fragment.BookListFragment
 import com.vincent.forexmgt.fragment.ExchangeRateFragment
 import com.vincent.forexmgt.fragment.TempFragment
 
@@ -33,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var manager: FragmentManager
     private var currentFragment: Fragment? = null
     private var homeFragment: ExchangeRateFragment? = null
-    private var bookFragment: BookFragment? = null
+    private var bookFragment: BookListFragment? = null
     private var thirdFragment: TempFragment? = null
 
     private val RC_SIGN_IN = 0
@@ -49,6 +51,11 @@ class MainActivity : AppCompatActivity() {
 
         homeFragment = ExchangeRateFragment()
         switchContent(homeFragment!!)
+
+        FirebaseFirestore.getInstance().firestoreSettings =
+            FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -100,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.navBook -> {
                     if (bookFragment == null) {
-                        bookFragment = BookFragment()
+                        bookFragment = BookListFragment()
                     }
                     switchContent(bookFragment!!)
                 }

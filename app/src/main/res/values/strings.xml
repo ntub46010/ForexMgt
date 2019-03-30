@@ -17,6 +17,9 @@
     <string name="title_create_book">建立帳本</string>
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
 
+    <string name="title_create_credit_entry">新增轉入紀錄</string>
+    <string name="title_create_debit_entry">新增轉出紀錄</string>
+
     <string name="tab_credit">轉入</string>
     <string name="tab_debit">轉出</string>
     <string name="tab_balance">結餘</string>

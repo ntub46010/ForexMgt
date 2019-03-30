@@ -12,8 +12,9 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-
-        <activity android:name=".activity.BookHomeActivity" />
+        <activity android:name=".activity.EntryEditActivity">
+        </activity>
+        <activity android:name=".activity.BookHomeActivity"/>
 
         <meta-data
                 android:name="com.facebook.sdk.ApplicationId"

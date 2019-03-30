@@ -56,10 +56,8 @@ class BookListAdapter(
         }
 
         fun bindValue(book: Book) {
-            val currencyType = CurrencyType.fromTitle(book.currencyType)
-
             imgBookIcon.setImageResource(R.drawable.icon_default_book)
-            imgCurrencyType.setImageResource(currencyType?.iconRes ?: R.drawable.flag_unknown)
+            imgCurrencyType.setImageResource(book.currencyType?.iconRes ?: R.drawable.flag_unknown)
             txtBookName.text = book.name
         }
     }
