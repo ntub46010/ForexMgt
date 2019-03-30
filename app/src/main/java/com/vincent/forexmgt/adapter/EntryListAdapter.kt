@@ -64,13 +64,13 @@ class EntryListAdapter(
 
             EntryType.DEBIT -> {
                 val twdAmt = formatMoney(entry.twdAmt.toDouble())
-                val twdBV = formatMoney(entry.twdBV.toDouble())
+                val twdBV = formatMoney(entry.twdBV!!.toDouble())
                 return context.getString(R.string.template_slash_with_2_string, twdAmt, twdBV)
             }
 
             EntryType.BALANCE -> {
                 val twdAmt = formatMoney(entry.twdAmt.toDouble())
-                val twdProfit = formatMoney(entry.twdProfit.toDouble())
+                val twdProfit = formatMoney(entry.twdProfit!!.toDouble())
                 return context.getString(R.string.template_slash_with_2_string, twdAmt, twdProfit)
             }
 

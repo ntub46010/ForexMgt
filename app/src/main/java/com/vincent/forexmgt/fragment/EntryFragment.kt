@@ -49,8 +49,8 @@ class EntryFragment : Fragment() {
             90000,
         30.0,
             90000,
-            0,
-            0
+            null,
+            null
         )
 
         val entry2 = Entry(
@@ -63,8 +63,8 @@ class EntryFragment : Fragment() {
             60000,
             30.0,
             60000,
-            0,
-            0
+            null,
+            null
         )
 
         val entry3 = Entry(
@@ -77,8 +77,8 @@ class EntryFragment : Fragment() {
             30000,
             30.0,
             30000,
-            0,
-            0
+            null,
+            null
         )
 
         val entries = mutableListOf(entry1, entry2, entry3)
@@ -96,9 +96,9 @@ class EntryFragment : Fragment() {
             3000.0,
             91000,
             35.1234,
-            0,
+            null,
             90000,
-            0
+            null
         )
 
         val entry2 = Entry(
@@ -110,9 +110,9 @@ class EntryFragment : Fragment() {
             2000.0,
             61000,
             35.2345,
-            0,
+            null,
             60000,
-            0
+            null
         )
 
         val entry3 = Entry(
@@ -124,9 +124,9 @@ class EntryFragment : Fragment() {
             1000.0,
             31000,
             35.3456,
-            0,
+            null,
             30000,
-            0
+            null
         )
 
         val entries = mutableListOf(entry1, entry2, entry3)
@@ -144,8 +144,8 @@ class EntryFragment : Fragment() {
             3000.333,
             9000,
             3.1234,
-            0,
-            0,
+            null,
+            null,
             450
         )
 
@@ -158,8 +158,8 @@ class EntryFragment : Fragment() {
             2000.22,
             6000,
             3.2345,
-            0,
-            0,
+            null,
+            null,
             300
         )
 
@@ -172,8 +172,8 @@ class EntryFragment : Fragment() {
             1000.1,
             3000,
             3.3456,
-            0,
-            0,
+            null,
+            null,
             -150
         )
 
