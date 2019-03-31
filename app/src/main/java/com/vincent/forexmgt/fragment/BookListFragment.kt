@@ -102,7 +102,9 @@ class BookListFragment : Fragment() {
                             edtBookName.text.toString(),
                             CurrencyType.fromTitleContains(spnCurrencyType.selectedItem.toString().substringAfter(" ")),
                             StringUtils.EMPTY,
-                            Date()
+                            Date(),
+                            0,
+                            0.0
                         ))
 
                         dlgCreateBook.dismiss()

@@ -9,5 +9,7 @@ data class Book(
     var name: String = "",
     var currencyType: CurrencyType? = null,
     var creator: String = "",
-    var createdTime: Date? = null)
+    var createdTime: Date? = null,
+    var twdTotalCost: Int = 0,
+    var fcyTotalAmt: Double = 0.0)
     : Entity(id), Serializable

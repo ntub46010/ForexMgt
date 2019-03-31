@@ -28,7 +28,10 @@
             <EditText
                     android:id="@+id/edtDate"
                     style="@style/DefaultEditText"
-                    android:hint="@string/date"/>
+                    android:hint="@string/date"
+                    android:editable="false"
+                    android:clickable="true"
+                    android:focusable="true"/>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -43,7 +46,7 @@
             <EditText
                     android:id="@+id/edtFcyAmt"
                     style="@style/DefaultEditText"
-                    android:inputType="number"/>
+                    android:inputType="numberDecimal"/>
 
         </android.support.design.widget.TextInputLayout>
 

@@ -12,9 +12,9 @@ class Entry(
     var fcyAmt: Double = 0.0,//
     var twdAmt: Int = 0,//
     var exchangeRate: Double = 0.0,
-    var twdCost: Int? = null,// 勾選方塊
-    var twdBV: Int? = null,// 自動計算，無UI
-    var twdProfit: Int? = null)// 自動計算，無UI
+    var twdCost: Int? = null, // 勾選方塊
+    var twdBV: Int? = null, // 臺幣總成本 * ( 領出外幣 / 總外幣 )
+    var twdProfit: Int? = null) // 臺幣現值 - 臺幣總成本
     : Entity(id) {
 
 }

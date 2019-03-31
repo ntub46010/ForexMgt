@@ -1,7 +1,13 @@
 package com.vincent.forexmgt.activity
 
+import android.app.DatePickerDialog
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -15,7 +21,11 @@ import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
+import com.vincent.forexmgt.entity.Entry
+import com.vincent.forexmgt.service.EntryService
 import org.apache.commons.lang3.StringUtils
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EntryEditActivity : AppCompatActivity() {
 
@@ -31,9 +41,12 @@ class EntryEditActivity : AppCompatActivity() {
     private lateinit var book: Book
     private lateinit var entryType: EntryType
 
+    private lateinit var entryService: EntryService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_entry_edit)
+        bindService(Intent(this, EntryService::class.java), entryServiceConn, Context.BIND_AUTO_CREATE)
         ButterKnife.bind(this)
         val bundle = intent.extras
 
@@ -66,8 +79,55 @@ class EntryEditActivity : AppCompatActivity() {
             return
         }
 
-        Toast.makeText(this, "OK", Toast.LENGTH_SHORT).show()
+        val date = edtDate.text.toString()
+        val fcyAmt = edtFcyAmt.text.toString().toDouble()
+        val twdAmt = edtTwdAmt.text.toString().toInt()
 
+        val entry = Entry(
+            StringUtils.EMPTY,
+            book.id,
+            SimpleDateFormat("yyyy/MM/dd", Locale.TAIWAN).parse(date),
+            entryType,
+            book.currencyType?.title?.substringAfter(" ")!!,
+            fcyAmt,
+            twdAmt,
+            Math.round(twdAmt * 10000 / fcyAmt) / 10000.0
+        )
+
+        when (entryType) {
+            EntryType.CREDIT -> {
+                if (chkAddToCost.isChecked) {
+                    entry.twdCost = entry.twdAmt
+                } else {
+                    entry.twdCost = 0
+                }
+            }
+
+            EntryType.DEBIT -> {
+                val twdBV = book.twdTotalCost * entry.fcyAmt / book.fcyTotalAmt
+                entry.twdBV = Math.round(twdBV).toInt()
+            }
+
+        }
+
+        entryService.createEntry(entry)
+    }
+
+    @OnClick(R.id.btnBack)
+    fun back() {
+        finish()
+    }
+
+    @OnClick(R.id.edtDate)
+    fun selectDate() {
+        val calendar = Calendar.getInstance()
+        DatePickerDialog(this, datePickListener,
+            calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+                .show()
+    }
+
+    private val datePickListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+        edtDate.setText("$year/${month + 1}/$dayOfMonth")
     }
 
     private fun validateData() {
@@ -93,8 +153,14 @@ class EntryEditActivity : AppCompatActivity() {
 
     }
 
-    @OnClick(R.id.btnBack)
-    fun back() {
-        finish()
+    private val entryServiceConn = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            entryService = (service as EntryService.CollectionBinder).getService()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+
+        }
     }
+
 }

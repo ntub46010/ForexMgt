@@ -4,6 +4,7 @@ class Constants {
 
     companion object {
         val COLLECTION_BOOK = "Book"
+        val COLLECTION_ENTRY = "Entry"
 
         val PROPERTY_CREATOR = "creator"
         val PROPERTY_CREATED_TIME = "createdTime"

@@ -31,6 +31,8 @@
 
         <service android:name=".service.LoadingExchangeRateService"/>
         <service android:name=".service.BookService"/>
+        <service android:name=".service.EntryService"/>
+
     </application>
 
 </manifest>

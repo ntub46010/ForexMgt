@@ -4,6 +4,7 @@
     <string name="facebook_app_id">776315792727800</string>
 
     <string name="template_slash_with_2_string">%1s / %2s</string>
+    <string name="template_slash_with_3_decimal">%1d/%2d/%3d</string>
 
     <string name="ok">確定</string>
     <string name="cancel">取消</string>
