@@ -12,9 +12,9 @@ class Entry(
     var fcyAmt: Double = 0.0,//
     var twdAmt: Int = 0,//
     var exchangeRate: Double = 0.0,
-    var twdCost: Int? = null,//a
-    var twdBV: Int? = null,//b
-    var twdProfit: Int? = null)//c
+    var twdCost: Int? = null,// 勾選方塊
+    var twdBV: Int? = null,// 自動計算，無UI
+    var twdProfit: Int? = null)// 自動計算，無UI
     : Entity(id) {
 
 }

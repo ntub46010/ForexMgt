@@ -12,10 +12,19 @@
     <string name="sign_out_successfully">登出成功</string>
     <string name="create_successfully">新增成功</string>
     <string name="create_failed">新增失敗</string>
+    <string name="submit">提交</string>
+    <string name="back">返回</string>
+    <string name="add_to_cost">加入到成本</string>
 
     <string name="book_name">帳本名稱</string>
     <string name="title_create_book">建立帳本</string>
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
+
+    <string name="date">日期</string>
+    <string name="fcy_amt_credit">轉入外幣</string>
+    <string name="fcy_amt_debit">轉出外幣</string>
+    <string name="twd_amt_credit">轉入臺幣</string>
+    <string name="twd_amt_debit">轉出臺幣</string>
 
     <string name="title_create_credit_entry">新增轉入紀錄</string>
     <string name="title_create_debit_entry">新增轉出紀錄</string>

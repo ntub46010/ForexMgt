@@ -4,7 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:padding="@dimen/default_widget_spacing"
+        android:padding="@dimen/widget_default_spacing"
         android:foreground="?android:attr/selectableItemBackground">
 
     <RelativeLayout
