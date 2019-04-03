@@ -94,20 +94,12 @@ class EntryEditActivity : AppCompatActivity() {
             Math.round(twdAmt * 10000 / fcyAmt) / 10000.0
         )
 
-        when (entryType) {
-            EntryType.CREDIT -> {
-                if (chkAddToCost.isChecked) {
-                    entry.twdCost = entry.twdAmt
-                } else {
-                    entry.twdCost = 0
-                }
+        if (entryType == EntryType.CREDIT) {
+            if (chkAddToCost.isChecked) {
+                entry.twdCost = entry.twdAmt
+            } else {
+                entry.twdCost = 0
             }
-
-            EntryType.DEBIT -> {
-                val twdBV = book.twdTotalCost * entry.fcyAmt / book.fcyTotalAmt
-                entry.twdBV = Math.round(twdBV).toInt()
-            }
-
         }
 
         entryService.createEntry(entry)

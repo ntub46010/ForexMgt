@@ -8,17 +8,21 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.vincent.forexmgt.Constants
+import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.Operator
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
+import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.util.DocumentConverter
 import org.apache.commons.lang3.StringUtils
 
 class BookService : Service() {
 
+    private lateinit var db: FirebaseFirestore
     private lateinit var collection: CollectionReference
     private lateinit var currentLoginUser: FirebaseUser
 
@@ -66,10 +70,13 @@ class BookService : Service() {
             }
     }
 
+    fun getBookDoc(id: String) = collection.document(id)
+
     internal inner class CollectionBinder : Binder() {
         fun getService(): BookService {
             val service: BookService = this@BookService
-            service.collection = FirebaseFirestore.getInstance().collection(Constants.COLLECTION_BOOK)
+            service.db = FirebaseFirestore.getInstance()
+            service.collection = db.collection(Constants.COLLECTION_BOOK)
             service.currentLoginUser = FirebaseAuth.getInstance().currentUser!!
 
             return service
