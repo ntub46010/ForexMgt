@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layWaiting"
+        android:layout_width="175dp"
+        android:layout_height="70dp"
+        android:padding="@dimen/screen_default_padding"
+        android:gravity="center">
+
+    <ProgressBar
+            android:id="@+id/prgBar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"/>
+
+    <TextView
+            android:id="@+id/txtHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/prgBar"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:gravity="center_horizontal"
+            android:text="@string/please_wait"
+            android:textSize="16sp"/>
+
+</RelativeLayout>

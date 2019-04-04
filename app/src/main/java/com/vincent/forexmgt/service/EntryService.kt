@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.google.firebase.firestore.*
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
+import com.vincent.forexmgt.Operator
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Entry
 
@@ -26,62 +27,43 @@ class EntryService : Service() {
         return CollectionBinder()
     }
 
-    fun createEntry(entry: Entry) {
+    fun createEntry(entry: Entry, operator: Operator) {
         collection
             .add(entry)
             .addOnSuccessListener { documentRef ->
                 entry.id = documentRef.id
-                createEntryPostProcess(entry)
+                createEntryPostProcess(entry, operator)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this@EntryService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EntryService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_LONG).show()
+                operator.execute(null)
             }
     }
 
-    private fun createEntryPostProcess(entry: Entry) {
+    private fun createEntryPostProcess(entry: Entry, operator: Operator) {
         db.runTransaction { transaction ->
-            updateEntryInfo(transaction, entry)
-            updateBookAsset(transaction, entry)
+            val bookDoc = bookService.getBookDoc(entry.bookId)
+            val bookSnapshot = transaction.get(bookDoc)
+            updateEntryInfo(transaction, bookSnapshot, entry)
+            updateBookAsset(transaction, bookSnapshot, bookDoc, entry)
             null
         }
             .addOnSuccessListener {
                 Toast.makeText(this@EntryService, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
+                operator.execute(null)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this@EntryService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EntryService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_LONG).show()
+                operator.execute(null)
             }
     }
 
-    private fun updateBookAsset(transaction: Transaction, entry: Entry) {
-        var deltaFcyTotalAmt = entry.fcyAmt
-        var deltaTwdTotalCost = entry.twdAmt
-        if (entry.type == EntryType.DEBIT) {
-            deltaFcyTotalAmt = -entry.fcyAmt
-            deltaTwdTotalCost = -entry.twdAmt
-        }
-
-        val bookDoc = bookService.getBookDoc(entry.bookId)
-        val bookSnapshot = transaction.get(bookDoc)
-        val newFcyTotalAmt = bookSnapshot.getDouble(Constants.PROPERTY_FCY_TOTAL_AMT)!! + deltaFcyTotalAmt
-        val newTwdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!! + deltaTwdTotalCost
-
-        val patchData = mapOf(
-            Constants.PROPERTY_FCY_TOTAL_AMT to newFcyTotalAmt,
-            Constants.PROPERTY_TWD_TOTAL_COST to newTwdTotalCost
-        )
-
-        transaction.set(bookDoc, patchData, SetOptions.merge())
-    }
-
-    private fun updateEntryInfo(transaction: Transaction, entry: Entry) {
+    private fun updateEntryInfo(transaction: Transaction, bookSnapshot: DocumentSnapshot, entry: Entry) {
         val entryDoc = getEntryDoc(entry.id)
         if (entry.type == EntryType.CREDIT) {
             transaction.update(entryDoc, Constants.PROPERTY_ID, entry.id)
             return
         }
-
-        val bookDoc = bookService.getBookDoc(entry.bookId)
-        val bookSnapshot = transaction.get(bookDoc)
 
         val fcyTotalAmt = bookSnapshot.getLong(Constants.PROPERTY_FCY_TOTAL_AMT)!!
         val twdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!!
@@ -89,10 +71,29 @@ class EntryService : Service() {
 
         val patchData = mapOf(
             Constants.PROPERTY_ID to entry.id,
-            Constants.PROPERTY_TWD_BV to twdBV
-        )
+            Constants.PROPERTY_TWD_BV to twdBV)
 
         transaction.set(entryDoc, patchData, SetOptions.merge())
+    }
+
+    private fun updateBookAsset(transaction: Transaction, bookSnapshot: DocumentSnapshot,
+                                bookDoc: DocumentReference, entry: Entry) {
+        val oldFcyTotalAmt = bookSnapshot.getDouble(Constants.PROPERTY_FCY_TOTAL_AMT)!!
+        val oldTwdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!!
+
+        val deltaFcyTotalAmt = if (entry.type == EntryType.CREDIT) entry.fcyAmt
+            else -entry.fcyAmt
+        val deltaTwdTotalCost = if (entry.type == EntryType.CREDIT) entry.twdCost!!
+            else -Math.round(oldTwdTotalCost * (entry.fcyAmt / oldFcyTotalAmt)).toInt()
+
+        val newFcyTotalAmt = oldFcyTotalAmt + deltaFcyTotalAmt
+        val newTwdTotalCost = oldTwdTotalCost + deltaTwdTotalCost
+
+        val patchData = mapOf(
+            Constants.PROPERTY_FCY_TOTAL_AMT to newFcyTotalAmt,
+            Constants.PROPERTY_TWD_TOTAL_COST to newTwdTotalCost)
+
+        transaction.set(bookDoc, patchData, SetOptions.merge())
     }
 
     fun getEntryDoc(id: String) = collection.document(id)

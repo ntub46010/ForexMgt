@@ -1,6 +1,7 @@
 package com.vincent.forexmgt.activity
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -13,16 +14,17 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
+import com.vincent.forexmgt.Operator
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.service.EntryService
+import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
 import java.text.SimpleDateFormat
 import java.util.*
@@ -37,6 +39,8 @@ class EntryEditActivity : AppCompatActivity() {
     @BindView(R.id.edtFcyAmt) lateinit var edtFcyAmt: EditText
     @BindView(R.id.edtTwdAmt) lateinit var edtTwdAmt: EditText
     @BindView(R.id.chkAddToCost) lateinit var chkAddToCost: CheckBox
+
+    private lateinit var dlgWaiting: Dialog
 
     private lateinit var book: Book
     private lateinit var entryType: EntryType
@@ -70,6 +74,7 @@ class EntryEditActivity : AppCompatActivity() {
             tilTwdAmt.hint = getString(R.string.twd_amt_credit)
         }
 
+        dlgWaiting = DialogUtils.getWaitingDialog(this)
     }
 
     @OnClick(R.id.btnSubmit)
@@ -102,7 +107,18 @@ class EntryEditActivity : AppCompatActivity() {
             }
         }
 
-        entryService.createEntry(entry)
+        val operator = object : Operator {
+            override fun execute(result: Any?) {
+                edtDate.text = null
+                edtFcyAmt.text = null
+                edtTwdAmt.text = null
+                chkAddToCost.isChecked = true
+                dlgWaiting.dismiss()
+            }
+        }
+
+        dlgWaiting.show()
+        entryService.createEntry(entry, operator)
     }
 
     @OnClick(R.id.btnBack)
@@ -135,14 +151,15 @@ class EntryEditActivity : AppCompatActivity() {
             tilDate.error = getString(R.string.mandatory_field)
         }
 
-        if (StringUtils.isEmpty(fcyAmt)) {
+        if (StringUtils.isEmpty(fcyAmt) || StringUtils.equals(fcyAmt, "0")) {
             tilFcyAmt.error = getString(R.string.mandatory_field)
+        } else if (entryType == EntryType.DEBIT && fcyAmt.toDouble() > book.fcyTotalAmt) {
+            tilFcyAmt.error = getString(R.string.insufficient_fcy_amt)
         }
 
-        if (StringUtils.isEmpty(twdAmt)) {
+        if (StringUtils.isEmpty(twdAmt) || StringUtils.equals(twdAmt, "0")) {
             tilTwdAmt.error = getString(R.string.mandatory_field)
         }
-
     }
 
     private val entryServiceConn = object : ServiceConnection {
