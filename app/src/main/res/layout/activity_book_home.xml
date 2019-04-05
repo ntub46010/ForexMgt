@@ -43,6 +43,7 @@
             android:id="@+id/fabCreateEntry"
             style="@style/FAB"
             android:layout_marginEnd="16dp"
+            android:visibility="invisible"
             app:srcCompat="@drawable/icon_edit"
             app:fabSize="normal"/>
 

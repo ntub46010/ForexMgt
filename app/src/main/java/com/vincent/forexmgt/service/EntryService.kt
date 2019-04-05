@@ -7,13 +7,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Binder
 import android.os.IBinder
-import android.widget.Toast
 import com.google.firebase.firestore.*
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.Operator
-import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Entry
+import com.vincent.forexmgt.util.DocumentConverter
 
 class EntryService : Service() {
 
@@ -35,8 +34,7 @@ class EntryService : Service() {
                 createEntryPostProcess(entry, operator)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this@EntryService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_LONG).show()
-                operator.execute(null)
+                operator.execute(e)
             }
     }
 
@@ -45,15 +43,13 @@ class EntryService : Service() {
             val bookDoc = bookService.getBookDoc(entry.bookId)
             val bookSnapshot = transaction.get(bookDoc)
             updateEntryInfo(transaction, bookSnapshot, entry)
-            updateBookAsset(transaction, bookSnapshot, bookDoc, entry)
+            updateBookAsset(transaction, bookSnapshot, entry)
             null
         }
             .addOnSuccessListener {
-                Toast.makeText(this@EntryService, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
                 operator.execute(null)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this@EntryService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_LONG).show()
                 operator.execute(null)
             }
     }
@@ -76,8 +72,7 @@ class EntryService : Service() {
         transaction.set(entryDoc, patchData, SetOptions.merge())
     }
 
-    private fun updateBookAsset(transaction: Transaction, bookSnapshot: DocumentSnapshot,
-                                bookDoc: DocumentReference, entry: Entry) {
+    private fun updateBookAsset(transaction: Transaction, bookSnapshot: DocumentSnapshot, entry: Entry) {
         val oldFcyTotalAmt = bookSnapshot.getDouble(Constants.PROPERTY_FCY_TOTAL_AMT)!!
         val oldTwdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!!
 
@@ -93,7 +88,23 @@ class EntryService : Service() {
             Constants.PROPERTY_FCY_TOTAL_AMT to newFcyTotalAmt,
             Constants.PROPERTY_TWD_TOTAL_COST to newTwdTotalCost)
 
+        val bookDoc = bookService.getBookDoc(entry.bookId)
         transaction.set(bookDoc, patchData, SetOptions.merge())
+    }
+
+    fun subscribeEntries(bookId: String, entryType: EntryType, operator: Operator): ListenerRegistration {
+        return collection
+            .whereEqualTo(Constants.PROPERTY_BOOK_ID, bookId)
+            .whereEqualTo(Constants.PROPERTY_TYPE, entryType.name)
+            .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
+            .addSnapshotListener { querySnapshot, e ->
+                if (e != null) {
+                    operator.execute(e)
+                } else {
+                    val entries = DocumentConverter.toObjects(querySnapshot, Entry::class.java)
+                    operator.execute(entries)
+                }
+            }
     }
 
     fun getEntryDoc(id: String) = collection.document(id)

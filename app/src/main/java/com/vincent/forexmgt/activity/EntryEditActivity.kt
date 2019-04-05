@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -26,6 +27,7 @@ import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.service.EntryService
 import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -107,13 +109,24 @@ class EntryEditActivity : AppCompatActivity() {
             }
         }
 
+        if (entryType == EntryType.DEBIT) {
+            book.fcyTotalAmt -= entry.fcyAmt
+        }
+
         val operator = object : Operator {
             override fun execute(result: Any?) {
+                if (result != null) {
+                    val e = result as Exception
+                    Toast.makeText(this@EntryEditActivity, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_LONG).show()
+                    return
+                }
+
                 edtDate.text = null
                 edtFcyAmt.text = null
                 edtTwdAmt.text = null
                 chkAddToCost.isChecked = true
                 dlgWaiting.dismiss()
+                Toast.makeText(this@EntryEditActivity, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
             }
         }
 

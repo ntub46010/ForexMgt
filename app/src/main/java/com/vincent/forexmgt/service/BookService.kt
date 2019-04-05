@@ -4,15 +4,14 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.Operator
-import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.util.DocumentConverter
 import org.apache.commons.lang3.StringUtils
@@ -39,7 +38,20 @@ class BookService : Service() {
                 updateBook(book, operator)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this@BookService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+                operator.execute(e)
+            }
+    }
+
+    fun subscribeBook(id: String, operator: Operator): ListenerRegistration {
+        return collection
+            .document(id)
+            .addSnapshotListener { documentSnapshot, exception ->
+                if (exception != null) {
+                    operator.execute(null)
+                } else {
+                    val book = DocumentConverter.toObject(documentSnapshot, Book::class.java)
+                    operator.execute(book)
+                }
             }
     }
 
@@ -59,11 +71,10 @@ class BookService : Service() {
             .document(book.id)
             .set(book)
             .addOnSuccessListener {
-                Toast.makeText(this@BookService, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
                 operator.execute(null)
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this@BookService, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+                operator.execute(e)
             }
     }
 

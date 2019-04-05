@@ -27,6 +27,7 @@ import com.vincent.forexmgt.service.BookService
 import com.vincent.forexmgt.util.BundleBuilder
 import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
+import java.lang.Exception
 import java.util.*
 
 class BookListFragment : Fragment() {
@@ -49,7 +50,7 @@ class BookListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        context?.bindService(Intent(activity, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
+        context?.bindService(Intent(context, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
 
         displayContent(true)
 
@@ -118,9 +119,16 @@ class BookListFragment : Fragment() {
 
         val operator = object : Operator {
             override fun execute(result: Any?) {
+                if (result != null) {
+                    val e = result as Exception
+                    Toast.makeText(context, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                Toast.makeText(context, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
                 loadBooks()
             }
         }
+
         bookService.createBook(book, operator)
     }
 
@@ -154,7 +162,8 @@ class BookListFragment : Fragment() {
 
     private fun goBookHomePage(book: Book) {
         val intent = BundleBuilder()
-            .putSerializable(Constants.KEY_BOOK, book)
+            .putString(Constants.PROPERTY_ID, book.id)
+            .putString(Constants.PROPERTY_NAME, book.name)
             .appendToIntent(Intent(context, BookHomeActivity::class.java))
 
         startActivity(intent)

@@ -9,6 +9,9 @@
     <string name="ok">確定</string>
     <string name="cancel">取消</string>
     <string name="mandatory_field">必填欄位</string>
+    <string name="insufficient_fcy_amt">外幣餘額不足</string>
+    <string name="load_book_error">載入帳簿時發生錯誤</string>
+    <string name="load_entry_error">載入紀錄時發生錯誤</string>
 
     <string name="sign_out_successfully">登出成功</string>
     <string name="create_successfully">新增成功</string>
@@ -27,7 +30,6 @@
     <string name="fcy_amt_debit">轉出外幣</string>
     <string name="twd_amt_credit">獲得臺幣</string>
     <string name="twd_amt_debit">臺幣價值</string>
-    <string name="insufficient_fcy_amt">外幣餘額不足</string>
 
     <string name="title_create_credit_entry">新增轉入紀錄</string>
     <string name="title_create_debit_entry">新增轉出紀錄</string>

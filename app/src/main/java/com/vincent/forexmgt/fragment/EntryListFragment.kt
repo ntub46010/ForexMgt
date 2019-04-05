@@ -1,23 +1,34 @@
 package com.vincent.forexmgt.fragment
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
+import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.google.firebase.firestore.ListenerRegistration
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
+import com.vincent.forexmgt.Operator
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.adapter.EntryListAdapter
 import com.vincent.forexmgt.entity.*
-import java.util.*
+import com.vincent.forexmgt.service.EntryService
 
 class EntryListFragment : Fragment() {
 
     @BindView(R.id.lstEntry) lateinit var lstEntry: ListView
+
+    private lateinit var entryService: EntryService
+    private var entryListener: ListenerRegistration? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -29,157 +40,50 @@ class EntryListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val entryType = EntryType.fromName(arguments?.getString(Constants.KEY_ENTRY_TYPE))
+        context?.bindService(Intent(context, EntryService::class.java), entryServiceConn, Context.BIND_AUTO_CREATE)
+    }
 
-        when (entryType) {
-            EntryType.CREDIT -> displayCreditList()
-            EntryType.DEBIT -> displayDebitList()
-            EntryType.BALANCE -> displayBalanceList()
+    private fun subscribeEntries(bookId: String, entryType: EntryType) {
+        val operator = object : Operator {
+            override fun execute(result: Any?) {
+                if (result is Exception) {
+                    Toast.makeText(context, "${getString(R.string.load_entry_error)}\n${result.message}", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                val entries = result as List<Entry>
+                val adapter = lstEntry.adapter
+
+                if (adapter == null) {
+                    val entryAdapter = EntryListAdapter(context!!, entries)
+                    lstEntry.adapter = entryAdapter
+                } else {
+                    (adapter as EntryListAdapter).entries = entries
+                    adapter.notifyDataSetChanged()
+                }
+            }
         }
+
+        entryListener = entryService.subscribeEntries(bookId, entryType, operator)
     }
 
-    private fun displayCreditList() {
-        val entry1 = Entry(
-            "id1",
-            "bookId",
-            Date(1),
-            EntryType.CREDIT,
-            "USD",
-            3000.0,
-            90000,
-        30.0,
-            90000,
-            null,
-            null
-        )
-
-        val entry2 = Entry(
-            "id2",
-            "bookId",
-            Date(1),
-            EntryType.CREDIT,
-            "USD",
-            2000.0,
-            60000,
-            30.0,
-            60000,
-            null,
-            null
-        )
-
-        val entry3 = Entry(
-            "id3",
-            "bookId",
-            Date(1),
-            EntryType.CREDIT,
-            "USD",
-            1000.0,
-            30000,
-            30.0,
-            30000,
-            null,
-            null
-        )
-
-        val entries = mutableListOf(entry1, entry2, entry3)
-
-        lstEntry.adapter = EntryListAdapter(context!!, entries)
+    override fun onDestroy() {
+        super.onDestroy()
+        entryListener?.remove()
     }
 
-    private fun displayDebitList() {
-        val entry1 = Entry(
-            "id4",
-            "bookId",
-            Date(1),
-            EntryType.DEBIT,
-            "EUR",
-            3000.0,
-            91000,
-            35.1234,
-            null,
-            90000,
-            null
-        )
+    private val entryServiceConn = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            entryService = (service as EntryService.CollectionBinder).getService()
 
-        val entry2 = Entry(
-            "id5",
-            "bookId",
-            Date(1),
-            EntryType.DEBIT,
-            "EUR",
-            2000.0,
-            61000,
-            35.2345,
-            null,
-            60000,
-            null
-        )
+            val bookId = arguments?.getString(Constants.PROPERTY_BOOK_ID)!!
+            val entryType = EntryType.fromName(arguments?.getString(Constants.KEY_ENTRY_TYPE))!!
+            subscribeEntries(bookId, entryType)
+        }
 
-        val entry3 = Entry(
-            "id6",
-            "bookId",
-            Date(1),
-            EntryType.DEBIT,
-            "EUR",
-            1000.0,
-            31000,
-            35.3456,
-            null,
-            30000,
-            null
-        )
+        override fun onServiceDisconnected(name: ComponentName?) {
 
-        val entries = mutableListOf(entry1, entry2, entry3)
-
-        lstEntry.adapter = EntryListAdapter(context!!, entries)
-    }
-
-    private fun displayBalanceList() {
-        val entry1 = Entry(
-            "id7",
-            "bookId",
-            Date(1),
-            EntryType.BALANCE,
-            "SEK",
-            3000.333,
-            9000,
-            3.1234,
-            null,
-            null,
-            450
-        )
-
-        val entry2 = Entry(
-            "id8",
-            "bookId",
-            Date(1),
-            EntryType.BALANCE,
-            "SEK",
-            2000.22,
-            6000,
-            3.2345,
-            null,
-            null,
-            300
-        )
-
-        val entry3 = Entry(
-            "id9",
-            "bookId",
-            Date(1),
-            EntryType.BALANCE,
-            "SEK",
-            1000.1,
-            3000,
-            3.3456,
-            null,
-            null,
-            -150
-        )
-
-        val entries = mutableListOf(entry1, entry2, entry3)
-
-        lstEntry.adapter = EntryListAdapter(context!!, entries)
+        }
     }
 
 }
