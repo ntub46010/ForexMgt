@@ -38,7 +38,7 @@ class EntryEditActivity : AppCompatActivity() {
     private lateinit var book: Book
     private lateinit var entryType: EntryType
 
-    private var entryService = ForExMgtApp.entryService!!
+    private var entryService = ForExMgtApp.entryService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +58,11 @@ class EntryEditActivity : AppCompatActivity() {
         entryType = EntryType.fromName(bundle.getString(Constants.KEY_ENTRY_TYPE))!!
         if (entryType == EntryType.CREDIT) {
             chkAddToCost.visibility = View.VISIBLE
-            tilFcyAmt.hint = "${getString(R.string.fcy_amt_credit)}（${book.currencyType?.title}）"
+            tilFcyAmt.hint = "${getString(R.string.fcy_amt_credit)}（${book.currencyType?.chineseName}）"
             tilTwdAmt.hint = getString(R.string.twd_amt_debit)
         } else if (entryType == EntryType.DEBIT) {
             chkAddToCost.visibility = View.GONE
-            tilFcyAmt.hint = "${getString(R.string.fcy_amt_debit)}（${book.currencyType?.title}）"
+            tilFcyAmt.hint = "${getString(R.string.fcy_amt_debit)}（${book.currencyType?.chineseName}）"
             tilTwdAmt.hint = getString(R.string.twd_amt_credit)
         }
 
@@ -85,7 +85,7 @@ class EntryEditActivity : AppCompatActivity() {
             book.id,
             SimpleDateFormat("yyyy/MM/dd", Locale.TAIWAN).parse(date),
             entryType,
-            book.currencyType?.title?.substringAfter(" ")!!,
+            book.currencyType!!.name,
             fcyAmt,
             twdAmt,
             Math.round(twdAmt * 10000 / fcyAmt) / 10000.0

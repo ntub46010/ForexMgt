@@ -24,8 +24,8 @@ class ForExMgtApp : Application() {
     }
 
     companion object {
-        var bookService: BookService? = null
-        var entryService: EntryService? = null
+        lateinit var bookService: BookService
+        lateinit var entryService: EntryService
     }
 
     private val bookServiceConn = object : ServiceConnection {

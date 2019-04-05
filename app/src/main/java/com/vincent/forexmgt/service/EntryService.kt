@@ -17,7 +17,7 @@ class EntryService : Service() {
     private lateinit var db: FirebaseFirestore
     private lateinit var collection: CollectionReference
 
-    private var bookService = ForExMgtApp.bookService
+    private lateinit var bookService: BookService
 
     override fun onBind(intent: Intent?): IBinder {
         return CollectionBinder()
@@ -37,7 +37,7 @@ class EntryService : Service() {
 
     private fun createEntryPostProcess(entry: Entry, operator: Operator) {
         db.runTransaction { transaction ->
-            val bookDoc = bookService!!.getBookDoc(entry.bookId)
+            val bookDoc = bookService.getBookDoc(entry.bookId)
             val bookSnapshot = transaction.get(bookDoc)
             updateEntryInfo(transaction, bookSnapshot, entry)
             updateBookAsset(transaction, bookSnapshot, entry)
@@ -85,7 +85,7 @@ class EntryService : Service() {
             Constants.PROPERTY_FCY_TOTAL_AMT to newFcyTotalAmt,
             Constants.PROPERTY_TWD_TOTAL_COST to newTwdTotalCost)
 
-        val bookDoc = bookService!!.getBookDoc(entry.bookId)
+        val bookDoc = bookService.getBookDoc(entry.bookId)
         transaction.set(bookDoc, patchData, SetOptions.merge())
     }
 
@@ -111,6 +111,7 @@ class EntryService : Service() {
             val service = this@EntryService
             service.db = FirebaseFirestore.getInstance()
             service.collection = db.collection(Constants.COLLECTION_ENTRY)
+            service.bookService = ForExMgtApp.bookService
             return service
         }
     }

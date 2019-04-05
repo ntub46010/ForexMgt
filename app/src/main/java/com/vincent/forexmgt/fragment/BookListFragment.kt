@@ -33,7 +33,7 @@ class BookListFragment : Fragment() {
 
     private lateinit var dlgCreateBook: AlertDialog
 
-    private var bookService = ForExMgtApp.bookService!!
+    private var bookService = ForExMgtApp.bookService
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -62,12 +62,7 @@ class BookListFragment : Fragment() {
         val edtBookName = layout.findViewById<EditText>(R.id.edtBookName)
         val spnCurrencyType = layout.findViewById<Spinner>(R.id.spnCurrencyType)
 
-        val currencyTitles = mutableListOf<String>()
-        for (type in CurrencyType.values()) {
-            currencyTitles.add(type.title)
-        }
-
-        val adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, currencyTitles)
+        val adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, CurrencyType.getTitles())
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spnCurrencyType.adapter = adapter
 
@@ -89,7 +84,7 @@ class BookListFragment : Fragment() {
                         val book = Book(
                             StringUtils.EMPTY,
                             edtBookName.text.toString(),
-                            CurrencyType.fromTitleContains(spnCurrencyType.selectedItem.toString().substringAfter(" ")),
+                            CurrencyType.fromTitle(spnCurrencyType.selectedItem.toString()),
                             StringUtils.EMPTY,
                             Date(),
                             0,

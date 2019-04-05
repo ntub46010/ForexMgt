@@ -28,8 +28,9 @@ class BookHomeActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var book: Book
 
-    private var bookService = ForExMgtApp.bookService!!
     private var bookListener: ListenerRegistration? = null
+
+    private var bookService = ForExMgtApp.bookService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +53,7 @@ class BookHomeActivity : AppCompatActivity() {
             goEntryEditPage()
         }
 
-        loadBook(bundle.getString(Constants.PROPERTY_ID))
+        subscribeBook(bundle.getString(Constants.PROPERTY_ID))
     }
 
     private fun prepareFragments() {
@@ -104,7 +105,7 @@ class BookHomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadBook(bookId: String) {
+    private fun subscribeBook(bookId: String) {
         val operator = object : Operator {
             override fun execute(result: Any?) {
                 if (result == null) {

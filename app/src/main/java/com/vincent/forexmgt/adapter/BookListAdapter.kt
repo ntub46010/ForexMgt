@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.vincent.forexmgt.CurrencyType
 import com.vincent.forexmgt.RecyclerViewOnItemClickListener
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
