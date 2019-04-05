@@ -35,7 +35,7 @@ class BookService : Service() {
             .add(book)
             .addOnSuccessListener { documentRef ->
                 book.id = documentRef.id
-                updateBook(book, operator)
+                createBookPostProcess(book, operator)
             }
             .addOnFailureListener { e ->
                 operator.execute(e)
@@ -66,7 +66,7 @@ class BookService : Service() {
             }
     }
 
-    fun updateBook(book: Book, operator: Operator) {
+    private fun createBookPostProcess(book: Book, operator: Operator) {
         collection
             .document(book.id)
             .set(book)

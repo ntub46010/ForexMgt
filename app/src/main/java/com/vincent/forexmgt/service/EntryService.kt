@@ -1,15 +1,13 @@
 package com.vincent.forexmgt.service
 
 import android.app.Service
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Binder
 import android.os.IBinder
 import com.google.firebase.firestore.*
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
+import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.Operator
 import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.util.DocumentConverter
@@ -19,10 +17,9 @@ class EntryService : Service() {
     private lateinit var db: FirebaseFirestore
     private lateinit var collection: CollectionReference
 
-    private lateinit var bookService: BookService
+    private var bookService = ForExMgtApp.bookService
 
     override fun onBind(intent: Intent?): IBinder {
-        bindService(Intent(this, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
         return CollectionBinder()
     }
 
@@ -40,7 +37,7 @@ class EntryService : Service() {
 
     private fun createEntryPostProcess(entry: Entry, operator: Operator) {
         db.runTransaction { transaction ->
-            val bookDoc = bookService.getBookDoc(entry.bookId)
+            val bookDoc = bookService!!.getBookDoc(entry.bookId)
             val bookSnapshot = transaction.get(bookDoc)
             updateEntryInfo(transaction, bookSnapshot, entry)
             updateBookAsset(transaction, bookSnapshot, entry)
@@ -88,7 +85,7 @@ class EntryService : Service() {
             Constants.PROPERTY_FCY_TOTAL_AMT to newFcyTotalAmt,
             Constants.PROPERTY_TWD_TOTAL_COST to newTwdTotalCost)
 
-        val bookDoc = bookService.getBookDoc(entry.bookId)
+        val bookDoc = bookService!!.getBookDoc(entry.bookId)
         transaction.set(bookDoc, patchData, SetOptions.merge())
     }
 
@@ -108,16 +105,6 @@ class EntryService : Service() {
     }
 
     fun getEntryDoc(id: String) = collection.document(id)
-
-    private val bookServiceConn = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            bookService = (service as BookService.CollectionBinder).getService()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-
-        }
-    }
 
     internal inner class CollectionBinder : Binder() {
         fun getService(): EntryService {

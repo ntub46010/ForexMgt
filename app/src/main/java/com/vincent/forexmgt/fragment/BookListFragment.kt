@@ -1,11 +1,7 @@
 package com.vincent.forexmgt.fragment
 
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
@@ -23,7 +19,6 @@ import com.vincent.forexmgt.*
 import com.vincent.forexmgt.activity.BookHomeActivity
 import com.vincent.forexmgt.adapter.BookListAdapter
 import com.vincent.forexmgt.entity.Book
-import com.vincent.forexmgt.service.BookService
 import com.vincent.forexmgt.util.BundleBuilder
 import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
@@ -38,7 +33,7 @@ class BookListFragment : Fragment() {
 
     private lateinit var dlgCreateBook: AlertDialog
 
-    private lateinit var bookService: BookService
+    private var bookService = ForExMgtApp.bookService!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -50,22 +45,15 @@ class BookListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        context?.bindService(Intent(context, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
 
         displayContent(true)
-
         lstBook.layoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL,false)
-
         fabCreateBook.setOnClickListener {
             dlgCreateBook.show()
         }
-
         prepareCreateDialog()
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        context?.unbindService(bookServiceConn)
+        loadBooks()
     }
 
     private fun prepareCreateDialog() {
@@ -98,7 +86,7 @@ class BookListFragment : Fragment() {
                     if (StringUtils.isEmpty(edtBookName.text)) {
                         tilBookName.error = getString(R.string.mandatory_field)
                     } else {
-                        createBook(Book(
+                        val book = Book(
                             StringUtils.EMPTY,
                             edtBookName.text.toString(),
                             CurrencyType.fromTitleContains(spnCurrencyType.selectedItem.toString().substringAfter(" ")),
@@ -106,8 +94,9 @@ class BookListFragment : Fragment() {
                             Date(),
                             0,
                             0.0
-                        ))
+                        )
 
+                        createBook(book)
                         dlgCreateBook.dismiss()
                     }
                 }
@@ -176,17 +165,6 @@ class BookListFragment : Fragment() {
         } else {
             lstBook.visibility = View.VISIBLE
             prgBar.visibility = View.INVISIBLE
-        }
-    }
-
-    private val bookServiceConn = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            bookService = (service as BookService.CollectionBinder).getService()
-            loadBooks()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-
         }
     }
 }

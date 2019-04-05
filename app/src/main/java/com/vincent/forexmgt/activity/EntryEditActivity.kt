@@ -2,13 +2,8 @@ package com.vincent.forexmgt.activity
 
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.IBinder
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.Toolbar
 import android.view.View
@@ -18,13 +13,9 @@ import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
-import com.vincent.forexmgt.Constants
-import com.vincent.forexmgt.EntryType
-import com.vincent.forexmgt.Operator
-import com.vincent.forexmgt.R
+import com.vincent.forexmgt.*
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.entity.Entry
-import com.vincent.forexmgt.service.EntryService
 import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
 import java.lang.Exception
@@ -47,12 +38,11 @@ class EntryEditActivity : AppCompatActivity() {
     private lateinit var book: Book
     private lateinit var entryType: EntryType
 
-    private lateinit var entryService: EntryService
+    private var entryService = ForExMgtApp.entryService!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_entry_edit)
-        bindService(Intent(this, EntryService::class.java), entryServiceConn, Context.BIND_AUTO_CREATE)
         ButterKnife.bind(this)
         val bundle = intent.extras
 
@@ -172,16 +162,6 @@ class EntryEditActivity : AppCompatActivity() {
 
         if (StringUtils.isEmpty(twdAmt) || StringUtils.equals(twdAmt, "0")) {
             tilTwdAmt.error = getString(R.string.mandatory_field)
-        }
-    }
-
-    private val entryServiceConn = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            entryService = (service as EntryService.CollectionBinder).getService()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-
         }
     }
 

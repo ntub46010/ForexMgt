@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.fragment.BookListFragment
 import com.vincent.forexmgt.fragment.ExchangeRateFragment
@@ -67,6 +68,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, response?.error?.errorCode.toString(), Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (application as ForExMgtApp).unbindService()
     }
 
     private fun prepareAuthentication() {

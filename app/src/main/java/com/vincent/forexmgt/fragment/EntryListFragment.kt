@@ -1,11 +1,6 @@
 package com.vincent.forexmgt.fragment
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,19 +10,15 @@ import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.google.firebase.firestore.ListenerRegistration
-import com.vincent.forexmgt.Constants
-import com.vincent.forexmgt.EntryType
-import com.vincent.forexmgt.Operator
-import com.vincent.forexmgt.R
+import com.vincent.forexmgt.*
 import com.vincent.forexmgt.adapter.EntryListAdapter
 import com.vincent.forexmgt.entity.*
-import com.vincent.forexmgt.service.EntryService
 
 class EntryListFragment : Fragment() {
 
     @BindView(R.id.lstEntry) lateinit var lstEntry: ListView
 
-    private lateinit var entryService: EntryService
+    private var entryService = ForExMgtApp.entryService!!
     private var entryListener: ListenerRegistration? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -40,7 +31,10 @@ class EntryListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        context?.bindService(Intent(context, EntryService::class.java), entryServiceConn, Context.BIND_AUTO_CREATE)
+
+        val bookId = arguments?.getString(Constants.PROPERTY_BOOK_ID)!!
+        val entryType = EntryType.fromName(arguments?.getString(Constants.KEY_ENTRY_TYPE))!!
+        subscribeEntries(bookId, entryType)
     }
 
     private fun subscribeEntries(bookId: String, entryType: EntryType) {
@@ -70,20 +64,6 @@ class EntryListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         entryListener?.remove()
-    }
-
-    private val entryServiceConn = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            entryService = (service as EntryService.CollectionBinder).getService()
-
-            val bookId = arguments?.getString(Constants.PROPERTY_BOOK_ID)!!
-            val entryType = EntryType.fromName(arguments?.getString(Constants.KEY_ENTRY_TYPE))!!
-            subscribeEntries(bookId, entryType)
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-
-        }
     }
 
 }

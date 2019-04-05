@@ -1,12 +1,8 @@
 package com.vincent.forexmgt.activity
 
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.IBinder
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
@@ -16,15 +12,10 @@ import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.google.firebase.firestore.ListenerRegistration
-import com.vincent.forexmgt.Constants
-import com.vincent.forexmgt.EntryType
-import com.vincent.forexmgt.Operator
-import com.vincent.forexmgt.R
+import com.vincent.forexmgt.*
 import com.vincent.forexmgt.adapter.EntryPagerAdapter
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.fragment.EntryListFragment
-import com.vincent.forexmgt.service.BookService
-import com.vincent.forexmgt.service.EntryService
 import com.vincent.forexmgt.util.BundleBuilder
 
 class BookHomeActivity : AppCompatActivity() {
@@ -37,13 +28,12 @@ class BookHomeActivity : AppCompatActivity() {
     private lateinit var bundle: Bundle
     private lateinit var book: Book
 
-    private lateinit var bookService: BookService
+    private var bookService = ForExMgtApp.bookService!!
     private var bookListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_home)
-        bindService(Intent(this, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
         ButterKnife.bind(this)
         bundle = intent.extras
 
@@ -56,12 +46,13 @@ class BookHomeActivity : AppCompatActivity() {
 
         tab.setupWithViewPager(vpgEntry)
         vpgEntry.offscreenPageLimit = 2
-
         prepareFragments()
 
         fabCreateEntry.setOnClickListener {
             goEntryEditPage()
         }
+
+        loadBook(bundle.getString(Constants.PROPERTY_ID))
     }
 
     private fun prepareFragments() {
@@ -135,14 +126,4 @@ class BookHomeActivity : AppCompatActivity() {
         bookListener?.remove()
     }
 
-    private val bookServiceConn = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            bookService = (service as BookService.CollectionBinder).getService()
-            loadBook(bundle.getString(Constants.PROPERTY_ID))
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-
-        }
-    }
 }
