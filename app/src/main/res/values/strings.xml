@@ -4,18 +4,35 @@
     <string name="facebook_app_id">776315792727800</string>
 
     <string name="template_slash_with_2_string">%1s / %2s</string>
+    <string name="template_slash_with_3_decimal">%1d/%2d/%3d</string>
 
     <string name="ok">確定</string>
     <string name="cancel">取消</string>
     <string name="mandatory_field">必填欄位</string>
+    <string name="insufficient_fcy_amt">外幣餘額不足</string>
+    <string name="load_book_error">載入帳簿時發生錯誤</string>
+    <string name="load_entry_error">載入紀錄時發生錯誤</string>
 
     <string name="sign_out_successfully">登出成功</string>
     <string name="create_successfully">新增成功</string>
     <string name="create_failed">新增失敗</string>
+    <string name="submit">提交</string>
+    <string name="back">返回</string>
+    <string name="add_to_cost">加入到成本</string>
 
-    <string name="book_name">帳本名稱</string>
     <string name="title_create_book">建立帳本</string>
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
+    <string name="book_name">帳本名稱</string>
+    <string name="please_wait">請稍後…</string>
+
+    <string name="date">日期</string>
+    <string name="fcy_amt_credit">轉入外幣</string>
+    <string name="fcy_amt_debit">轉出外幣</string>
+    <string name="twd_amt_credit">獲得臺幣</string>
+    <string name="twd_amt_debit">臺幣價值</string>
+
+    <string name="title_create_credit_entry">新增轉入紀錄</string>
+    <string name="title_create_debit_entry">新增轉出紀錄</string>
 
     <string name="tab_credit">轉入</string>
     <string name="tab_debit">轉出</string>

@@ -24,14 +24,17 @@ import com.vincent.forexmgt.activity.BookHomeActivity
 import com.vincent.forexmgt.adapter.BookListAdapter
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.service.BookService
+import com.vincent.forexmgt.util.BundleBuilder
 import com.vincent.forexmgt.util.DialogUtils
 import org.apache.commons.lang3.StringUtils
+import java.lang.Exception
 import java.util.*
 
-class BookFragment : Fragment() {
+class BookListFragment : Fragment() {
 
     @BindView(R.id.lstBook) lateinit var lstBook: RecyclerView
     @BindView(R.id.fabCreateBook) lateinit var fabCreateBook: FloatingActionButton
+    @BindView(R.id.prgBar) lateinit var prgBar: ProgressBar
 
     private lateinit var dlgCreateBook: AlertDialog
 
@@ -39,7 +42,7 @@ class BookFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val view = inflater.inflate(R.layout.fragment_book_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_book_list, container, false)
         ButterKnife.bind(this, view)
 
         return view
@@ -47,7 +50,9 @@ class BookFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        context?.bindService(Intent(activity, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
+        context?.bindService(Intent(context, BookService::class.java), bookServiceConn, Context.BIND_AUTO_CREATE)
+
+        displayContent(true)
 
         lstBook.layoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL,false)
 
@@ -96,9 +101,11 @@ class BookFragment : Fragment() {
                         createBook(Book(
                             StringUtils.EMPTY,
                             edtBookName.text.toString(),
-                            spnCurrencyType.selectedItem.toString(),
+                            CurrencyType.fromTitleContains(spnCurrencyType.selectedItem.toString().substringAfter(" ")),
                             StringUtils.EMPTY,
-                            Date()
+                            Date(),
+                            0,
+                            0.0
                         ))
 
                         dlgCreateBook.dismiss()
@@ -108,39 +115,68 @@ class BookFragment : Fragment() {
     }
 
     private fun createBook(book: Book) {
-        bookService.createBook(book)
+        displayContent(true)
+
+        val operator = object : Operator {
+            override fun execute(result: Any?) {
+                if (result != null) {
+                    val e = result as Exception
+                    Toast.makeText(context, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                Toast.makeText(context, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
+                loadBooks()
+            }
+        }
+
+        bookService.createBook(book, operator)
     }
 
     private fun loadBooks() {
+        displayContent(true)
+
         val operator = object : Operator {
             override fun execute(result: Any?) {
                 val books = result as List<Book>
-                var adapter = lstBook.adapter
+                val adapter = lstBook.adapter
 
                 if (adapter == null) {
-                    adapter = BookListAdapter(books)
-                    adapter.setOnItemClickListener(object : RecyclerViewOnItemClickListener {
+                    val bookAdapter = BookListAdapter(books)
+                    bookAdapter.setOnItemClickListener(object : RecyclerViewOnItemClickListener {
                         override fun onItemClick(view: View?, position: Int) {
-                            goBookHomePage(books[position])
+                            goBookHomePage(bookAdapter.books[position])
                         }
                     })
-                    lstBook.adapter = adapter
+                    lstBook.adapter = bookAdapter
                 } else {
                     (adapter as BookListAdapter).books = books
                     adapter.notifyDataSetChanged()
                 }
+
+                displayContent(false)
             }
         }
+
         bookService.loadBooks(operator)
     }
 
-    fun goBookHomePage(book: Book) {
-        val intent = Intent(context, BookHomeActivity::class.java)
-        val bundle = Bundle()
-        bundle.putString(Constants.KEY_ID, book.id)
-        bundle.putString(Constants.KEY_NAME, book.name)
-        intent.putExtras(bundle)
+    private fun goBookHomePage(book: Book) {
+        val intent = BundleBuilder()
+            .putString(Constants.PROPERTY_ID, book.id)
+            .putString(Constants.PROPERTY_NAME, book.name)
+            .appendToIntent(Intent(context, BookHomeActivity::class.java))
+
         startActivity(intent)
+    }
+
+    private fun displayContent(isLoading: Boolean) {
+        if (isLoading) {
+            lstBook.visibility = View.INVISIBLE
+            prgBar.visibility = View.VISIBLE
+        } else {
+            lstBook.visibility = View.VISIBLE
+            prgBar.visibility = View.INVISIBLE
+        }
     }
 
     private val bookServiceConn = object : ServiceConnection {

@@ -1,7 +1,10 @@
 package com.vincent.forexmgt.util
 
+import android.app.Dialog
 import android.content.Context
 import android.support.v7.app.AlertDialog
+import android.view.Window
+import com.vincent.forexmgt.R
 
 class DialogUtils {
 
@@ -12,6 +15,14 @@ class DialogUtils {
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("確定", null)
+
+        fun getWaitingDialog(context: Context): Dialog {
+            val dialog = Dialog(context)
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.dialog_waiting)
+            dialog.setCancelable(false)
+            return dialog
+        }
 
 
     }

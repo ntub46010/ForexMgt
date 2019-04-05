@@ -1,11 +1,10 @@
 package com.vincent.forexmgt.entity
 
-import com.vincent.forexmgt.Entity
 import com.vincent.forexmgt.EntryType
 import java.util.*
 
 class Entry(
-    id: String,
+    override var id: String = "",
     var bookId: String = "",
     var createdTime: Date? = null,
     val type: EntryType? = null,
@@ -16,6 +15,4 @@ class Entry(
     var twdCost: Int? = null,
     var twdBV: Int? = null,
     var twdProfit: Int? = null)
-    : Entity(id) {
-
-}
+    : Entity(id)

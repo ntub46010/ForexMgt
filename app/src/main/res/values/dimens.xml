@@ -3,6 +3,7 @@
 
     <dimen name="screen_default_padding">10dp</dimen>
     <dimen name="tab_bar_elevation">4dp</dimen>
-    <dimen name="default_widget_spacing">8dp</dimen>
+    <dimen name="widget_default_spacing">8dp</dimen>
+    <dimen name="edit_entry_edit_text_width">250dp</dimen>
 
 </resources>
