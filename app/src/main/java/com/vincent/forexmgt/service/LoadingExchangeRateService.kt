@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.CurrencyType
-import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.ExchangeRate
+import org.apache.commons.lang3.StringUtils
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.io.IOException
@@ -40,13 +40,12 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
 
         for (row in tableRows) {
             val tableCells = row.select("td")
-            val currencyTitle = tableCells[0].select("a").text()
-            val currencyType = CurrencyType.fromTitle(currencyTitle)
+            val currencyCode = StringUtils.split(tableCells[0].select("a").text(), StringUtils.SPACE)[1]
+            val currencyType = CurrencyType.fromCode(currencyCode)
 
             rates.add(
                 ExchangeRate(
-                    currencyType?.iconRes ?: R.drawable.flag_unknown,
-                    currencyTitle,
+                    currencyType,
                     tableCells[4].text().toDouble(),
                     tableCells[3].text().toDouble()
                 )

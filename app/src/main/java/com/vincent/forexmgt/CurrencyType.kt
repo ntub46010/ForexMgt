@@ -23,6 +23,10 @@ enum class CurrencyType(
     SEK("瑞典幣", R.drawable.flag_sek),
     THB("泰幣", R.drawable.flag_thb);
 
+    fun getTitle(): String {
+        return "$chineseName${StringUtils.SPACE}$name"
+    }
+
     companion object {
 
         fun getTitles(): List<String> {
@@ -35,12 +39,9 @@ enum class CurrencyType(
             return titles
         }
 
-        fun fromTitle(title: String): CurrencyType? {
-            val titleElement = StringUtils.split(title, StringUtils.SPACE)
-
+        fun fromCode(code: String): CurrencyType? {
             return values().firstOrNull { currencyType ->
-                StringUtils.equals(currencyType.chineseName, titleElement[0]) &&
-                        StringUtils.equals(currencyType.name, titleElement[1])
+                StringUtils.equals(currencyType.name, code)
             }
         }
 

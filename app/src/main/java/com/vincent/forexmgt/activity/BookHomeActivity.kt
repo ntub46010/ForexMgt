@@ -102,6 +102,13 @@ class BookHomeActivity : AppCompatActivity() {
 
                 startActivity(intent)
             }
+
+
+            2 -> {
+                // 外幣餘額 * 匯率? = 臺幣現值
+                // 臺幣現值 - 臺幣成本 = 利差
+
+            }
         }
     }
 
