@@ -9,8 +9,12 @@ import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.Operator
+import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.entity.Entry
+import com.vincent.forexmgt.entity.ExchangeRate
 import com.vincent.forexmgt.util.DocumentConverter
+import org.apache.commons.lang3.StringUtils
+import java.util.*
 
 class EntryService : Service() {
 
@@ -33,6 +37,30 @@ class EntryService : Service() {
             .addOnFailureListener { e ->
                 operator.execute(e)
             }
+    }
+
+    fun generateBalanceEntry(book: Book, exchangeRates: List<ExchangeRate>): Entry {
+        val spotRate = exchangeRates.find { rate ->
+            StringUtils.equals(rate.currencyType?.name, book.currencyType?.name)
+        }!!
+
+        val presentValue = Math.round(book.twdTotalCost * spotRate.debit).toInt()
+        val profit = presentValue - book.twdTotalCost
+
+        val entry = Entry(
+            StringUtils.EMPTY,
+            book.id,
+            Date(),
+            EntryType.BALANCE,
+            book.currencyType!!.name,
+            book.fcyTotalAmt,
+            presentValue,
+            spotRate.debit
+        )
+
+        entry.twdProfit = profit
+
+        return entry
     }
 
     private fun createEntryPostProcess(entry: Entry, operator: Operator) {
