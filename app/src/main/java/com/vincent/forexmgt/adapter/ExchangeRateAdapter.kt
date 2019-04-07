@@ -41,8 +41,8 @@ class ExchangeRateAdapter(
         }
 
         fun bindValue(rate: ExchangeRate) {
-            imgCurrencyIcon.setImageResource(rate.iconRes)
-            txtCurrencyTitle.text = rate.name
+            imgCurrencyIcon.setImageResource(rate.currencyType!!.iconRes)
+            txtCurrencyTitle.text = rate.currencyType!!.getTitle()
             txtCredit.text = formatNumber(rate.credit)
             txtDebit.text = formatNumber(rate.debit)
         }

@@ -9,8 +9,12 @@ import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.Operator
+import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.entity.Entry
+import com.vincent.forexmgt.entity.ExchangeRate
 import com.vincent.forexmgt.util.DocumentConverter
+import org.apache.commons.lang3.StringUtils
+import java.util.*
 
 class EntryService : Service() {
 
@@ -35,12 +39,39 @@ class EntryService : Service() {
             }
     }
 
+    fun generateBalanceEntry(book: Book, exchangeRates: List<ExchangeRate>): Entry {
+        val spotRate = exchangeRates.find { rate ->
+            StringUtils.equals(rate.currencyType?.name, book.currencyType?.name)
+        }!!
+
+        val presentValue = Math.round(book.fcyTotalAmt * spotRate.debit).toInt()
+        val profit = presentValue - book.twdTotalCost
+
+        val entry = Entry(
+            StringUtils.EMPTY,
+            book.id,
+            Date(),
+            EntryType.BALANCE,
+            book.currencyType!!.name,
+            book.fcyTotalAmt,
+            presentValue,
+            spotRate.debit
+        )
+
+        entry.twdProfit = profit
+
+        return entry
+    }
+
     private fun createEntryPostProcess(entry: Entry, operator: Operator) {
         db.runTransaction { transaction ->
             val bookDoc = bookService.getBookDoc(entry.bookId)
             val bookSnapshot = transaction.get(bookDoc)
             updateEntryInfo(transaction, bookSnapshot, entry)
-            updateBookAsset(transaction, bookSnapshot, entry)
+
+            if (entry.type != EntryType.BALANCE) {
+                updateBookAsset(transaction, bookSnapshot, entry)
+            }
             null
         }
             .addOnSuccessListener {
@@ -53,7 +84,7 @@ class EntryService : Service() {
 
     private fun updateEntryInfo(transaction: Transaction, bookSnapshot: DocumentSnapshot, entry: Entry) {
         val entryDoc = getEntryDoc(entry.id)
-        if (entry.type == EntryType.CREDIT) {
+        if (entry.type == EntryType.CREDIT || entry.type == EntryType.BALANCE) {
             transaction.update(entryDoc, Constants.PROPERTY_ID, entry.id)
             return
         }

@@ -4,9 +4,11 @@
     <string name="facebook_app_id">776315792727800</string>
 
     <string name="template_slash_with_2_string">%1s / %2s</string>
-    <string name="template_slash_with_3_decimal">%1d/%2d/%3d</string>
+    <string name="template_fcy_balance">%1s餘額</string>
+    <string name="template_currency_amount">%1s  %2s</string>
 
     <string name="ok">確定</string>
+    <string name="add">新增</string>
     <string name="cancel">取消</string>
     <string name="mandatory_field">必填欄位</string>
     <string name="insufficient_fcy_amt">外幣餘額不足</string>
@@ -24,8 +26,10 @@
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
     <string name="book_name">帳本名稱</string>
     <string name="please_wait">請稍後…</string>
+    <string name="desc_create_balance_entry">以下為本帳簿的餘額狀態，確認後可按下「新增」來儲存紀錄。</string>
 
     <string name="date">日期</string>
+    <string name="time">時間</string>
     <string name="fcy_amt_credit">轉入外幣</string>
     <string name="fcy_amt_debit">轉出外幣</string>
     <string name="twd_amt_credit">獲得臺幣</string>
@@ -44,5 +48,9 @@
     <string name="label_amount_and_book_value">實領 / 帳面價值</string>
     <string name="label_twd_value_and_profit">臺幣價值 / 利差</string>
     <string name="label_twd">TWD</string>
+    <string name="label_spot_rate">即期匯率</string>
+    <string name="label_twd_present_value">臺幣現值</string>
+    <string name="label_profit">利差</string>
+
 
 </resources>
