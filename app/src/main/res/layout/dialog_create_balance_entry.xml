@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
+
+    <TextView
+            android:id="@+id/txtDateLabel"
+            style="@style/TableLabelText"
+            android:text="@string/time"/>
+
+    <TextView
+            android:id="@+id/txtDate"
+            style="@style/TableValueText"/>
+
+    <TextView
+            android:id="@+id/txtFcyAmtLabel"
+            style="@style/TableLabelText"
+            android:layout_below="@id/txtDateLabel"/>
+
+    <TextView
+            android:id="@+id/txtFcyAmt"
+            style="@style/TableValueText"
+            android:layout_below="@id/txtDate"/>
+
+    <TextView
+            android:id="@+id/txtExRateLabel"
+            style="@style/TableLabelText"
+            android:layout_below="@id/txtFcyAmtLabel"
+            android:text="@string/label_spot_rate"/>
+
+    <TextView
+            android:id="@+id/txtExRateValue"
+            style="@style/TableValueText"
+            android:layout_below="@id/txtFcyAmt"/>
+
+    <TextView
+            android:id="@+id/txtTwdAmtLabel"
+            style="@style/TableLabelText"
+            android:layout_below="@id/txtExRateLabel"
+            android:text="@string/label_twd_present_value"/>
+
+    <TextView
+            android:id="@+id/txtTwdAmt"
+            style="@style/TableValueText"
+            android:layout_below="@id/txtExRateValue"/>
+
+    <TextView
+            android:id="@+id/txtProfitLabel"
+            style="@style/TableLabelText"
+            android:layout_below="@id/txtTwdAmtLabel"
+            android:text="@string/label_profit"/>
+
+    <TextView
+            android:id="@+id/txtProfit"
+            style="@style/TableValueText"
+            android:layout_below="@id/txtTwdAmt"/>
+    
+</RelativeLayout>

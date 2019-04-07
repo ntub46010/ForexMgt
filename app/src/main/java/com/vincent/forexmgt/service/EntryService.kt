@@ -44,7 +44,7 @@ class EntryService : Service() {
             StringUtils.equals(rate.currencyType?.name, book.currencyType?.name)
         }!!
 
-        val presentValue = Math.round(book.twdTotalCost * spotRate.debit).toInt()
+        val presentValue = Math.round(book.fcyTotalAmt * spotRate.debit).toInt()
         val profit = presentValue - book.twdTotalCost
 
         val entry = Entry(
@@ -68,7 +68,10 @@ class EntryService : Service() {
             val bookDoc = bookService.getBookDoc(entry.bookId)
             val bookSnapshot = transaction.get(bookDoc)
             updateEntryInfo(transaction, bookSnapshot, entry)
-            updateBookAsset(transaction, bookSnapshot, entry)
+
+            if (entry.type != EntryType.BALANCE) {
+                updateBookAsset(transaction, bookSnapshot, entry)
+            }
             null
         }
             .addOnSuccessListener {
@@ -81,7 +84,7 @@ class EntryService : Service() {
 
     private fun updateEntryInfo(transaction: Transaction, bookSnapshot: DocumentSnapshot, entry: Entry) {
         val entryDoc = getEntryDoc(entry.id)
-        if (entry.type == EntryType.CREDIT) {
+        if (entry.type == EntryType.CREDIT || entry.type == EntryType.BALANCE) {
             transaction.update(entryDoc, Constants.PROPERTY_ID, entry.id)
             return
         }

@@ -105,9 +105,11 @@ class EntryEditActivity : AppCompatActivity() {
 
         val operator = object : Operator {
             override fun execute(result: Any?) {
+                dlgWaiting.dismiss()
+
                 if (result != null) {
                     val e = result as Exception
-                    Toast.makeText(this@EntryEditActivity, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@EntryEditActivity, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
                     return
                 }
 
@@ -115,7 +117,6 @@ class EntryEditActivity : AppCompatActivity() {
                 edtFcyAmt.text = null
                 edtTwdAmt.text = null
                 chkAddToCost.isChecked = true
-                dlgWaiting.dismiss()
                 Toast.makeText(this@EntryEditActivity, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
             }
         }
