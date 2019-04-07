@@ -28,11 +28,9 @@ import com.vincent.forexmgt.fragment.EntryListFragment
 import com.vincent.forexmgt.service.LoadingExchangeRateService
 import com.vincent.forexmgt.util.BundleBuilder
 import com.vincent.forexmgt.util.DialogUtils
+import com.vincent.forexmgt.util.FormatUtils
 import org.apache.commons.lang3.StringUtils
 import java.lang.Exception
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 class BookHomeActivity : AppCompatActivity() {
 
@@ -141,8 +139,6 @@ class BookHomeActivity : AppCompatActivity() {
             }
 
             2 -> {
-                // 外幣餘額 * 即期匯率 = 臺幣現值
-                // 臺幣現值 - 臺幣成本 = 利差
                 createBalanceEntry()
             }
         }
@@ -154,7 +150,7 @@ class BookHomeActivity : AppCompatActivity() {
                 dlgWaiting.dismiss()
 
                 if (resultData == null) {
-                    Toast.makeText(this@BookHomeActivity, "沒有網路連線", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@BookHomeActivity, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
                     return
                 }
 
@@ -182,14 +178,15 @@ class BookHomeActivity : AppCompatActivity() {
 
         val currencyType = CurrencyType.fromCode(entry.fcyType)
 
-        txtDate.text = SimpleDateFormat("yyyy/MM/dd  HH:mm", Locale.TAIWAN).format(entry.createdTime)
+        txtDate.text = FormatUtils.formatDateTime(entry.createdTime)
         txtFcyAmtLabel.text = getString(R.string.template_fcy_balance, currencyType?.chineseName)
         txtFcyAmt.text = getString(R.string.template_currency_amount,
-            formatMoney(entry.fcyAmt), currencyType?.name)
+            FormatUtils.formatMoney(entry.fcyAmt), currencyType?.name)
         txtExRateValue.text = entry.exchangeRate.toString()
         txtTwdAmt.text = getString(R.string.template_currency_amount,
-            formatMoney(entry.twdAmt.toDouble()), getString(R.string.label_twd))
-        txtProfit.text = formatMoney(entry.twdProfit!!.toDouble())
+            FormatUtils.formatMoney(entry.twdAmt), getString(R.string.label_twd))
+        txtProfit.text = getString(R.string.template_currency_amount,
+            FormatUtils.formatMoney(entry.twdProfit!!), getString(R.string.label_twd))
 
         val dlgCreateBalanceEntry = DialogUtils.getPlainDialog(this,
             StringUtils.EMPTY, getString(R.string.desc_create_balance_entry))
@@ -221,8 +218,6 @@ class BookHomeActivity : AppCompatActivity() {
         entryService.createEntry(entry, operator)
         dlgWaiting.show()
     }
-
-    private fun formatMoney(amount: Double) = NumberFormat.getNumberInstance(Locale.US).format(amount)
 
     override fun onDestroy() {
         super.onDestroy()

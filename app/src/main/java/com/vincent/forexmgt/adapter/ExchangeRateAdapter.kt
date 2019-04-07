@@ -10,7 +10,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.ExchangeRate
-import java.util.*
+import com.vincent.forexmgt.util.FormatUtils
 
 class ExchangeRateAdapter(
      var exchangeRates: List<ExchangeRate>)
@@ -43,11 +43,9 @@ class ExchangeRateAdapter(
         fun bindValue(rate: ExchangeRate) {
             imgCurrencyIcon.setImageResource(rate.currencyType!!.iconRes)
             txtCurrencyTitle.text = rate.currencyType!!.getTitle()
-            txtCredit.text = formatNumber(rate.credit)
-            txtDebit.text = formatNumber(rate.debit)
+            txtCredit.text = FormatUtils.formatExchangeRate(rate.credit)
+            txtDebit.text = FormatUtils.formatExchangeRate(rate.debit)
         }
     }
-
-    private fun formatNumber(num: Double) = java.lang.String.format(Locale.US, "%.4f", num)
 
 }

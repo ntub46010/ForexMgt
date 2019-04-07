@@ -14,6 +14,7 @@
     <string name="insufficient_fcy_amt">外幣餘額不足</string>
     <string name="load_book_error">載入帳簿時發生錯誤</string>
     <string name="load_entry_error">載入紀錄時發生錯誤</string>
+    <string name="load_exchange_rate_error">取得匯率資料失敗</string>
 
     <string name="sign_out_successfully">登出成功</string>
     <string name="create_successfully">新增成功</string>
@@ -26,7 +27,7 @@
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
     <string name="book_name">帳本名稱</string>
     <string name="please_wait">請稍後…</string>
-    <string name="desc_create_balance_entry">以下為本帳簿的餘額狀態，確認後可按下「新增」來儲存紀錄。</string>
+    <string name="desc_create_balance_entry">以下為本帳簿的餘額狀態，確認後可點擊「新增」來儲存紀錄。</string>
 
     <string name="date">日期</string>
     <string name="time">時間</string>

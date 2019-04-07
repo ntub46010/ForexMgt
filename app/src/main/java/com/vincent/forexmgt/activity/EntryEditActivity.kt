@@ -17,9 +17,9 @@ import com.vincent.forexmgt.*
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.util.DialogUtils
+import com.vincent.forexmgt.util.FormatUtils
 import org.apache.commons.lang3.StringUtils
 import java.lang.Exception
-import java.text.SimpleDateFormat
 import java.util.*
 
 class EntryEditActivity : AppCompatActivity() {
@@ -76,19 +76,19 @@ class EntryEditActivity : AppCompatActivity() {
             return
         }
 
-        val date = edtDate.text.toString()
+        val dateStr = edtDate.text.toString()
         val fcyAmt = edtFcyAmt.text.toString().toDouble()
         val twdAmt = edtTwdAmt.text.toString().toInt()
 
         val entry = Entry(
             StringUtils.EMPTY,
             book.id,
-            SimpleDateFormat("yyyy/MM/dd", Locale.TAIWAN).parse(date),
+            FormatUtils.parseDate(dateStr),
             entryType,
             book.currencyType!!.name,
             fcyAmt,
             twdAmt,
-            Math.round(twdAmt * 10000 / fcyAmt) / 10000.0
+            FormatUtils.calcExchangeRate(twdAmt, fcyAmt)
         )
 
         if (entryType == EntryType.CREDIT) {
@@ -147,11 +147,11 @@ class EntryEditActivity : AppCompatActivity() {
         tilFcyAmt.error = null
         tilTwdAmt.error = null
 
-        val date = edtDate.text.toString()
+        val dateStr = edtDate.text.toString()
         val fcyAmt = edtFcyAmt.text.toString()
         val twdAmt = edtTwdAmt.text.toString()
 
-        if (StringUtils.isEmpty(date)) {
+        if (StringUtils.isEmpty(dateStr)) {
             tilDate.error = getString(R.string.mandatory_field)
         }
 

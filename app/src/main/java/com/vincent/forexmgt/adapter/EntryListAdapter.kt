@@ -9,16 +9,13 @@ import android.widget.TextView
 import com.vincent.forexmgt.EntryType
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.*
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.*
+import com.vincent.forexmgt.util.FormatUtils
+import org.apache.commons.lang3.StringUtils
 
 class EntryListAdapter(
     val context: Context,
     var entries: List<Entry>)
     : BaseAdapter() {
-
-    private val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.TAIWAN)
 
     override fun getItem(position: Int): Any {
         return entries[position]
@@ -44,14 +41,18 @@ class EntryListAdapter(
         val txtExRateValue = view.findViewById<TextView>(R.id.txtExRateValue)
 
         val entry = entries[position]
-        txtDate.text = dateFormat.format(entry.createdTime)
-        txtFcyAmt.text = formatMoney(entry.fcyAmt)
+
+        txtDate.text =
+            if (entry.type == EntryType.BALANCE) FormatUtils.formatDateTime(entry.createdTime)
+            else FormatUtils.formatDate(entry.createdTime)
+
+        txtFcyAmt.text = FormatUtils.formatMoney(entry.fcyAmt)
         txtFcyAmt.setTextColor(context.resources.getColor(entry.type!!.fcyColorRes))
         txtFcyType.text = entry.fcyType
         txtFcyType.setTextColor(context.resources.getColor(entry.type.fcyColorRes))
         txtTwdAmtLabel.text = context.getString(entry.type.twdAmtLabelRes)
         txtTwdAmt.text = getTwdAmount(entry)
-        txtExRateValue.text = entry.exchangeRate.toString()
+        txtExRateValue.text = FormatUtils.formatExchangeRate(entry.exchangeRate)
 
         return view
     }
@@ -59,25 +60,22 @@ class EntryListAdapter(
     private fun getTwdAmount(entry: Entry): String {
         when(entry.type) {
             EntryType.CREDIT -> {
-                return formatMoney(entry.twdAmt.toDouble())
+                return FormatUtils.formatMoney(entry.twdAmt)
             }
 
             EntryType.DEBIT -> {
-                val twdAmt = formatMoney(entry.twdAmt.toDouble())
-                val twdBV = formatMoney(entry.twdBV!!.toDouble())
+                val twdAmt = FormatUtils.formatMoney(entry.twdAmt)
+                val twdBV = FormatUtils.formatMoney(entry.twdBV!!)
                 return context.getString(R.string.template_slash_with_2_string, twdAmt, twdBV)
             }
 
             EntryType.BALANCE -> {
-                val twdAmt = formatMoney(entry.twdAmt.toDouble())
-                val twdProfit = formatMoney(entry.twdProfit!!.toDouble())
+                val twdAmt = FormatUtils.formatMoney(entry.twdAmt)
+                val twdProfit = FormatUtils.formatMoney(entry.twdProfit!!)
                 return context.getString(R.string.template_slash_with_2_string, twdAmt, twdProfit)
             }
 
-            else -> return ""
+            else -> return StringUtils.EMPTY
         }
     }
-
-    private fun formatMoney(amount: Double) = NumberFormat.getNumberInstance(Locale.US).format(amount)
-
 }

@@ -52,7 +52,7 @@ class ExchangeRateFragment : Fragment() {
                 prgBar.visibility = View.INVISIBLE
 
                 if (resultData == null) {
-                    Toast.makeText(activity, "沒有網路連線", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
                     return
                 }
 
