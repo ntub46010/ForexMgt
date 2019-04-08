@@ -38,7 +38,7 @@ class EntryEditActivity : AppCompatActivity() {
     private lateinit var book: Book
     private lateinit var entryType: EntryType
 
-    private var entryService = ForExMgtApp.entryService
+    private var entryService = ForExMgtApp.entryService!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

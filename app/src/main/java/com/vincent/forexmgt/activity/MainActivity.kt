@@ -31,8 +31,6 @@ class MainActivity : AppCompatActivity() {
 
     @BindView(R.id.navBar) lateinit var navBar: BottomNavigationView
 
-    private var firebaseUser: FirebaseUser? = null
-
     private lateinit var manager: FragmentManager
     private var currentFragment: Fragment? = null
     private var homeFragment: ExchangeRateFragment? = null
@@ -95,7 +93,8 @@ class MainActivity : AppCompatActivity() {
                         .build()
                     startActivityForResult(intent, this.RC_SIGN_IN)
                 } else {
-                    this.firebaseUser = firebaseUser
+                    ForExMgtApp.currentLoginUser = firebaseUser
+                    ForExMgtApp.bookService?.setLoginUser(firebaseUser)
                 }
             }
 

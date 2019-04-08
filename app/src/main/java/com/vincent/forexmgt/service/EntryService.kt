@@ -142,7 +142,7 @@ class EntryService : Service() {
             val service = this@EntryService
             service.db = FirebaseFirestore.getInstance()
             service.collection = db.collection(Constants.COLLECTION_ENTRY)
-            service.bookService = ForExMgtApp.bookService
+            service.bookService = ForExMgtApp.bookService!!
             return service
         }
     }

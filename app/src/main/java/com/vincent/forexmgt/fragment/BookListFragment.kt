@@ -33,7 +33,7 @@ class BookListFragment : Fragment() {
 
     private lateinit var dlgCreateBook: AlertDialog
 
-    private var bookService = ForExMgtApp.bookService
+    private var bookService = ForExMgtApp.bookService!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)

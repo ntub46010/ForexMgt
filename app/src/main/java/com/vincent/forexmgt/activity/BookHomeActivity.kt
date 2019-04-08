@@ -46,8 +46,8 @@ class BookHomeActivity : AppCompatActivity() {
 
     private var bookListener: ListenerRegistration? = null
 
-    private var bookService = ForExMgtApp.bookService
-    private var entryService = ForExMgtApp.entryService
+    private var bookService = ForExMgtApp.bookService!!
+    private var entryService = ForExMgtApp.entryService!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
