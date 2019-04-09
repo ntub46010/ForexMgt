@@ -13,6 +13,5 @@ class Entry(
     var twdAmt: Int = 0,
     var exchangeRate: Double = 0.0,
     var twdCost: Int? = null,
-    var twdBV: Int? = null,
     var twdProfit: Int? = null)
     : Entity(id)

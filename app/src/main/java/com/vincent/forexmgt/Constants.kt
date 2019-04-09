@@ -14,7 +14,7 @@ class Constants {
         const val PROPERTY_TYPE = "type"
         const val PROPERTY_FCY_TOTAL_AMT = "fcyTotalAmt"
         const val PROPERTY_TWD_TOTAL_COST = "twdTotalCost"
-        const val PROPERTY_TWD_BV = "twdBV"
+        const val PROPERTY_TWD_PROFIT = "twdProfit"
 
         const val KEY_TITLE = "title"
         const val KEY_RECEIVER = "receiver"

@@ -78,13 +78,13 @@ class EntryService : Service() {
                 operator.execute(null)
             }
             .addOnFailureListener { e ->
-                operator.execute(null)
+                operator.execute(e)
             }
     }
 
     private fun updateEntryInfo(transaction: Transaction, bookSnapshot: DocumentSnapshot, entry: Entry) {
         val entryDoc = getEntryDoc(entry.id)
-        if (entry.type == EntryType.CREDIT || entry.type == EntryType.BALANCE) {
+        if (entry.type != EntryType.DEBIT) {
             transaction.update(entryDoc, Constants.PROPERTY_ID, entry.id)
             return
         }
@@ -92,10 +92,11 @@ class EntryService : Service() {
         val fcyTotalAmt = bookSnapshot.getLong(Constants.PROPERTY_FCY_TOTAL_AMT)!!
         val twdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!!
         val twdBV = Math.round(twdTotalCost * entry.fcyAmt / fcyTotalAmt).toInt()
+        val profit = entry.twdAmt - twdBV
 
         val patchData = mapOf(
             Constants.PROPERTY_ID to entry.id,
-            Constants.PROPERTY_TWD_BV to twdBV)
+            Constants.PROPERTY_TWD_PROFIT to profit)
 
         transaction.set(entryDoc, patchData, SetOptions.merge())
     }
