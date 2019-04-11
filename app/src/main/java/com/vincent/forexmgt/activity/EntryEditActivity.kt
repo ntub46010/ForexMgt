@@ -81,8 +81,7 @@ class EntryEditActivity : AppCompatActivity() {
         val twdAmt = edtTwdAmt.text.toString().toInt()
 
         val entry = Entry(
-            StringUtils.EMPTY,
-            book.id,
+            book.obtainId(),
             FormatUtils.parseDate(dateStr),
             entryType,
             book.currencyType!!.name,

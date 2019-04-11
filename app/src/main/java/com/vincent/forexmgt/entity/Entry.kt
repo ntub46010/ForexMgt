@@ -4,7 +4,6 @@ import com.vincent.forexmgt.EntryType
 import java.util.*
 
 class Entry(
-    override var id: String = "",
     var bookId: String = "",
     var createdTime: Date? = null,
     val type: EntryType? = null,
@@ -13,5 +12,14 @@ class Entry(
     var twdAmt: Int = 0,
     var exchangeRate: Double = 0.0,
     var twdCost: Int? = null,
-    var twdProfit: Int? = null)
-    : Entity(id)
+    var twdProfit: Int? = null) {
+
+    private var id: String = ""
+
+    fun obtainId() = id
+
+    fun defineId(id: String) {
+        this.id = id
+    }
+
+}

@@ -85,7 +85,6 @@ class BookListFragment : Fragment() {
                         val currencyCode = StringUtils.split(strSelectedItem, StringUtils.SPACE)[1]
 
                         val book = Book(
-                            StringUtils.EMPTY,
                             edtBookName.text.toString(),
                             CurrencyType.fromCode(currencyCode),
                             StringUtils.EMPTY,
@@ -149,7 +148,7 @@ class BookListFragment : Fragment() {
 
     private fun goBookHomePage(book: Book) {
         val intent = BundleBuilder()
-            .putString(Constants.PROPERTY_ID, book.id)
+            .putString(Constants.PROPERTY_ID, book.obtainId())
             .putString(Constants.PROPERTY_NAME, book.name)
             .appendToIntent(Intent(context, BookHomeActivity::class.java))
 

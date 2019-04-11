@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -34,9 +33,8 @@ class BookService : Service() {
 
         collection
             .add(book)
-            .addOnSuccessListener { documentRef ->
-                book.id = documentRef.id
-                createBookPostProcess(book, operator)
+            .addOnSuccessListener {
+                operator.execute(null)
             }
             .addOnFailureListener { e ->
                 operator.execute(e)
@@ -50,7 +48,7 @@ class BookService : Service() {
                 if (exception != null) {
                     operator.execute(null)
                 } else {
-                    val book = DocumentConverter.toObject(documentSnapshot, Book::class.java)
+                    val book = DocumentConverter.toBook(documentSnapshot)
                     operator.execute(book)
                 }
             }
@@ -62,20 +60,8 @@ class BookService : Service() {
             .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val books = DocumentConverter.toObjects(querySnapshot, Book::class.java)
+                val books = DocumentConverter.toBooks(querySnapshot)
                 operator.execute(books)
-            }
-    }
-
-    private fun createBookPostProcess(book: Book, operator: Operator) {
-        collection
-            .document(book.id)
-            .set(book)
-            .addOnSuccessListener {
-                operator.execute(null)
-            }
-            .addOnFailureListener { e ->
-                operator.execute(e)
             }
     }
 

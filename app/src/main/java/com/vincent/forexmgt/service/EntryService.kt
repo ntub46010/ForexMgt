@@ -31,8 +31,13 @@ class EntryService : Service() {
         collection
             .add(entry)
             .addOnSuccessListener { documentRef ->
-                entry.id = documentRef.id
-                createEntryPostProcess(entry, operator)
+                entry.defineId(documentRef.id)
+
+                if (entry.type == EntryType.BALANCE) {
+                    operator.execute(null)
+                } else {
+                    createEntryPostProcess(entry, operator)
+                }
             }
             .addOnFailureListener { e ->
                 operator.execute(e)
@@ -48,8 +53,7 @@ class EntryService : Service() {
         val profit = presentValue - book.twdTotalCost
 
         val entry = Entry(
-            StringUtils.EMPTY,
-            book.id,
+            book.obtainId(),
             Date(),
             EntryType.BALANCE,
             book.currencyType!!.name,
@@ -67,7 +71,10 @@ class EntryService : Service() {
         db.runTransaction { transaction ->
             val bookDoc = bookService.getBookDoc(entry.bookId)
             val bookSnapshot = transaction.get(bookDoc)
-            updateEntryInfo(transaction, bookSnapshot, entry)
+
+            if (entry.type == EntryType.DEBIT) {
+                updateEntryInfo(transaction, bookSnapshot, entry)
+            }
 
             if (entry.type != EntryType.BALANCE) {
                 updateBookAsset(transaction, bookSnapshot, entry)
@@ -83,22 +90,13 @@ class EntryService : Service() {
     }
 
     private fun updateEntryInfo(transaction: Transaction, bookSnapshot: DocumentSnapshot, entry: Entry) {
-        val entryDoc = getEntryDoc(entry.id)
-        if (entry.type != EntryType.DEBIT) {
-            transaction.update(entryDoc, Constants.PROPERTY_ID, entry.id)
-            return
-        }
-
         val fcyTotalAmt = bookSnapshot.getLong(Constants.PROPERTY_FCY_TOTAL_AMT)!!
         val twdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!!
         val twdBV = Math.round(twdTotalCost * entry.fcyAmt / fcyTotalAmt).toInt()
         val profit = entry.twdAmt - twdBV
 
-        val patchData = mapOf(
-            Constants.PROPERTY_ID to entry.id,
-            Constants.PROPERTY_TWD_PROFIT to profit)
-
-        transaction.set(entryDoc, patchData, SetOptions.merge())
+        val entryDoc = getEntryDoc(entry.obtainId())
+        transaction.update(entryDoc, Constants.PROPERTY_TWD_PROFIT, profit)
     }
 
     private fun updateBookAsset(transaction: Transaction, bookSnapshot: DocumentSnapshot, entry: Entry) {
@@ -130,7 +128,7 @@ class EntryService : Service() {
                 if (e != null) {
                     operator.execute(e)
                 } else {
-                    val entries = DocumentConverter.toObjects(querySnapshot, Entry::class.java)
+                    val entries = DocumentConverter.toEntries(querySnapshot)
                     operator.execute(entries)
                 }
             }
