@@ -3,6 +3,10 @@
     <string name="facebook_application_id">776315792727800</string>
     <string name="facebook_app_id">776315792727800</string>
 
+    <string name="title_exchange_rate_list">匯率表</string>
+    <string name="title_book_list">帳簿</string>
+    <string name="title_asset_summary">資產總覽</string>
+
     <string name="template_slash_with_2_string">%1s / %2s</string>
     <string name="template_fcy_balance">%1s餘額</string>
     <string name="template_currency_amount">%1s  %2s</string>
