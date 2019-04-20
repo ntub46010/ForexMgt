@@ -49,6 +49,7 @@
 
     <string name="label_amount">金額</string>
     <string name="label_exchange_rate">匯率：</string>
+    <string name="label_avg_cost">平均成本：</string>
     <string name="label_twd_value">臺幣價值</string>
     <string name="label_amount_and_book_value">實領 / 帳面價值</string>
     <string name="label_twd_value_and_profit">臺幣價值 / 利差</string>

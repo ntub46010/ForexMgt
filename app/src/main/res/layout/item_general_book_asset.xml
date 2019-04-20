@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:padding="@dimen/screen_default_padding">
+
+    <ImageView
+            android:id="@+id/imgCurrency"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/flag_usd"/>
+
+    <TextView
+            android:id="@+id/txtCurrencyName"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_toEndOf="@id/imgCurrency"
+            android:layout_marginStart="15dp"
+            android:gravity="center_vertical"
+            android:text="美金"
+            android:textSize="20sp"
+            android:textColor="@color/black1"
+            android:includeFontPadding="false"/>
+
+    <LinearLayout
+            android:id="@+id/layAmt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/txtCurrencyName"
+            android:layout_alignStart="@id/txtCurrencyName">
+
+        <TextView
+                android:id="@+id/txtFcyAmt"
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="3,000"/>
+
+        <TextView
+                android:id="@+id/txtFcyType"
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:layout_marginStart="@dimen/widget_default_spacing"
+                android:layout_marginEnd="@dimen/widget_default_spacing"
+                android:text="USD"/>
+
+        <TextView
+                android:id="@+id/txtTwdAmt"
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="90,000"/>
+
+        <TextView
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:layout_marginStart="@dimen/widget_default_spacing"
+                android:text="@string/label_twd"/>
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/txtAvgCostLabel"
+            style="@style/ListSmallText"
+            android:layout_alignBottom="@id/txtAvgCostValue"
+            android:layout_toStartOf="@id/txtAvgCostValue"
+            android:text="@string/label_avg_cost"/>
+
+    <TextView
+            android:id="@+id/txtAvgCostValue"
+            style="@style/ListSmallText"
+            android:layout_below="@id/layAmt"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="3dp"
+            android:gravity="end"
+            android:text="30.1234"/>
+
+</RelativeLayout>
