@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.SubAssetSummary
 import com.vincent.forexmgt.entity.GeneralAssetSummary

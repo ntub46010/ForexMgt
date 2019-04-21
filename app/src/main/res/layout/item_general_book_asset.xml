@@ -4,7 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/screen_default_padding"
-        android:background="@color/list_item_background">
+        android:background="@color/list_item_background_dark">
 
     <ImageView
             android:id="@+id/imgIndicator"

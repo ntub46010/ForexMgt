@@ -12,7 +12,8 @@
     <color name="black4">#808080</color>
 
     <color name="normal_background">#FAFAFA</color>
-    <color name="list_item_background">#FFF0F0</color>
+    <color name="list_item_background_dark">#FFE0E0</color>
+    <color name="list_item_background_light">#FFF0F0</color>
 
     <color name="amount_credit">#4444FF</color>
     <color name="amount_debit">#FF4444</color>
