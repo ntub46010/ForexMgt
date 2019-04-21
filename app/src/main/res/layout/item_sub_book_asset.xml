@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="40dp"
+        android:paddingEnd="@dimen/screen_default_padding"
+        android:paddingTop="@dimen/screen_default_padding"
+        android:paddingBottom="@dimen/screen_default_padding">
+
+    <TextView
+            android:id="@+id/txtBookName"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_toEndOf="@id/imgCurrency"
+            android:gravity="center_vertical"
+            android:textSize="17sp"
+            android:textColor="@color/black1"
+            android:includeFontPadding="false"/>
+
+    <TextView
+            android:id="@+id/txtFcyType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtBookName"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/widget_default_spacing"
+            android:gravity="center_vertical"
+            android:textSize="16sp"
+            android:textColor="@color/black2"
+            android:includeFontPadding="false"/>
+
+    <TextView
+            android:id="@+id/txtFcyAmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtBookName"
+            android:layout_toStartOf="@id/txtFcyType"
+            android:gravity="center_vertical"
+            android:textSize="16sp"
+            android:textColor="@color/black2"
+            android:includeFontPadding="false"/>
+
+    <TextView
+            android:id="@+id/txtTwdLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtFcyAmt"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="3dp"
+            android:textSize="16sp"
+            android:textColor="@color/black2"
+            android:text="@string/label_twd"/>
+
+    <TextView
+            android:id="@+id/txtTwdAmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/txtTwdLabel"
+            android:layout_toStartOf="@id/txtTwdLabel"
+            android:textSize="16sp"
+            android:textColor="@color/black2"/>
+
+    <TextView
+            android:id="@+id/txtTwdAmtLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/txtTwdAmt"
+            android:text="@string/label_pv_and_cost"
+            android:textSize="13sp"
+            android:textColor="@color/black4"/>
+
+</RelativeLayout>

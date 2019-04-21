@@ -3,24 +3,32 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:padding="@dimen/screen_default_padding">
+        android:padding="@dimen/screen_default_padding"
+        android:background="@color/list_item_background">
+
+    <ImageView
+            android:id="@+id/imgIndicator"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"/>
 
     <ImageView
             android:id="@+id/imgCurrency"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/flag_usd"/>
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_toEndOf="@id/imgIndicator"
+            android:layout_marginStart="20dp"/>
 
     <TextView
             android:id="@+id/txtCurrencyName"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_toEndOf="@id/imgCurrency"
+            android:layout_alignBaseline="@id/imgCurrency"
             android:layout_marginStart="15dp"
+            android:paddingBottom="3dp"
             android:gravity="center_vertical"
-            android:text="美金"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@color/black1"
             android:includeFontPadding="false"/>
 
@@ -37,8 +45,7 @@
                 style="@style/AssetSummaryAmountText"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:gravity="end"
-                android:text="3,000"/>
+                android:gravity="end"/>
 
         <TextView
                 android:id="@+id/txtFcyType"
@@ -46,16 +53,14 @@
                 android:layout_width="wrap_content"
                 android:gravity="end"
                 android:layout_marginStart="@dimen/widget_default_spacing"
-                android:layout_marginEnd="@dimen/widget_default_spacing"
-                android:text="USD"/>
+                android:layout_marginEnd="@dimen/widget_default_spacing"/>
 
         <TextView
-                android:id="@+id/txtTwdAmt"
+                android:id="@+id/txtTwdPV"
                 style="@style/AssetSummaryAmountText"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:gravity="end"
-                android:text="90,000"/>
+                android:gravity="end"/>
 
         <TextView
                 style="@style/AssetSummaryAmountText"
@@ -79,7 +84,6 @@
             android:layout_below="@id/layAmt"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="3dp"
-            android:gravity="end"
-            android:text="30.1234"/>
+            android:gravity="end"/>
 
 </RelativeLayout>

@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layEntry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/widget_default_spacing">
+        android:padding="@dimen/widget_default_spacing"
+        android:background="@color/list_item_background">
 
     <TextView
             android:id="@+id/txtDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="13sp"
-            android:textColor="@color/black4"/>
+            android:textColor="@color/black3"/>
 
     <TextView
             android:id="@+id/txtFcyAmt"
@@ -37,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/txtTwdAmt"
             android:textSize="13sp"
-            android:textColor="@color/black3"/>
+            android:textColor="@color/black4"/>
 
     <TextView
             android:id="@+id/txtTwdAmt"
