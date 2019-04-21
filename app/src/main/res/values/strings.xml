@@ -3,6 +3,10 @@
     <string name="facebook_application_id">776315792727800</string>
     <string name="facebook_app_id">776315792727800</string>
 
+    <string name="title_exchange_rate_list">匯率表</string>
+    <string name="title_book_list">帳簿</string>
+    <string name="title_asset_summary">資產總覽</string>
+
     <string name="template_slash_with_2_string">%1s / %2s</string>
     <string name="template_fcy_balance">%1s餘額</string>
     <string name="template_currency_amount">%1s  %2s</string>
@@ -45,9 +49,11 @@
 
     <string name="label_amount">金額</string>
     <string name="label_exchange_rate">匯率：</string>
+    <string name="label_avg_cost">平均成本：</string>
     <string name="label_twd_value">臺幣價值</string>
-    <string name="label_amount_and_book_value">實領 / 帳面價值</string>
-    <string name="label_twd_value_and_profit">臺幣價值 / 利差</string>
+    <string name="label_amount_and_profit">實領 / 利差</string>
+    <string name="label_pv_and_profit">現值 / 利差</string>
+    <string name="label_pv_and_cost">現值 / 成本</string>
     <string name="label_twd">TWD</string>
     <string name="label_spot_rate">即期匯率</string>
     <string name="label_twd_present_value">臺幣現值</string>

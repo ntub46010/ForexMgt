@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/screen_default_padding"
+        android:background="@color/list_item_background_dark">
+
+    <ImageView
+            android:id="@+id/imgIndicator"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"/>
+
+    <ImageView
+            android:id="@+id/imgCurrency"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_toEndOf="@id/imgIndicator"
+            android:layout_marginStart="20dp"/>
+
+    <TextView
+            android:id="@+id/txtCurrencyName"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_toEndOf="@id/imgCurrency"
+            android:layout_alignBaseline="@id/imgCurrency"
+            android:layout_marginStart="15dp"
+            android:paddingBottom="3dp"
+            android:gravity="center_vertical"
+            android:textSize="18sp"
+            android:textColor="@color/black1"
+            android:includeFontPadding="false"/>
+
+    <LinearLayout
+            android:id="@+id/layAmt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/txtCurrencyName"
+            android:layout_alignStart="@id/txtCurrencyName">
+
+        <TextView
+                android:id="@+id/txtFcyAmt"
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="end"/>
+
+        <TextView
+                android:id="@+id/txtFcyType"
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:layout_marginStart="@dimen/widget_default_spacing"
+                android:layout_marginEnd="@dimen/widget_default_spacing"/>
+
+        <TextView
+                android:id="@+id/txtTwdPV"
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="end"/>
+
+        <TextView
+                style="@style/AssetSummaryAmountText"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:layout_marginStart="@dimen/widget_default_spacing"
+                android:text="@string/label_twd"/>
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/txtAvgCostLabel"
+            style="@style/ListSmallText"
+            android:layout_alignBottom="@id/txtAvgCostValue"
+            android:layout_toStartOf="@id/txtAvgCostValue"
+            android:text="@string/label_avg_cost"/>
+
+    <TextView
+            android:id="@+id/txtAvgCostValue"
+            style="@style/ListSmallText"
+            android:layout_below="@id/layAmt"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="3dp"
+            android:gravity="end"/>
+
+</RelativeLayout>

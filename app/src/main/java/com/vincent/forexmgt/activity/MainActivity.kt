@@ -14,14 +14,13 @@ import butterknife.OnClick
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.R
+import com.vincent.forexmgt.fragment.AssetSummaryFragment
 import com.vincent.forexmgt.fragment.BookListFragment
 import com.vincent.forexmgt.fragment.ExchangeRateFragment
-import com.vincent.forexmgt.fragment.TempFragment
 
 class MainActivity : AppCompatActivity() {
     // http://givemepass.blogspot.com/2015/11/recylerviewcardview.html
@@ -31,11 +30,11 @@ class MainActivity : AppCompatActivity() {
 
     @BindView(R.id.navBar) lateinit var navBar: BottomNavigationView
 
-    private lateinit var manager: FragmentManager
+    private lateinit var fragmentManager: FragmentManager
     private var currentFragment: Fragment? = null
-    private var homeFragment: ExchangeRateFragment? = null
-    private var bookFragment: BookListFragment? = null
-    private var thirdFragment: TempFragment? = null
+    private var exchangeRateFragment: ExchangeRateFragment? = null
+    private var bookListFragment: BookListFragment? = null
+    private var assetSummaryFragment: AssetSummaryFragment? = null
 
     private val RC_SIGN_IN = 0
 
@@ -44,12 +43,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         ButterKnife.bind(this)
         prepareAuthentication()
-        manager = supportFragmentManager
+        fragmentManager = supportFragmentManager
 
         setupNavigationBar()
 
-        homeFragment = ExchangeRateFragment()
-        switchContent(homeFragment!!)
+        exchangeRateFragment = ExchangeRateFragment()
+        switchContent(exchangeRateFragment!!)
 
         FirebaseFirestore.getInstance().firestoreSettings =
             FirebaseFirestoreSettings.Builder()
@@ -104,25 +103,26 @@ class MainActivity : AppCompatActivity() {
     private fun setupNavigationBar() {
         navBar.setOnNavigationItemSelectedListener { item ->
             when(item.itemId) {
-                R.id.navHome -> {
-                    if (homeFragment == null) {
-                        homeFragment = ExchangeRateFragment()
+                R.id.navExchangeRateList -> {
+                    if (exchangeRateFragment == null) {
+                        exchangeRateFragment = ExchangeRateFragment()
                     }
-                    switchContent(homeFragment!!)
+                    switchContent(exchangeRateFragment!!)
                 }
                 R.id.navBook -> {
-                    if (bookFragment == null) {
-                        bookFragment = BookListFragment()
+                    if (bookListFragment == null) {
+                        bookListFragment = BookListFragment()
                     }
-                    switchContent(bookFragment!!)
+                    switchContent(bookListFragment!!)
                 }
-                R.id.navThird -> {
-                    if (thirdFragment == null) {
-                        thirdFragment = TempFragment()
+                R.id.navSummary -> {
+                    if (assetSummaryFragment == null) {
+                        assetSummaryFragment = AssetSummaryFragment()
                     }
-                    switchContent(thirdFragment!!)
+                    switchContent(assetSummaryFragment!!)
                 }
             }
+
             true
         }
 
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchContent(fragment: Fragment) {
-        val transaction = manager.beginTransaction()
+        val transaction = fragmentManager.beginTransaction()
 
         if (currentFragment == null) {
             transaction.add(R.id.frameLayout, fragment)

@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimaryDark">#FF7230</color>
+    <color name="colorPrimary">#FF8C44</color>
+    <color name="colorAccent">#FF8C44</color>
 
-    <color name="navigation_bar_background">#f0f0f0</color>
+    <color name="navigation_bar_background">#F0F0F0</color>
 
     <color name="black1">#000000</color>
     <color name="black2">#222222</color>
     <color name="black3">#444444</color>
     <color name="black4">#808080</color>
 
-    <color name="normal_background">#C3E4C3</color>
+    <color name="normal_background">#FAFAFA</color>
+    <color name="list_item_background_dark">#FFE0E0</color>
+    <color name="list_item_background_light">#FFF0F0</color>
 
-    <color name="amount_credit">#4444ff</color>
-    <color name="amount_debit">#ff4444</color>
-    <color name="amount_balance">#44bb44</color>
+    <color name="amount_credit">#4444FF</color>
+    <color name="amount_debit">#FF4444</color>
+    <color name="amount_balance">#44BB44</color>
 </resources>

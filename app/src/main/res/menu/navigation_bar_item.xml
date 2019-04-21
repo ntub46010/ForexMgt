@@ -3,18 +3,18 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/navHome"
-            android:icon="@drawable/icon_home"
-            android:title="匯率表"/>
+            android:id="@+id/navExchangeRateList"
+            android:icon="@drawable/icon_exchange"
+            android:title="@string/title_exchange_rate_list"/>
 
     <item
             android:id="@+id/navBook"
             android:icon="@drawable/icon_book"
-            android:title="帳簿"/>
+            android:title="@string/title_book_list"/>
 
     <item
-            android:id="@+id/navThird"
-            android:icon="@drawable/icon_third"
-            android:title="功能三"/>
+            android:id="@+id/navSummary"
+            android:icon="@drawable/icon_report"
+            android:title="@string/title_asset_summary"/>
 
 </menu>
