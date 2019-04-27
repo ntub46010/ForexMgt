@@ -12,7 +12,10 @@ import com.google.firebase.firestore.Query
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.Operator
+import com.vincent.forexmgt.entity.AssetReport
 import com.vincent.forexmgt.entity.Book
+import com.vincent.forexmgt.entity.GeneralAssetSummary
+import com.vincent.forexmgt.entity.SubAssetSummary
 import com.vincent.forexmgt.util.DocumentConverter
 import org.apache.commons.lang3.StringUtils
 
@@ -63,6 +66,35 @@ class BookService : Service() {
                 val books = DocumentConverter.toBooks(querySnapshot)
                 operator.execute(books)
             }
+    }
+
+    fun generateAssetReport(currencySortedBooks: List<Book>, summariesGroup: List<List<SubAssetSummary>>, displayOp: Operator) {
+        val genAssetSummaries = mutableListOf<GeneralAssetSummary>()
+
+        for (i in 0 until currencySortedBooks.size) {
+            val summaries = summariesGroup[i]
+            var fcyAmt = 0.0
+            var twdPV = 0
+            var twdCost = 0
+
+            for (summary in summaries) {
+                fcyAmt += summary.fcyAmt
+                twdPV += summary.twdPV
+                twdCost += summary.twdCost
+            }
+
+            val genSummary = GeneralAssetSummary(
+                currencySortedBooks[i].currencyType,
+                fcyAmt,
+                twdPV,
+                Math.round(twdCost * 10000 / fcyAmt) / 10000.0
+            )
+
+            genAssetSummaries.add(genSummary)
+        }
+
+        val assetReport = AssetReport(genAssetSummaries, summariesGroup)
+        displayOp.execute(assetReport)
     }
 
     fun getBookDoc(id: String) = collection.document(id)

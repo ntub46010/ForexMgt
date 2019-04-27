@@ -65,6 +65,22 @@ class EntryService : Service() {
         return entry
     }
 
+    fun loadEntries(bookIds: Set<String>, operator: Operator) {
+        for (id in bookIds) {
+            collection.whereEqualTo(Constants.PROPERTY_BOOK_ID, id)
+        }
+
+        collection
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val entries = DocumentConverter.toEntries(querySnapshot)
+                operator.execute(entries)
+            }
+            .addOnFailureListener { e ->
+                operator.execute(e)
+            }
+    }
+
     private fun createEntryPostProcess(entry: Entry, operator: Operator) {
         db.runTransaction { transaction ->
             val bookDoc = bookService.getBookDoc(entry.bookId)
@@ -132,11 +148,11 @@ class EntryService : Service() {
             }
     }
 
-    fun generateBookSummaries(books: List<Book>, entries: List<Entry>, rateMap: Map<CurrencyType, Double>, operator: Operator) {
+    fun generateBookSummaries(currencySortedBooks: List<Book>, entries: List<Entry>, rateMap: Map<CurrencyType, Double>, displayOp: Operator) {
         val bookMap = mutableMapOf<String, Book>()
         val entriesMap = linkedMapOf<String, MutableList<Entry>>()
 
-        for (book in books) {
+        for (book in currencySortedBooks) {
             bookMap[book.obtainId()] = book
             entriesMap[book.obtainId()] = mutableListOf()
         }
@@ -147,8 +163,7 @@ class EntryService : Service() {
 
         val summariesGroup = mutableListOf<MutableList<SubAssetSummary>>()
 
-        for (pair in entriesMap) {
-            val entryList = pair.value
+        for (entryList in entriesMap.values) {
             val summaries = mutableListOf<SubAssetSummary>()
 
             if (entryList.isNotEmpty()) {
@@ -156,9 +171,11 @@ class EntryService : Service() {
                 val bookName = bookMap[bookId]?.name
                 summaries.add(generateBookSummary(bookName!!, entriesMap[bookId]!!, rateMap))
             }
+
+            summariesGroup.add(summaries)
         }
 
-        operator.execute(summariesGroup as List<List<SubAssetSummary>>)
+        bookService.generateAssetReport(currencySortedBooks, summariesGroup, displayOp)
     }
 
     private fun generateBookSummary(bookName: String, entries: List<Entry>, rateMap: Map<CurrencyType, Double>): SubAssetSummary {
