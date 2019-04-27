@@ -21,6 +21,7 @@ class Constants {
         const val KEY_RATE = "rate"
         const val KEY_ENTRY_TYPE = "entryType"
         const val KEY_BOOK = "book"
+        const val KEY_REPORT = "report"
 
     }
 }

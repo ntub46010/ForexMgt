@@ -68,35 +68,6 @@ class BookService : Service() {
             }
     }
 
-    fun generateAssetReport(currencySortedBooks: List<Book>, summariesGroup: List<List<SubAssetSummary>>, displayOp: Operator) {
-        val genAssetSummaries = mutableListOf<GeneralAssetSummary>()
-
-        for (i in 0 until currencySortedBooks.size) {
-            val summaries = summariesGroup[i]
-            var fcyAmt = 0.0
-            var twdPV = 0
-            var twdCost = 0
-
-            for (summary in summaries) {
-                fcyAmt += summary.fcyAmt
-                twdPV += summary.twdPV
-                twdCost += summary.twdCost
-            }
-
-            val genSummary = GeneralAssetSummary(
-                currencySortedBooks[i].currencyType,
-                fcyAmt,
-                twdPV,
-                Math.round(twdCost * 10000 / fcyAmt) / 10000.0
-            )
-
-            genAssetSummaries.add(genSummary)
-        }
-
-        val assetReport = AssetReport(genAssetSummaries, summariesGroup)
-        displayOp.execute(assetReport)
-    }
-
     fun getBookDoc(id: String) = collection.document(id)
 
     fun setLoginUser(currentLoginUser: FirebaseUser?) {

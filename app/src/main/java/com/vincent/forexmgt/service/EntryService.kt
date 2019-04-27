@@ -118,9 +118,9 @@ class EntryService : Service() {
         val oldTwdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!!
 
         val deltaFcyTotalAmt = if (entry.type == EntryType.CREDIT) entry.fcyAmt
-            else -entry.fcyAmt
+        else -entry.fcyAmt
         val deltaTwdTotalCost = if (entry.type == EntryType.CREDIT) entry.twdCost!!
-            else -Math.round(oldTwdTotalCost * (entry.fcyAmt / oldFcyTotalAmt)).toInt()
+        else -Math.round(oldTwdTotalCost * (entry.fcyAmt / oldFcyTotalAmt)).toInt()
 
         val newFcyTotalAmt = oldFcyTotalAmt + deltaFcyTotalAmt
         val newTwdTotalCost = oldTwdTotalCost + deltaTwdTotalCost
@@ -146,56 +146,6 @@ class EntryService : Service() {
                     operator.execute(entries)
                 }
             }
-    }
-
-    fun generateBookSummaries(currencySortedBooks: List<Book>, entries: List<Entry>, rateMap: Map<CurrencyType, Double>, displayOp: Operator) {
-        val bookMap = mutableMapOf<String, Book>()
-        val entriesMap = linkedMapOf<String, MutableList<Entry>>()
-
-        for (book in currencySortedBooks) {
-            bookMap[book.obtainId()] = book
-            entriesMap[book.obtainId()] = mutableListOf()
-        }
-
-        for (entry in entries) {
-            entriesMap[entry.bookId]?.add(entry)
-        }
-
-        val summariesGroup = mutableListOf<MutableList<SubAssetSummary>>()
-
-        for (entryList in entriesMap.values) {
-            val summaries = mutableListOf<SubAssetSummary>()
-
-            if (entryList.isNotEmpty()) {
-                val bookId = entryList[0].bookId
-                val bookName = bookMap[bookId]?.name
-                summaries.add(generateBookSummary(bookName!!, entriesMap[bookId]!!, rateMap))
-            }
-
-            summariesGroup.add(summaries)
-        }
-
-        bookService.generateAssetReport(currencySortedBooks, summariesGroup, displayOp)
-    }
-
-    private fun generateBookSummary(bookName: String, entries: List<Entry>, rateMap: Map<CurrencyType, Double>): SubAssetSummary {
-        var fcyAmt = 0.0
-        var twdCost = 0
-
-        for (entry in entries) {
-            if (entry.type == EntryType.CREDIT) {
-                fcyAmt += entry.fcyAmt
-                twdCost += entry.twdCost!!
-            } else if (entry.type == EntryType.DEBIT) {
-                twdCost -= Math.round(twdCost * (entry.fcyAmt / fcyAmt)).toInt()
-                fcyAmt -= entry.fcyAmt
-            }
-        }
-
-        val currencyType = CurrencyType.fromCode(entries[0].fcyType)!!
-        val twdPV = Math.round(fcyAmt * rateMap[currencyType]!!).toInt()
-
-        return SubAssetSummary(bookName, fcyAmt, twdPV, twdCost)
     }
 
     fun getEntryDoc(id: String) = collection.document(id)
