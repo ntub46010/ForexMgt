@@ -82,25 +82,27 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
 
         // generate reports of every book
         for (entriesInBook in bookToEntriesMap.values) {
-            val bookId = entriesInBook[0].bookId
-            val book = bookMap[bookId]!!
-            val bookName = book.name
 
             // generate report of that book
             if (entriesInBook.isNotEmpty()) {
+                val bookId = entriesInBook[0].bookId
+                val book = bookMap[bookId]!!
+                val bookName = book.name
+
                 val bookReport = generateBookReport(bookName, entriesInBook, rateMap)
                 currencyToBookReportsMap[book.currencyType]?.add(bookReport)
             }
         }
 
-        generateAssetReport(allBooks, currencyToBookReportsMap, returnOp)
+        generateAssetReport(currencyToBookReportsMap, returnOp)
     }
 
-    private fun generateAssetReport(books: List<Book>, currencyToBookReportsMap: Map<CurrencyType, List<BookAssetReport>>, returnOp: Operator) {
+    private fun generateAssetReport(currencyToBookReportsMap: Map<CurrencyType, List<BookAssetReport>>, returnOp: Operator) {
         val currencyReports = mutableListOf<CurrencyAssetReport>()
 
-        for (book in books) {
-            val bookReports = currencyToBookReportsMap[book.currencyType]!!
+        for (currencyType in CurrencyType.values()) {
+            val bookReports = currencyToBookReportsMap[currencyType] ?: continue
+
             var fcyAmt = 0.0
             var twdPV = 0
             var twdCost = 0
@@ -112,11 +114,15 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
             }
 
             val currencyReport = CurrencyAssetReport(
-                book.currencyType,
+                currencyType,
                 fcyAmt,
                 twdPV,
-                Math.round(twdCost * 10000 / fcyAmt) / 10000.0
+                0.0
             )
+
+            currencyReport.avgCost =
+                if (fcyAmt == 0.0) 0.0
+                else Math.round(twdCost * 10000 / fcyAmt) / 10000.0
 
             currencyReports.add(currencyReport)
         }
