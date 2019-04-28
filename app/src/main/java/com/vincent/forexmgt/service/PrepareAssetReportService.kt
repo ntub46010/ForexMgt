@@ -142,7 +142,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
         val currencyType = CurrencyType.fromCode(entriesInBook[0].fcyType)!!
         val twdPV = Math.round(fcyAmt * rateMap[currencyType]!!).toInt()
 
-        return BookAssetReport(bookName, fcyAmt, twdPV, twdCost)
+        return BookAssetReport(entriesInBook[0].bookId, bookName, fcyAmt, twdPV, twdCost)
     }
 
     private fun convertRateMap(rateList: List<ExchangeRate>): Map<CurrencyType, Double> {

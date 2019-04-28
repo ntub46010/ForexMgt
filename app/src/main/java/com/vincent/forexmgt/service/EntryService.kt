@@ -118,6 +118,7 @@ class EntryService : Service() {
 
         val deltaFcyTotalAmt = if (entry.type == EntryType.CREDIT) entry.fcyAmt
         else -entry.fcyAmt
+
         val deltaTwdTotalCost = if (entry.type == EntryType.CREDIT) entry.twdCost!!
         else -Math.round(oldTwdTotalCost * (entry.fcyAmt / oldFcyTotalAmt)).toInt()
 

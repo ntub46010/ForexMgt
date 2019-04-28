@@ -15,10 +15,12 @@ import android.widget.Toast
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.vincent.forexmgt.*
-import com.vincent.forexmgt.adapter.AssetSummaryAdapter
+import com.vincent.forexmgt.activity.BookHomeActivity
+import com.vincent.forexmgt.adapter.AssetReportAdapter
 import com.vincent.forexmgt.entity.*
 import com.vincent.forexmgt.service.LoadingExchangeRateService
 import com.vincent.forexmgt.service.PrepareAssetReportService
+import com.vincent.forexmgt.util.BundleBuilder
 import java.io.Serializable
 
 class AssetReportFragment : Fragment() {
@@ -29,7 +31,7 @@ class AssetReportFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val view = inflater.inflate(R.layout.fragment_asset_summary, container, false)
+        val view = inflater.inflate(R.layout.fragment_asset_report, container, false)
         ButterKnife.bind(this, view)
 
         return view
@@ -72,14 +74,12 @@ class AssetReportFragment : Fragment() {
                 prgBar.visibility = View.INVISIBLE
 
                 val assetReport = resultData?.getSerializable(Constants.KEY_REPORT) as AssetReport
-                var adapter = listView.expandableListAdapter
+                val adapter = listView.expandableListAdapter
 
                 if (adapter == null) {
-                    adapter = AssetSummaryAdapter(context!!,
-                        assetReport.currencyReports, assetReport.currencyToBookReportsMap)
-                    listView.setAdapter(adapter)
+                    initAdapter(assetReport)
                 } else {
-                    (adapter as AssetSummaryAdapter)
+                    (adapter as AssetReportAdapter)
                         .refreshData(assetReport.currencyReports, assetReport.currencyToBookReportsMap)
                 }
             }
@@ -89,6 +89,25 @@ class AssetReportFragment : Fragment() {
         intent.putExtra(Constants.KEY_RECEIVER, receiver)
         intent.putExtra(Constants.KEY_RATE, rates as Serializable)
         context?.startService(intent)
+    }
+
+    private fun initAdapter(assetReport: AssetReport) {
+        val adapter = AssetReportAdapter(context!!,
+            assetReport.currencyReports, assetReport.currencyToBookReportsMap)
+
+        listView.setAdapter(adapter)
+
+        listView.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
+            val bookReport = adapter.getChild(groupPosition, childPosition) as BookAssetReport
+
+            val intent = BundleBuilder()
+                .putString(Constants.PROPERTY_ID, bookReport.bookId)
+                .putString(Constants.PROPERTY_NAME, bookReport.bookName)
+                .appendToIntent(Intent(context, BookHomeActivity::class.java))
+            startActivity(intent)
+
+            true
+        }
     }
 
 }
