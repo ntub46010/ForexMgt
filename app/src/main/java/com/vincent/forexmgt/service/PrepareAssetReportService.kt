@@ -66,7 +66,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
     private fun generateBookReports(allBooks: List<Book>, allEntries: List<Entry>, rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
         val bookMap = mutableMapOf<String, Book>()
         val bookToEntriesMap = linkedMapOf<String, MutableList<Entry>>()
-        val currencyToBookReportsMap = mutableMapOf<CurrencyType, MutableList<BookAssetReport>>()
+        var currencyToBookReportsMap = mutableMapOf<CurrencyType, MutableList<BookAssetReport>>()
 
         // init map
         for (book in allBooks) {
@@ -93,6 +93,10 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
                 currencyToBookReportsMap[book.currencyType]?.add(bookReport)
             }
         }
+
+        currencyToBookReportsMap = currencyToBookReportsMap.filter { pair ->
+            !pair.value.isNullOrEmpty()
+        }.toMutableMap()
 
         generateAssetReport(currencyToBookReportsMap, returnOp)
     }
