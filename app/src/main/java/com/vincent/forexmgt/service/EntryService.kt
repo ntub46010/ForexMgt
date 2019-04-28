@@ -9,7 +9,6 @@ import com.vincent.forexmgt.*
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.entity.ExchangeRate
-import com.vincent.forexmgt.entity.SubAssetSummary
 import com.vincent.forexmgt.util.DocumentConverter
 import org.apache.commons.lang3.StringUtils
 import java.util.*

@@ -42,9 +42,9 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
         bookService.loadBooks(operator)
     }
 
-    private fun loadEntries(books: List<Book>, rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
+    private fun loadEntries(allBooks: List<Book>, rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
         val bookIds = mutableSetOf<String>()
-        for (book in books) {
+        for (book in allBooks) {
             bookIds.add(book.obtainId())
         }
 
@@ -55,12 +55,94 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
                     return
                 }
 
-                val entries = result as List<Entry>
-                generateBookSummaries(books, entries, rateMap, returnOp)
+                val allEntries = result as List<Entry>
+                generateBookReports(allBooks, allEntries, rateMap, returnOp)
             }
         }
 
         entryService.loadEntries(bookIds, operator)
+    }
+
+    private fun generateBookReports(allBooks: List<Book>, allEntries: List<Entry>, rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
+        val bookMap = mutableMapOf<String, Book>()
+        val bookToEntriesMap = linkedMapOf<String, MutableList<Entry>>()
+        val currencyToBookReportsMap = mutableMapOf<CurrencyType, MutableList<BookAssetReport>>()
+
+        // init map
+        for (book in allBooks) {
+            bookMap[book.obtainId()] = book
+            bookToEntriesMap[book.obtainId()] = mutableListOf()
+            currencyToBookReportsMap[book.currencyType!!] = mutableListOf()
+        }
+
+        // classify all entries by book they belong to
+        for (entry in allEntries) {
+            bookToEntriesMap[entry.bookId]?.add(entry)
+        }
+
+        // generate reports of every book
+        for (entriesInBook in bookToEntriesMap.values) {
+            val bookId = entriesInBook[0].bookId
+            val book = bookMap[bookId]!!
+            val bookName = book.name
+
+            // generate report of that book
+            if (entriesInBook.isNotEmpty()) {
+                val bookReport = generateBookReport(bookName, entriesInBook, rateMap)
+                currencyToBookReportsMap[book.currencyType]?.add(bookReport)
+            }
+        }
+
+        generateAssetReport(allBooks, currencyToBookReportsMap, returnOp)
+    }
+
+    private fun generateAssetReport(books: List<Book>, currencyToBookReportsMap: Map<CurrencyType, List<BookAssetReport>>, returnOp: Operator) {
+        val currencyReports = mutableListOf<CurrencyAssetReport>()
+
+        for (book in books) {
+            val bookReports = currencyToBookReportsMap[book.currencyType]!!
+            var fcyAmt = 0.0
+            var twdPV = 0
+            var twdCost = 0
+
+            for (bookReport in bookReports) {
+                fcyAmt += bookReport.fcyAmt
+                twdPV += bookReport.twdPV
+                twdCost += bookReport.twdCost
+            }
+
+            val currencyReport = CurrencyAssetReport(
+                book.currencyType,
+                fcyAmt,
+                twdPV,
+                Math.round(twdCost * 10000 / fcyAmt) / 10000.0
+            )
+
+            currencyReports.add(currencyReport)
+        }
+
+        val assetReport = AssetReport(currencyReports, currencyToBookReportsMap)
+        returnOp.execute(assetReport)
+    }
+
+    private fun generateBookReport(bookName: String, entriesInBook: List<Entry>, rateMap: Map<CurrencyType, Double>): BookAssetReport {
+        var fcyAmt = 0.0
+        var twdCost = 0
+
+        for (entry in entriesInBook) {
+            if (entry.type == EntryType.CREDIT) {
+                twdCost += entry.twdCost!!
+                fcyAmt += entry.fcyAmt
+            } else if (entry.type == EntryType.DEBIT) {
+                twdCost -= Math.round(twdCost * (entry.fcyAmt / fcyAmt)).toInt()
+                fcyAmt -= entry.fcyAmt
+            }
+        }
+
+        val currencyType = CurrencyType.fromCode(entriesInBook[0].fcyType)!!
+        val twdPV = Math.round(fcyAmt * rateMap[currencyType]!!).toInt()
+
+        return BookAssetReport(bookName, fcyAmt, twdPV, twdCost)
     }
 
     private fun convertRateMap(rateList: List<ExchangeRate>): Map<CurrencyType, Double> {
@@ -90,85 +172,6 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
         }
 
         return sortedBooks
-    }
-
-    private fun generateBookSummaries(currencySortedBooks: List<Book>, entries: List<Entry>, rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
-        val bookMap = mutableMapOf<String, Book>()
-        val entriesMap = linkedMapOf<String, MutableList<Entry>>()
-
-        for (book in currencySortedBooks) {
-            bookMap[book.obtainId()] = book
-            entriesMap[book.obtainId()] = mutableListOf()
-        }
-
-        for (entry in entries) {
-            entriesMap[entry.bookId]?.add(entry)
-        }
-
-        val summariesGroup = mutableListOf<MutableList<SubAssetSummary>>()
-
-        for (entryList in entriesMap.values) {
-            val summaries = mutableListOf<SubAssetSummary>()
-
-            if (entryList.isNotEmpty()) {
-                val bookId = entryList[0].bookId
-                val bookName = bookMap[bookId]?.name
-                summaries.add(generateBookSummary(bookName!!, entriesMap[bookId]!!, rateMap))
-            }
-
-            summariesGroup.add(summaries)
-        }
-
-        generateAssetReport(currencySortedBooks, summariesGroup, returnOp)
-    }
-
-    private fun generateBookSummary(bookName: String, entries: List<Entry>, rateMap: Map<CurrencyType, Double>): SubAssetSummary {
-        var fcyAmt = 0.0
-        var twdCost = 0
-
-        for (entry in entries) {
-            if (entry.type == EntryType.CREDIT) {
-                fcyAmt += entry.fcyAmt
-                twdCost += entry.twdCost!!
-            } else if (entry.type == EntryType.DEBIT) {
-                twdCost -= Math.round(twdCost * (entry.fcyAmt / fcyAmt)).toInt()
-                fcyAmt -= entry.fcyAmt
-            }
-        }
-
-        val currencyType = CurrencyType.fromCode(entries[0].fcyType)!!
-        val twdPV = Math.round(fcyAmt * rateMap[currencyType]!!).toInt()
-
-        return SubAssetSummary(bookName, fcyAmt, twdPV, twdCost)
-    }
-
-    private fun generateAssetReport(currencySortedBooks: List<Book>, summariesGroup: List<List<SubAssetSummary>>, returnOp: Operator) {
-        val genAssetSummaries = mutableListOf<GeneralAssetSummary>()
-
-        for (i in 0 until currencySortedBooks.size) {
-            val summaries = summariesGroup[i]
-            var fcyAmt = 0.0
-            var twdPV = 0
-            var twdCost = 0
-
-            for (summary in summaries) {
-                fcyAmt += summary.fcyAmt
-                twdPV += summary.twdPV
-                twdCost += summary.twdCost
-            }
-
-            val genSummary = GeneralAssetSummary(
-                currencySortedBooks[i].currencyType,
-                fcyAmt,
-                twdPV,
-                Math.round(twdCost * 10000 / fcyAmt) / 10000.0
-            )
-
-            genAssetSummaries.add(genSummary)
-        }
-
-        val assetReport = AssetReport(genAssetSummaries, summariesGroup)
-        returnOp.execute(assetReport)
     }
 
 }

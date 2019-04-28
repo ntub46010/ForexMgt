@@ -12,10 +12,7 @@ import com.google.firebase.firestore.Query
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.Operator
-import com.vincent.forexmgt.entity.AssetReport
 import com.vincent.forexmgt.entity.Book
-import com.vincent.forexmgt.entity.GeneralAssetSummary
-import com.vincent.forexmgt.entity.SubAssetSummary
 import com.vincent.forexmgt.util.DocumentConverter
 import org.apache.commons.lang3.StringUtils
 

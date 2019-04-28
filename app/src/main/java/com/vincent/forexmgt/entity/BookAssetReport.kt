@@ -1,6 +1,6 @@
 package com.vincent.forexmgt.entity
 
-data class SubAssetSummary(
+data class BookAssetReport(
     var bookName: String,
     var fcyAmt: Double,
     var twdPV: Int,

@@ -21,7 +21,7 @@ import com.vincent.forexmgt.service.LoadingExchangeRateService
 import com.vincent.forexmgt.service.PrepareAssetReportService
 import java.io.Serializable
 
-class AssetSummaryFragment : Fragment() {
+class AssetReportFragment : Fragment() {
 
     @BindView(R.id.listView) lateinit var listView: ExpandableListView
     @BindView(R.id.refreshLayout) lateinit var refreshLayout: SwipeRefreshLayout
@@ -72,8 +72,16 @@ class AssetSummaryFragment : Fragment() {
                 prgBar.visibility = View.INVISIBLE
 
                 val assetReport = resultData?.getSerializable(Constants.KEY_REPORT) as AssetReport
-                listView.setAdapter(AssetSummaryAdapter(context!!,
-                    assetReport.generalAssetSummaries, assetReport.subAssetSummariesGroup))
+                var adapter = listView.expandableListAdapter
+
+                if (adapter == null) {
+                    adapter = AssetSummaryAdapter(context!!,
+                        assetReport.currencyReports, assetReport.currencyToBookReportsMap)
+                    listView.setAdapter(adapter)
+                } else {
+                    (adapter as AssetSummaryAdapter)
+                        .refreshData(assetReport.currencyReports, assetReport.currencyToBookReportsMap)
+                }
             }
         }
 
