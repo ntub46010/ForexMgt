@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/btnSignOut"
+            android:layout_above="@id/navBar"
+            android:layout_centerHorizontal="true">
+
+        <ExpandableListView
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="#C0C0C0"
+                android:childDivider="#C0C0C0"
+                android:dividerHeight="1dp"
+                android:groupIndicator="@null"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <ProgressBar
+            android:id="@+id/prgBar"
+            style="@style/PrgBarNormal"
+            android:layout_centerInParent="true"/>
+
+</RelativeLayout>

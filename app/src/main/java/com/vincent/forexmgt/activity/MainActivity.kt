@@ -18,7 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.vincent.forexmgt.ForExMgtApp
 import com.vincent.forexmgt.R
-import com.vincent.forexmgt.fragment.AssetSummaryFragment
+import com.vincent.forexmgt.fragment.AssetReportFragment
 import com.vincent.forexmgt.fragment.BookListFragment
 import com.vincent.forexmgt.fragment.ExchangeRateFragment
 
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private var currentFragment: Fragment? = null
     private var exchangeRateFragment: ExchangeRateFragment? = null
     private var bookListFragment: BookListFragment? = null
-    private var assetSummaryFragment: AssetSummaryFragment? = null
+    private var assetReportFragment: AssetReportFragment? = null
 
     private val RC_SIGN_IN = 0
 
@@ -116,10 +116,10 @@ class MainActivity : AppCompatActivity() {
                     switchContent(bookListFragment!!)
                 }
                 R.id.navSummary -> {
-                    if (assetSummaryFragment == null) {
-                        assetSummaryFragment = AssetSummaryFragment()
+                    if (assetReportFragment == null) {
+                        assetReportFragment = AssetReportFragment()
                     }
-                    switchContent(assetSummaryFragment!!)
+                    switchContent(assetReportFragment!!)
                 }
             }
 

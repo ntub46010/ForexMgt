@@ -7,31 +7,34 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.vincent.forexmgt.CurrencyType
 import com.vincent.forexmgt.R
-import com.vincent.forexmgt.entity.SubAssetSummary
-import com.vincent.forexmgt.entity.GeneralAssetSummary
+import com.vincent.forexmgt.entity.BookAssetReport
+import com.vincent.forexmgt.entity.CurrencyAssetReport
 import com.vincent.forexmgt.util.FormatUtils
 
-class AssetSummaryAdapter(
+class AssetReportAdapter(
     private val context: Context,
-    private var generalSummaries: List<GeneralAssetSummary>,
-    private var subSummaries: List<List<SubAssetSummary>>)
+    private var currencyReports: List<CurrencyAssetReport>,
+    private var currencyToBookReportsMap: Map<CurrencyType, List<BookAssetReport>>)
     : BaseExpandableListAdapter() {
 
     override fun getGroup(groupPosition: Int): Any {
-        return generalSummaries[groupPosition]
+        return currencyReports[groupPosition]
     }
 
     override fun getChild(groupPosition: Int, childPosition: Int): Any {
-        return subSummaries[groupPosition][childPosition]
+        val currencyType = currencyReports[groupPosition].currencyType
+        return currencyToBookReportsMap[currencyType]!![childPosition]
     }
 
     override fun getGroupCount(): Int {
-        return generalSummaries.size
+        return currencyReports.size
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        return subSummaries[groupPosition].size
+        val currencyType = currencyReports[groupPosition].currencyType
+        return currencyToBookReportsMap[currencyType]!!.size
     }
 
     override fun getGroupId(groupPosition: Int): Long {
@@ -51,7 +54,7 @@ class AssetSummaryAdapter(
     }
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_general_book_asset, null)
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_asset_currency, null)
         val imgIndicator = view.findViewById<ImageView>(R.id.imgIndicator)
         val imgCurrency = view.findViewById<ImageView>(R.id.imgCurrency)
         val txtCurrencyName = view.findViewById<TextView>(R.id.txtCurrencyName)
@@ -60,15 +63,15 @@ class AssetSummaryAdapter(
         val txtTwdPV = view.findViewById<TextView>(R.id.txtTwdPV)
         val txtAvgCost = view.findViewById<TextView>(R.id.txtAvgCostValue)
 
-        val summary = generalSummaries[groupPosition]
-        val currencyType = summary.currencyType!!
+        val currencyReport = currencyReports[groupPosition]
+        val currencyType = currencyReport.currencyType!!
 
         imgCurrency.setImageResource(currencyType.iconRes)
         txtCurrencyName.text = currencyType.chineseName
-        txtFcyAmt.text = FormatUtils.formatMoney(summary.fcyAmt)
+        txtFcyAmt.text = FormatUtils.formatMoney(currencyReport.fcyAmt)
         txtFcyType.text = currencyType.name
-        txtTwdPV.text = FormatUtils.formatMoney(summary.twdPV)
-        txtAvgCost.text = FormatUtils.formatExchangeRate(summary.avgCost)
+        txtTwdPV.text = FormatUtils.formatMoney(currencyReport.twdPV)
+        txtAvgCost.text = FormatUtils.formatExchangeRate(currencyReport.avgCost)
 
         // #E9BC5D
         if (isExpanded) {
@@ -87,24 +90,30 @@ class AssetSummaryAdapter(
         convertView: View?,
         parent: ViewGroup?
     ): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_sub_book_asset, null)
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_asset_book, null)
         val txtBookName = view.findViewById<TextView>(R.id.txtBookName)
         val txtFcyAmt = view.findViewById<TextView>(R.id.txtFcyAmt)
         val txtFcyType = view.findViewById<TextView>(R.id.txtFcyType)
         val txtTwdAmt = view.findViewById<TextView>(R.id.txtTwdAmt)
 
-        val summary = subSummaries[groupPosition][childPosition]
-        val currencyType = generalSummaries[groupPosition].currencyType!!
+        val currencyType = currencyReports[groupPosition].currencyType!!
+        val bookReport = currencyToBookReportsMap[currencyType]!![childPosition]
 
-        txtBookName.text = summary.bookName
-        txtFcyAmt.text = FormatUtils.formatMoney(summary.fcyAmt)
+        txtBookName.text = bookReport.bookName
+        txtFcyAmt.text = FormatUtils.formatMoney(bookReport.fcyAmt)
         txtFcyType.text = currencyType.name
 
-        val strTwdPV = FormatUtils.formatMoney(summary.twdPV)
-        val strTwdCost = FormatUtils.formatMoney(summary.twdCost)
+        val strTwdPV = FormatUtils.formatMoney(bookReport.twdPV)
+        val strTwdCost = FormatUtils.formatMoney(bookReport.twdCost)
         txtTwdAmt.text = context.getString(R.string.template_slash_with_2_string, strTwdPV, strTwdCost)
 
         return view
+    }
+
+    fun refreshData(currencyReportList: List<CurrencyAssetReport>, bookReportsMap: Map<CurrencyType, List<BookAssetReport>>) {
+        this.currencyReports = currencyReportList
+        this.currencyToBookReportsMap = bookReportsMap
+        notifyDataSetChanged()
     }
 
 }

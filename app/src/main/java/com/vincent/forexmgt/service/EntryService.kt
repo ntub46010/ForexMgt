@@ -5,10 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import com.google.firebase.firestore.*
-import com.vincent.forexmgt.Constants
-import com.vincent.forexmgt.EntryType
-import com.vincent.forexmgt.ForExMgtApp
-import com.vincent.forexmgt.Operator
+import com.vincent.forexmgt.*
 import com.vincent.forexmgt.entity.Book
 import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.entity.ExchangeRate
@@ -67,6 +64,22 @@ class EntryService : Service() {
         return entry
     }
 
+    fun loadEntries(bookIds: Set<String>, operator: Operator) {
+        for (id in bookIds) {
+            collection.whereEqualTo(Constants.PROPERTY_BOOK_ID, id)
+        }
+
+        collection
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val entries = DocumentConverter.toEntries(querySnapshot)
+                operator.execute(entries)
+            }
+            .addOnFailureListener { e ->
+                operator.execute(e)
+            }
+    }
+
     private fun createEntryPostProcess(entry: Entry, operator: Operator) {
         db.runTransaction { transaction ->
             val bookDoc = bookService.getBookDoc(entry.bookId)
@@ -104,9 +117,10 @@ class EntryService : Service() {
         val oldTwdTotalCost = bookSnapshot.getLong(Constants.PROPERTY_TWD_TOTAL_COST)!!
 
         val deltaFcyTotalAmt = if (entry.type == EntryType.CREDIT) entry.fcyAmt
-            else -entry.fcyAmt
+        else -entry.fcyAmt
+
         val deltaTwdTotalCost = if (entry.type == EntryType.CREDIT) entry.twdCost!!
-            else -Math.round(oldTwdTotalCost * (entry.fcyAmt / oldFcyTotalAmt)).toInt()
+        else -Math.round(oldTwdTotalCost * (entry.fcyAmt / oldFcyTotalAmt)).toInt()
 
         val newFcyTotalAmt = oldFcyTotalAmt + deltaFcyTotalAmt
         val newTwdTotalCost = oldTwdTotalCost + deltaTwdTotalCost

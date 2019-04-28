@@ -15,6 +15,6 @@
     <item
             android:id="@+id/navSummary"
             android:icon="@drawable/icon_report"
-            android:title="@string/title_asset_summary"/>
+            android:title="@string/title_asset_report"/>
 
 </menu>
