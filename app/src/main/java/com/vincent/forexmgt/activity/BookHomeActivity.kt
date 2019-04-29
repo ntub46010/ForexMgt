@@ -30,7 +30,7 @@ import com.vincent.forexmgt.util.BundleBuilder
 import com.vincent.forexmgt.util.DialogUtils
 import com.vincent.forexmgt.util.FormatUtils
 import org.apache.commons.lang3.StringUtils
-import java.lang.Exception
+import kotlin.Exception
 
 class BookHomeActivity : AppCompatActivity() {
 
@@ -98,20 +98,20 @@ class BookHomeActivity : AppCompatActivity() {
     }
 
     private fun subscribeBook(bookId: String) {
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
-                if (result == null) {
-                    Toast.makeText(this@BookHomeActivity, getString(R.string.load_book_error), Toast.LENGTH_SHORT).show()
-                } else {
-                    book = result as Book
-                    toolbar.title = book.name
-                }
-
+        val callback = object : Callback<Book> {
+            override fun onExecute(data: Book) {
                 fabCreateEntry.visibility = View.VISIBLE
+                book = data
+                toolbar.title = book.name
+            }
+
+            override fun onError(e: Exception) {
+                fabCreateEntry.visibility = View.VISIBLE
+                Toast.makeText(this@BookHomeActivity, getString(R.string.load_book_error), Toast.LENGTH_SHORT).show()
             }
         }
 
-        bookListener = bookService.subscribeBook(bookId, operator)
+        bookListener = bookService.subscribeBook(bookId, callback)
     }
 
     private fun goEntryEditPage() {
@@ -149,12 +149,13 @@ class BookHomeActivity : AppCompatActivity() {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 dlgWaiting.dismiss()
 
-                if (resultData == null) {
+                val data = resultData?.getSerializable(Constants.KEY_DATA)
+                if (data is Exception) {
                     Toast.makeText(this@BookHomeActivity, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
                     return
                 }
 
-                val rates = resultData.getSerializable(Constants.KEY_RATE) as List<ExchangeRate>
+                val rates = data as List<ExchangeRate>
                 val entry = entryService.generateBalanceEntry(book, rates)
                 showBalanceEntryInfo(entry)
             }
@@ -201,21 +202,19 @@ class BookHomeActivity : AppCompatActivity() {
     }
 
     private fun insertBalanceEntry(entry: Entry) {
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
+        val callback = object : Callback<Entry> {
+            override fun onExecute(data: Entry) {
                 dlgWaiting.dismiss()
-
-                if (result != null) {
-                    val e = result as Exception
-                    Toast.makeText(this@BookHomeActivity, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
-                    return
-                }
-
                 Toast.makeText(this@BookHomeActivity, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onError(e: Exception) {
+                dlgWaiting.dismiss()
+                Toast.makeText(this@BookHomeActivity, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
-        entryService.createEntry(entry, operator)
+        entryService.createEntry(entry, callback)
         dlgWaiting.show()
     }
 

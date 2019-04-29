@@ -38,27 +38,28 @@ class EntryListFragment : Fragment() {
     }
 
     private fun subscribeEntries(bookId: String, entryType: EntryType) {
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
-                if (result is Exception) {
-                    Toast.makeText(context, "${getString(R.string.load_entry_error)}\n${result.message}", Toast.LENGTH_SHORT).show()
-                    return
-                }
-
-                val entries = result as List<Entry>
+        val callback = object : Callback<List<Entry>> {
+            override fun onExecute(data: List<Entry>) {
                 val adapter = lstEntry.adapter
 
                 if (adapter == null) {
-                    val entryAdapter = EntryListAdapter(context!!, entries)
-                    lstEntry.adapter = entryAdapter
+                    initAdapter(data)
                 } else {
-                    (adapter as EntryListAdapter).entries = entries
-                    adapter.notifyDataSetChanged()
+                    (adapter as EntryListAdapter).refreshData(data)
                 }
+            }
+
+            override fun onError(e: Exception) {
+                Toast.makeText(context, "${getString(R.string.load_entry_error)}\n${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
-        entryListener = entryService.subscribeEntries(bookId, entryType, operator)
+        entryListener = entryService.subscribeEntries(bookId, entryType, callback)
+    }
+
+    private fun initAdapter(entries: List<Entry>) {
+        val entryAdapter = EntryListAdapter(context!!, entries)
+        lstEntry.adapter = entryAdapter
     }
 
     override fun onDestroy() {

@@ -24,20 +24,20 @@ class EntryService : Service() {
         return CollectionBinder()
     }
 
-    fun createEntry(entry: Entry, operator: Operator) {
+    fun createEntry(entry: Entry, callback: Callback<Entry>) {
         collection
             .add(entry)
             .addOnSuccessListener { documentRef ->
                 entry.defineId(documentRef.id)
 
                 if (entry.type == EntryType.BALANCE) {
-                    operator.execute(null)
+                    callback.onExecute(entry)
                 } else {
-                    createEntryPostProcess(entry, operator)
+                    createEntryPostProcess(entry, callback)
                 }
             }
             .addOnFailureListener { e ->
-                operator.execute(e)
+                callback.onError(e)
             }
     }
 
@@ -64,7 +64,7 @@ class EntryService : Service() {
         return entry
     }
 
-    fun loadEntries(bookIds: Set<String>, operator: Operator) {
+    fun loadEntries(bookIds: Set<String>, callback: Callback<List<Entry>>) {
         for (id in bookIds) {
             collection.whereEqualTo(Constants.PROPERTY_BOOK_ID, id)
         }
@@ -73,14 +73,14 @@ class EntryService : Service() {
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val entries = DocumentConverter.toEntries(querySnapshot)
-                operator.execute(entries)
+                callback.onExecute(entries)
             }
             .addOnFailureListener { e ->
-                operator.execute(e)
+                callback.onError(e)
             }
     }
 
-    private fun createEntryPostProcess(entry: Entry, operator: Operator) {
+    private fun createEntryPostProcess(entry: Entry, callback: Callback<Entry>) {
         db.runTransaction { transaction ->
             val bookDoc = bookService.getBookDoc(entry.bookId)
             val bookSnapshot = transaction.get(bookDoc)
@@ -92,13 +92,14 @@ class EntryService : Service() {
             if (entry.type != EntryType.BALANCE) {
                 updateBookAsset(transaction, bookSnapshot, entry)
             }
-            null
+
+            entry
         }
-            .addOnSuccessListener {
-                operator.execute(null)
+            .addOnSuccessListener { data ->
+                callback.onExecute(data)
             }
             .addOnFailureListener { e ->
-                operator.execute(e)
+                callback.onError(e)
             }
     }
 
@@ -133,17 +134,17 @@ class EntryService : Service() {
         transaction.set(bookDoc, patchData, SetOptions.merge())
     }
 
-    fun subscribeEntries(bookId: String, entryType: EntryType, operator: Operator): ListenerRegistration {
+    fun subscribeEntries(bookId: String, entryType: EntryType, callback: Callback<List<Entry>>): ListenerRegistration {
         return collection
             .whereEqualTo(Constants.PROPERTY_BOOK_ID, bookId)
             .whereEqualTo(Constants.PROPERTY_TYPE, entryType.name)
             .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
             .addSnapshotListener { querySnapshot, e ->
-                if (e != null) {
-                    operator.execute(e)
-                } else {
+                if (e == null) {
                     val entries = DocumentConverter.toEntries(querySnapshot)
-                    operator.execute(entries)
+                    callback.onExecute(entries)
+                } else {
+                    callback.onError(e)
                 }
             }
     }

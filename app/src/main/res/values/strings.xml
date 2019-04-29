@@ -19,6 +19,7 @@
     <string name="load_book_error">載入帳簿時發生錯誤</string>
     <string name="load_entry_error">載入紀錄時發生錯誤</string>
     <string name="load_exchange_rate_error">取得匯率資料失敗</string>
+    <string name="generate_asset_report_error">產生報表時發生錯誤</string>
 
     <string name="sign_out_successfully">登出成功</string>
     <string name="create_successfully">新增成功</string>

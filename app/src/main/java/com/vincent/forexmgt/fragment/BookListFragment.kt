@@ -103,47 +103,42 @@ class BookListFragment : Fragment() {
     private fun createBook(book: Book) {
         displayContent(true)
 
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
-                if (result != null) {
-                    val e = result as Exception
-                    Toast.makeText(context, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
-                    return
-                }
+        val callback = object : Callback<Book> {
+            override fun onExecute(data: Book) {
                 Toast.makeText(context, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
                 loadBooks()
             }
+
+            override fun onError(e: Exception) {
+                Toast.makeText(context, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        bookService.createBook(book, operator)
+        bookService.createBook(book, callback)
     }
 
     private fun loadBooks() {
         displayContent(true)
 
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
-                val books = result as List<Book>
-                val adapter = lstBook.adapter
-
-                if (adapter == null) {
-                    val bookAdapter = BookListAdapter(books)
-                    bookAdapter.setOnItemClickListener(object : RecyclerViewOnItemClickListener {
-                        override fun onItemClick(view: View?, position: Int) {
-                            goBookHomePage(bookAdapter.books[position])
-                        }
-                    })
-                    lstBook.adapter = bookAdapter
-                } else {
-                    (adapter as BookListAdapter).books = books
-                    adapter.notifyDataSetChanged()
-                }
-
+        val callback = object : Callback<List<Book>> {
+            override fun onExecute(data: List<Book>) {
                 displayContent(false)
+
+                val adapter = lstBook.adapter
+                if (adapter == null) {
+                    initAdapter(data)
+                } else {
+                    (adapter as BookListAdapter).refreshData(data)
+                }
+            }
+
+            override fun onError(e: Exception) {
+                displayContent(false)
+                Toast.makeText(context, getString(R.string.load_book_error), Toast.LENGTH_SHORT).show()
             }
         }
 
-        bookService.loadBooks(operator)
+        bookService.loadBooks(callback)
     }
 
     private fun goBookHomePage(book: Book) {
@@ -163,5 +158,18 @@ class BookListFragment : Fragment() {
             lstBook.visibility = View.VISIBLE
             prgBar.visibility = View.INVISIBLE
         }
+    }
+
+    private fun initAdapter(books: List<Book>) {
+        val adapter = BookListAdapter(books)
+
+        adapter.setOnItemClickListener(object : RecyclerViewOnItemClickListener {
+            override fun onItemClick(view: View?, position: Int) {
+                val book = adapter.getItem(position)
+                goBookHomePage(book)
+            }
+        })
+
+        lstBook.adapter = adapter
     }
 }

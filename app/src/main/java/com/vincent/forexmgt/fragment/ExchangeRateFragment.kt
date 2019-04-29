@@ -51,19 +51,19 @@ class ExchangeRateFragment : Fragment() {
                 refreshLayout.isRefreshing = false
                 prgBar.visibility = View.INVISIBLE
 
-                if (resultData == null) {
-                    Toast.makeText(activity, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
+                val data = resultData?.getSerializable(Constants.KEY_DATA)
+                if (data is Exception) {
+                    Toast.makeText(context, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
                     return
                 }
 
-                val rates = resultData.getSerializable(Constants.KEY_RATE) as List<ExchangeRate>
+                val rates = data as List<ExchangeRate>
                 val adapter = lstExchangeRate.adapter
 
                 if (adapter == null) {
-                    lstExchangeRate.adapter = ExchangeRateAdapter(rates)
+                    initAdapter(rates)
                 } else {
-                    (adapter as ExchangeRateAdapter).exchangeRates = rates
-                    adapter.notifyDataSetChanged()
+                    (adapter as ExchangeRateAdapter).refreshData(rates)
                 }
             }
         }
@@ -71,5 +71,9 @@ class ExchangeRateFragment : Fragment() {
         val intent = Intent(activity, LoadingExchangeRateService::class.java)
         intent.putExtra(Constants.KEY_RECEIVER, receiver)
         activity?.startService(intent)
+    }
+
+    private fun initAdapter(rates: List<ExchangeRate>) {
+        lstExchangeRate.adapter = ExchangeRateAdapter(rates)
     }
 }
