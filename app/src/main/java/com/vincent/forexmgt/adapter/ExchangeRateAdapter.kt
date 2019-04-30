@@ -30,6 +30,11 @@ class ExchangeRateAdapter(
         holder.bindValue(rate)
     }
 
+    fun refreshData(exchangeRates: List<ExchangeRate>) {
+        this.exchangeRates = exchangeRates
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         @BindView(R.id.imgCurrency) lateinit var imgCurrencyIcon: ImageView
         @BindView(R.id.txtCurrencyTitle) lateinit var txtCurrencyTitle: TextView

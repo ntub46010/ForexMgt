@@ -50,14 +50,15 @@ class AssetReportFragment : Fragment() {
     private fun startPrepareReport() {
         val receiver = object : ResultReceiver(Handler()) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                if (resultData == null) {
+                val data = resultData?.getSerializable(Constants.KEY_DATA)
+                if (data is Exception) {
                     refreshLayout.isRefreshing = false
                     prgBar.visibility = View.INVISIBLE
-                    Toast.makeText(context, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "${getString(R.string.load_exchange_rate_error)}\n${data.message}", Toast.LENGTH_SHORT).show()
                     return
                 }
 
-                val rates = resultData.getSerializable(Constants.KEY_RATE) as List<ExchangeRate>
+                val rates = data as List<ExchangeRate>
                 prepareAssetReport(rates)
             }
         }
@@ -73,7 +74,13 @@ class AssetReportFragment : Fragment() {
                 refreshLayout.isRefreshing = false
                 prgBar.visibility = View.INVISIBLE
 
-                val assetReport = resultData?.getSerializable(Constants.KEY_REPORT) as AssetReport
+                val data = resultData?.getSerializable(Constants.KEY_DATA)
+                if (data is Exception) {
+                    Toast.makeText(activity, "${getString(R.string.generate_asset_report_error)}\n${data.message}", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                val assetReport = data as AssetReport
                 val adapter = listView.expandableListAdapter
 
                 if (adapter == null) {

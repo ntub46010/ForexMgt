@@ -78,4 +78,9 @@ class EntryListAdapter(
             else -> return StringUtils.EMPTY
         }
     }
+
+    fun refreshData(entries: List<Entry>) {
+        this.entries = entries
+        notifyDataSetChanged()
+    }
 }

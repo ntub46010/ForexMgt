@@ -19,8 +19,8 @@ import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.util.DialogUtils
 import com.vincent.forexmgt.util.FormatUtils
 import org.apache.commons.lang3.StringUtils
-import java.lang.Exception
 import java.util.*
+import kotlin.Exception
 
 class EntryEditActivity : AppCompatActivity() {
 
@@ -102,15 +102,9 @@ class EntryEditActivity : AppCompatActivity() {
             book.fcyTotalAmt -= entry.fcyAmt
         }
 
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
+        val callback = object : Callback<Entry> {
+            override fun onExecute(data: Entry) {
                 dlgWaiting.dismiss()
-
-                if (result != null) {
-                    val e = result as Exception
-                    Toast.makeText(this@EntryEditActivity, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
-                    return
-                }
 
                 edtDate.text = null
                 edtFcyAmt.text = null
@@ -118,10 +112,15 @@ class EntryEditActivity : AppCompatActivity() {
                 chkAddToCost.isChecked = true
                 Toast.makeText(this@EntryEditActivity, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
             }
+
+            override fun onError(e: Exception) {
+                dlgWaiting.dismiss()
+                Toast.makeText(this@EntryEditActivity, "${getString(R.string.create_failed)}\n${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
 
         dlgWaiting.show()
-        entryService.createEntry(entry, operator)
+        entryService.createEntry(entry, callback)
     }
 
     @OnClick(R.id.btnBack)

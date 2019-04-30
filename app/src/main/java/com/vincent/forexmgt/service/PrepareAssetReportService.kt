@@ -4,7 +4,6 @@ import android.app.IntentService
 import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
-import android.widget.Toast
 import com.vincent.forexmgt.*
 import com.vincent.forexmgt.entity.*
 import java.io.Serializable
@@ -18,52 +17,59 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
         val receiver = intent?.getParcelableExtra(Constants.KEY_RECEIVER) as ResultReceiver
         val rateList = intent.getSerializableExtra(Constants.KEY_RATE) as List<ExchangeRate>
 
-        val returnOp = object : Operator {
-            override fun execute(result: Any?) {
-                val assetReport = result as AssetReport
+        val returnCb = object : Callback<AssetReport> {
+            override fun onExecute(data: AssetReport) {
                 val bundle = Bundle()
-                bundle.putSerializable(Constants.KEY_REPORT, assetReport as Serializable)
+                bundle.putSerializable(Constants.KEY_DATA, data as Serializable)
+                receiver.send(0, bundle)
+            }
+
+            override fun onError(e: Exception) {
+                val bundle = Bundle()
+                bundle.putSerializable(Constants.KEY_DATA, e as Serializable)
                 receiver.send(0, bundle)
             }
         }
 
         val rateMap = convertRateMap(rateList)
-        loadBooks(rateMap, returnOp)
+        loadBooks(rateMap, returnCb)
     }
 
-    private fun loadBooks(rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
-                val books = sortBooksByCurrencyType(result as List<Book>)
-                loadEntries(books, rateMap, returnOp)
+    private fun loadBooks(rateMap: Map<CurrencyType, Double>, returnCb: Callback<AssetReport>) {
+        val callback = object : Callback<List<Book>> {
+            override fun onExecute(data: List<Book>) {
+                val books = sortBooksByCurrencyType(data)
+                loadEntries(books, rateMap, returnCb)
+            }
+
+            override fun onError(e: Exception) {
+                returnCb.onError(e)
             }
         }
 
-        bookService.loadBooks(operator)
+        bookService.loadBooks(callback)
     }
 
-    private fun loadEntries(allBooks: List<Book>, rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
+    private fun loadEntries(allBooks: List<Book>, rateMap: Map<CurrencyType, Double>, returnCb: Callback<AssetReport>) {
         val bookIds = mutableSetOf<String>()
         for (book in allBooks) {
             bookIds.add(book.obtainId())
         }
 
-        val operator = object : Operator {
-            override fun execute(result: Any?) {
-                if (result is Exception) {
-                    Toast.makeText(this@PrepareAssetReportService, "${getString(R.string.load_entry_error)}\n${result.message}", Toast.LENGTH_SHORT).show()
-                    return
-                }
+        val callback = object : Callback<List<Entry>> {
+            override fun onExecute(data: List<Entry>) {
+                generateBookReports(allBooks, data, rateMap, returnCb)
+            }
 
-                val allEntries = result as List<Entry>
-                generateBookReports(allBooks, allEntries, rateMap, returnOp)
+            override fun onError(e: Exception) {
+                returnCb.onError(e)
             }
         }
 
-        entryService.loadEntries(bookIds, operator)
+        entryService.loadEntries(bookIds, callback)
     }
 
-    private fun generateBookReports(allBooks: List<Book>, allEntries: List<Entry>, rateMap: Map<CurrencyType, Double>, returnOp: Operator) {
+    private fun generateBookReports(allBooks: List<Book>, allEntries: List<Entry>, rateMap: Map<CurrencyType, Double>, returnCb: Callback<AssetReport>) {
         val bookMap = mutableMapOf<String, Book>()
         val bookToEntriesMap = linkedMapOf<String, MutableList<Entry>>()
         var currencyToBookReportsMap = mutableMapOf<CurrencyType, MutableList<BookAssetReport>>()
@@ -98,10 +104,10 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
             !pair.value.isNullOrEmpty()
         }.toMutableMap()
 
-        generateAssetReport(currencyToBookReportsMap, returnOp)
+        generateAssetReport(currencyToBookReportsMap, returnCb)
     }
 
-    private fun generateAssetReport(currencyToBookReportsMap: Map<CurrencyType, List<BookAssetReport>>, returnOp: Operator) {
+    private fun generateAssetReport(currencyToBookReportsMap: Map<CurrencyType, List<BookAssetReport>>, returnCb: Callback<AssetReport>) {
         val currencyReports = mutableListOf<CurrencyAssetReport>()
 
         for (currencyType in CurrencyType.values()) {
@@ -132,7 +138,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
         }
 
         val assetReport = AssetReport(currencyReports, currencyToBookReportsMap)
-        returnOp.execute(assetReport)
+        returnCb.onExecute(assetReport)
     }
 
     private fun generateBookReport(bookName: String, entriesInBook: List<Entry>, rateMap: Map<CurrencyType, Double>): BookAssetReport {

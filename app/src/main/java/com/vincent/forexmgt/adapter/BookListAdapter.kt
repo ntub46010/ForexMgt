@@ -13,7 +13,7 @@ import com.vincent.forexmgt.R
 import com.vincent.forexmgt.entity.Book
 
 class BookListAdapter(
-    var books: List<Book>)
+    private var books: List<Book>)
     : RecyclerView.Adapter<BookListAdapter.ViewHolder>(), View.OnClickListener {
     // http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0327/2647.html
 
@@ -35,8 +35,17 @@ class BookListAdapter(
         holder.bindValue(book)
     }
 
+    fun getItem(position: Int): Book {
+        return books[position]
+    }
+
     fun setOnItemClickListener(listener: RecyclerViewOnItemClickListener?) {
         onItemClickListener = listener
+    }
+
+    fun refreshData(books: List<Book>) {
+        this.books = books
+        notifyDataSetChanged()
     }
 
     override fun onClick(v: View?) {
