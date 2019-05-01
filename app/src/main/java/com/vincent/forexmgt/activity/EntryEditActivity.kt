@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.Toolbar
 import android.view.View
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -31,7 +29,7 @@ class EntryEditActivity : AppCompatActivity() {
     @BindView(R.id.edtDate) lateinit var edtDate: EditText
     @BindView(R.id.edtFcyAmt) lateinit var edtFcyAmt: EditText
     @BindView(R.id.edtTwdAmt) lateinit var edtTwdAmt: EditText
-    @BindView(R.id.chkAddToCost) lateinit var chkAddToCost: CheckBox
+    @BindView(R.id.rgpCreditType) lateinit var rgpCreditType: RadioGroup
 
     private lateinit var dlgWaiting: Dialog
 
@@ -57,11 +55,11 @@ class EntryEditActivity : AppCompatActivity() {
 
         entryType = EntryType.fromName(bundle.getString(Constants.KEY_ENTRY_TYPE))!!
         if (entryType == EntryType.CREDIT) {
-            chkAddToCost.visibility = View.VISIBLE
+            rgpCreditType.visibility = View.VISIBLE
             tilFcyAmt.hint = "${getString(R.string.fcy_amt_credit)}（${book.currencyType?.chineseName}）"
             tilTwdAmt.hint = getString(R.string.twd_amt_debit)
         } else if (entryType == EntryType.DEBIT) {
-            chkAddToCost.visibility = View.GONE
+            rgpCreditType.visibility = View.GONE
             tilFcyAmt.hint = "${getString(R.string.fcy_amt_debit)}（${book.currencyType?.chineseName}）"
             tilTwdAmt.hint = getString(R.string.twd_amt_credit)
         }
@@ -73,6 +71,11 @@ class EntryEditActivity : AppCompatActivity() {
     fun createEntry() {
         validateData()
         if (!StringUtils.isAllEmpty(tilDate.error, tilFcyAmt.error, tilTwdAmt.error)) {
+            return
+        }
+
+        if (entryType == EntryType.CREDIT && rgpCreditType.checkedRadioButtonId == RadioGroup.NO_ID) {
+            Toast.makeText(this, getString(R.string.credit_type_not_selected), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -91,10 +94,9 @@ class EntryEditActivity : AppCompatActivity() {
         )
 
         if (entryType == EntryType.CREDIT) {
-            if (chkAddToCost.isChecked) {
-                entry.twdCost = entry.twdAmt
-            } else {
-                entry.twdCost = 0
+            when (rgpCreditType.checkedRadioButtonId) {
+                R.id.rdoCost -> entry.twdCost = entry.twdAmt
+                R.id.rdoInterest -> entry.twdCost = 0
             }
         }
 
@@ -109,7 +111,7 @@ class EntryEditActivity : AppCompatActivity() {
                 edtDate.text = null
                 edtFcyAmt.text = null
                 edtTwdAmt.text = null
-                chkAddToCost.isChecked = true
+                rgpCreditType.clearCheck()
                 Toast.makeText(this@EntryEditActivity, getString(R.string.create_successfully), Toast.LENGTH_SHORT).show()
             }
 

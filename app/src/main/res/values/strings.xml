@@ -20,13 +20,15 @@
     <string name="load_entry_error">載入紀錄時發生錯誤</string>
     <string name="load_exchange_rate_error">取得匯率資料失敗</string>
     <string name="generate_asset_report_error">產生報表時發生錯誤</string>
+    <string name="credit_type_not_selected">未選擇轉入類型</string>
 
     <string name="sign_out_successfully">登出成功</string>
     <string name="create_successfully">新增成功</string>
     <string name="create_failed">新增失敗</string>
     <string name="submit">提交</string>
     <string name="back">返回</string>
-    <string name="add_to_cost">加入到成本</string>
+    <string name="cost_credit">成本轉入</string>
+    <string name="interest_credit">利息轉入</string>
 
     <string name="title_create_book">建立帳本</string>
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>

@@ -65,35 +65,45 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <CheckBox
-                android:id="@+id/chkAddToCost"
-                android:layout_width="wrap_content"
+        <RadioGroup
+                android:id="@+id/rgpCreditType"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_below="@id/tilTwdAmt"
-                android:layout_centerHorizontal="true"
-                android:text="@string/add_to_cost"
-                android:textColor="@color/black1"
-                android:checked="true"
-                android:visibility="gone"/>
+                android:layout_centerHorizontal="true">
+
+            <RadioButton
+                    android:id="@+id/rdoCost"
+                    android:layout_width="125dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cost_credit"
+                    android:textColor="@color/black1"/>
+
+            <RadioButton
+                    android:id="@+id/rdoInterest"
+                    android:layout_width="125dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interest_credit"
+                    android:textColor="@color/black1"/>
+
+        </RadioGroup>
 
         <Button
                 android:id="@+id/btnSubmit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/chkAddToCost"
+                style="@style/ActionButton"
+                android:layout_below="@id/rgpCreditType"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="30dp"
-                android:text="@string/submit"
-                android:textColor="@color/black1"/>
+                android:text="@string/submit"/>
 
         <Button
                 android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/ActionButton"
                 android:layout_below="@id/btnSubmit"
                 android:layout_centerHorizontal="true"
-                android:text="@string/back"
-                android:textColor="@color/black1"/>
+                android:layout_marginTop="@dimen/widget_default_spacing"
+                android:text="@string/back"/>
 
     </RelativeLayout>
 
