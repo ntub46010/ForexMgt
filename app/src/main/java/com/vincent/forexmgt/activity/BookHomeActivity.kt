@@ -177,12 +177,10 @@ class BookHomeActivity : AppCompatActivity() {
         val txtTwdAmt = layout.findViewById<TextView>(R.id.txtTwdAmt)
         val txtProfit = layout.findViewById<TextView>(R.id.txtProfit)
 
-        val currencyType = CurrencyType.fromCode(entry.fcyType)
-
         txtDate.text = FormatUtils.formatDateTime(entry.createdTime)
-        txtFcyAmtLabel.text = getString(R.string.template_fcy_balance, currencyType?.chineseName)
+        txtFcyAmtLabel.text = getString(R.string.template_fcy_balance, entry.currencyType?.chineseName)
         txtFcyAmt.text = getString(R.string.template_currency_amount,
-            FormatUtils.formatMoney(entry.fcyAmt), currencyType?.name)
+            FormatUtils.formatMoney(entry.fcyAmt), entry.currencyType?.name)
         txtExRateValue.text = entry.exchangeRate.toString()
         txtTwdAmt.text = getString(R.string.template_currency_amount,
             FormatUtils.formatMoney(entry.twdAmt), getString(R.string.label_twd))

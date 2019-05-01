@@ -87,7 +87,7 @@ class EntryEditActivity : AppCompatActivity() {
             book.obtainId(),
             FormatUtils.parseDate(dateStr),
             entryType,
-            book.currencyType!!.name,
+            book.currencyType!!,
             fcyAmt,
             twdAmt,
             FormatUtils.calcExchangeRate(twdAmt, fcyAmt)

@@ -48,7 +48,7 @@ class EntryListAdapter(
 
         txtFcyAmt.text = FormatUtils.formatMoney(entry.fcyAmt)
         txtFcyAmt.setTextColor(context.resources.getColor(entry.type!!.fcyColorRes))
-        txtFcyType.text = entry.fcyType
+        txtFcyType.text = entry.currencyType?.name
         txtFcyType.setTextColor(context.resources.getColor(entry.type.fcyColorRes))
         txtTwdAmtLabel.text = context.getString(entry.type.twdAmtLabelRes)
         txtTwdAmt.text = getTwdAmount(entry)

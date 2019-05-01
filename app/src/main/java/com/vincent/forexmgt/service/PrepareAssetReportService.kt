@@ -155,7 +155,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
             }
         }
 
-        val currencyType = CurrencyType.fromCode(entriesInBook[0].fcyType)!!
+        val currencyType = entriesInBook[0].currencyType
         val twdPV = Math.round(fcyAmt * rateMap[currencyType]!!).toInt()
 
         return BookAssetReport(entriesInBook[0].bookId, bookName, fcyAmt, twdPV, twdCost)

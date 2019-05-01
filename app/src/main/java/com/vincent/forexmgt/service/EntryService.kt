@@ -53,7 +53,7 @@ class EntryService : Service() {
             book.obtainId(),
             Date(),
             EntryType.BALANCE,
-            book.currencyType!!.name,
+            book.currencyType!!,
             book.fcyTotalAmt,
             presentValue,
             spotRate.debit
