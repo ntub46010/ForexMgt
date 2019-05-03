@@ -25,16 +25,45 @@ class EntryService : Service() {
     }
 
     fun createEntry(entry: Entry, callback: Callback<Entry>) {
+        when (entry.type) {
+            EntryType.CREDIT -> insertEntry(entry, callback)
+            EntryType.DEBIT -> createDebitEntry(entry, callback)
+            EntryType.BALANCE -> insertEntry(entry, callback)
+        }
+    }
+
+    private fun createDebitEntry(entry: Entry, callback: Callback<Entry>) {
+        val loadEntriesCb = object : Callback<List<Entry>> {
+            override fun onExecute(data: List<Entry>) {
+                var fcyTotalAmt = 0.0
+                var twdTotalCost = 0
+                for (en in data) {
+                    if (en.type == EntryType.CREDIT) {
+                        fcyTotalAmt += en.fcyAmt
+                        twdTotalCost += en.twdCost!!
+                    } else if (en.type == EntryType.DEBIT) {
+                        fcyTotalAmt -= en.fcyAmt
+                        twdTotalCost -= en.twdCost!!
+                    }
+                }
+
+                generateDebitEntry(entry, fcyTotalAmt, twdTotalCost, callback)
+            }
+
+            override fun onError(e: Exception) {
+                callback.onError(e)
+            }
+        }
+
+        loadEntries(setOf(entry.bookId), loadEntriesCb)
+    }
+
+    private fun insertEntry(entry: Entry, callback: Callback<Entry>) {
         collection
             .add(entry)
             .addOnSuccessListener { documentRef ->
                 entry.defineId(documentRef.id)
-
-                if (entry.type == EntryType.BALANCE) {
-                    callback.onExecute(entry)
-                } else {
-                    createEntryPostProcess(entry, callback)
-                }
+                callback.onExecute(entry)
             }
             .addOnFailureListener { e ->
                 callback.onError(e)
@@ -62,6 +91,12 @@ class EntryService : Service() {
         entry.twdProfit = profit
 
         return entry
+    }
+
+    fun generateDebitEntry(entry: Entry, fcyTotalAmt: Double, twdTotalCost: Int, callback: Callback<Entry>) {
+        val twdBV = Math.round(twdTotalCost * entry.fcyAmt / fcyTotalAmt).toInt()
+        entry.twdProfit = entry.twdAmt - twdBV
+        insertEntry(entry, callback)
     }
 
     fun loadEntries(bookIds: Set<String>, callback: Callback<List<Entry>>) {
