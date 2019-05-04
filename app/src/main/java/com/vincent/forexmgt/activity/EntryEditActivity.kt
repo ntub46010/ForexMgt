@@ -100,10 +100,6 @@ class EntryEditActivity : AppCompatActivity() {
             }
         }
 
-        if (entryType == EntryType.DEBIT) {
-            book.fcyTotalAmt -= entry.fcyAmt
-        }
-
         val callback = object : Callback<Entry> {
             override fun onExecute(data: Entry) {
                 dlgWaiting.dismiss()
@@ -157,8 +153,6 @@ class EntryEditActivity : AppCompatActivity() {
 
         if (StringUtils.isEmpty(fcyAmt) || StringUtils.equals(fcyAmt, "0")) {
             tilFcyAmt.error = getString(R.string.mandatory_field)
-        } else if (entryType == EntryType.DEBIT && fcyAmt.toDouble() > book.fcyTotalAmt) {
-            tilFcyAmt.error = getString(R.string.insufficient_fcy_amt)
         }
 
         if (StringUtils.isEmpty(twdAmt) || StringUtils.equals(twdAmt, "0")) {

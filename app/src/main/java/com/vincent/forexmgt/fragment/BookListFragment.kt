@@ -88,9 +88,7 @@ class BookListFragment : Fragment() {
                             edtBookName.text.toString(),
                             CurrencyType.fromCode(currencyCode),
                             StringUtils.EMPTY,
-                            Date(),
-                            0,
-                            0.0
+                            Date()
                         )
 
                         createBook(book)

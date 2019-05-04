@@ -68,7 +68,7 @@ class BookHomeActivity : AppCompatActivity() {
         prepareFragments()
 
         fabCreateEntry.setOnClickListener {
-            goEntryEditPage()
+            prepareEntry()
         }
 
         subscribeBook(bundle.getString(Constants.PROPERTY_ID))
@@ -114,12 +114,10 @@ class BookHomeActivity : AppCompatActivity() {
         bookListener = bookService.subscribeBook(bookId, callback)
     }
 
-    private fun goEntryEditPage() {
-        val bundleBuilder = BundleBuilder()
-
+    private fun prepareEntry() {
         when(vpgEntry.currentItem) {
             0 -> {
-                val intent = bundleBuilder
+                val intent = BundleBuilder()
                     .putString(Constants.KEY_TITLE, getString(R.string.title_create_credit_entry))
                     .putString(Constants.KEY_ENTRY_TYPE, EntryType.CREDIT.name)
                     .putSerializable(Constants.KEY_BOOK, book)
@@ -129,7 +127,7 @@ class BookHomeActivity : AppCompatActivity() {
             }
 
             1 -> {
-                val intent = bundleBuilder
+                val intent = BundleBuilder()
                     .putString(Constants.KEY_TITLE, getString(R.string.title_create_debit_entry))
                     .putString(Constants.KEY_ENTRY_TYPE, EntryType.DEBIT.name)
                     .putSerializable(Constants.KEY_BOOK, book)
@@ -139,25 +137,35 @@ class BookHomeActivity : AppCompatActivity() {
             }
 
             2 -> {
-                createBalanceEntry()
+                previewBalanceEntry()
             }
         }
     }
 
-    private fun createBalanceEntry() {
+    private fun previewBalanceEntry() {
+        val callback = object : Callback<Entry> {
+            override fun onExecute(data: Entry) {
+                showBalanceEntryInfo(data)
+                dlgWaiting.dismiss()
+            }
+
+            override fun onError(e: Exception) {
+                Toast.makeText(this@BookHomeActivity, "${getString(R.string.load_entry_error)}\n${e.message}", Toast.LENGTH_SHORT).show()
+                dlgWaiting.dismiss()
+            }
+        }
+
         val receiver = object : ResultReceiver(Handler()) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                dlgWaiting.dismiss()
-
                 val data = resultData?.getSerializable(Constants.KEY_DATA)
                 if (data is Exception) {
                     Toast.makeText(this@BookHomeActivity, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
+                    dlgWaiting.dismiss()
                     return
                 }
 
                 val rates = data as List<ExchangeRate>
-                val entry = entryService.generateBalanceEntry(book, rates)
-                showBalanceEntryInfo(entry)
+                entryService.previewBalanceEntry(book, rates, callback)
             }
         }
 
