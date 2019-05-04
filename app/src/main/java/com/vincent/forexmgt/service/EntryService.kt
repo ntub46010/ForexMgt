@@ -2,8 +2,7 @@ package com.vincent.forexmgt.service
 
 import android.app.Service
 import android.content.Intent
-import android.os.Binder
-import android.os.IBinder
+import android.os.*
 import com.google.firebase.firestore.*
 import com.vincent.forexmgt.*
 import com.vincent.forexmgt.R
@@ -12,6 +11,7 @@ import com.vincent.forexmgt.entity.Entry
 import com.vincent.forexmgt.entity.ExchangeRate
 import com.vincent.forexmgt.util.DocumentConverter
 import org.apache.commons.lang3.StringUtils
+import java.math.BigDecimal
 import java.util.*
 
 class EntryService : Service() {
@@ -33,34 +33,23 @@ class EntryService : Service() {
         }
     }
 
-    fun previewBalanceEntry(book: Book, exchangeRates: List<ExchangeRate>, callback: Callback<Entry>) {
-        val loadEntriesCb = object : Callback<List<Entry>> {
-            override fun onExecute(data: List<Entry>) {
-                var fcyTotalAmt = 0.0
-                var twdTotalCost = 0
-                for (en in data) {
-                    if (en.type == EntryType.CREDIT) {
-                        fcyTotalAmt += en.fcyAmt
-                        twdTotalCost += en.twdCost!!
-                    } else if (en.type == EntryType.DEBIT) {
-                        fcyTotalAmt -= en.fcyAmt
-                        twdTotalCost -= en.twdCost!!
-                    }
+    fun previewBalanceEntry(book: Book, callback: Callback<Entry>) {
+        val receiver = object : ResultReceiver(Handler()) {
+            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                val data = resultData?.getSerializable(Constants.KEY_DATA)
+                if (data is Exception) {
+                    callback.onError(data)
+                    return
                 }
 
-                val spotRate = exchangeRates.firstOrNull { rate ->
-                    StringUtils.equals(rate.currencyType?.name, book.currencyType?.name)
-                }!!
-
-                generateBalanceEntry(book, spotRate, fcyTotalAmt, twdTotalCost, callback)
-            }
-
-            override fun onError(e: Exception) {
-                callback.onError(e)
+                val rates = data as List<ExchangeRate>
+                createBalanceEntry(book, rates, callback)
             }
         }
 
-        loadEntries(setOf(book.obtainId()), loadEntriesCb)
+        val intent = Intent(this, LoadingExchangeRateService::class.java)
+        intent.putExtra(Constants.KEY_RECEIVER, receiver)
+        startService(intent)
     }
 
     fun loadEntries(bookIds: Set<String>, callback: Callback<List<Entry>>) {
@@ -97,18 +86,23 @@ class EntryService : Service() {
     private fun createDebitEntry(entry: Entry, callback: Callback<Entry>) {
         val loadEntriesCb = object : Callback<List<Entry>> {
             override fun onExecute(data: List<Entry>) {
-                var fcyTotalAmt = 0.0
+                var fcyTotalAmtDec = BigDecimal(0.0)
                 var twdTotalCost = 0
+                var dec: BigDecimal
+
                 for (en in data) {
+                    dec = BigDecimal(en.fcyAmt)
+
                     if (en.type == EntryType.CREDIT) {
-                        fcyTotalAmt += en.fcyAmt
+                        fcyTotalAmtDec = fcyTotalAmtDec.add(dec)
                         twdTotalCost += en.twdCost!!
                     } else if (en.type == EntryType.DEBIT) {
-                        fcyTotalAmt -= en.fcyAmt
+                        fcyTotalAmtDec = fcyTotalAmtDec.subtract(dec)
                         twdTotalCost -= en.twdCost!!
                     }
                 }
 
+                val fcyTotalAmt = fcyTotalAmtDec.toDouble()
                 if (fcyTotalAmt < entry.fcyAmt) {
                     callback.onError(Exception(getString(R.string.insufficient_fcy_amt)))
                     return
@@ -123,6 +117,41 @@ class EntryService : Service() {
         }
 
         loadEntries(setOf(entry.bookId), loadEntriesCb)
+    }
+
+    private fun createBalanceEntry(book: Book, exchangeRates: List<ExchangeRate>, callback: Callback<Entry>) {
+        val loadEntriesCb = object : Callback<List<Entry>> {
+            override fun onExecute(data: List<Entry>) {
+                var fcyTotalAmtDec = BigDecimal(0.0)
+                var twdTotalCost = 0
+                var dec: BigDecimal
+
+                for (en in data) {
+                    dec = BigDecimal(en.fcyAmt)
+
+                    if (en.type == EntryType.CREDIT) {
+                        fcyTotalAmtDec = fcyTotalAmtDec.add(dec)
+                        twdTotalCost += en.twdCost!!
+                    } else if (en.type == EntryType.DEBIT) {
+                        fcyTotalAmtDec = fcyTotalAmtDec.subtract(dec)
+                        twdTotalCost -= en.twdCost!!
+                    }
+                }
+
+                val fcyTotalAmt = fcyTotalAmtDec.toDouble()
+                val spotRate = exchangeRates.firstOrNull { rate ->
+                    StringUtils.equals(rate.currencyType?.name, book.currencyType?.name)
+                }!!
+
+                generateBalanceEntry(book, spotRate, fcyTotalAmt, twdTotalCost, callback)
+            }
+
+            override fun onError(e: Exception) {
+                callback.onError(e)
+            }
+        }
+
+        loadEntries(setOf(book.obtainId()), loadEntriesCb)
     }
 
     private fun generateDebitEntry(entry: Entry, fcyTotalAmt: Double, twdTotalCost: Int, callback: Callback<Entry>) {

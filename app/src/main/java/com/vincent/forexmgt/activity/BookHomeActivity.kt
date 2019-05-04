@@ -155,24 +155,7 @@ class BookHomeActivity : AppCompatActivity() {
             }
         }
 
-        val receiver = object : ResultReceiver(Handler()) {
-            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                val data = resultData?.getSerializable(Constants.KEY_DATA)
-                if (data is Exception) {
-                    Toast.makeText(this@BookHomeActivity, getString(R.string.load_exchange_rate_error), Toast.LENGTH_SHORT).show()
-                    dlgWaiting.dismiss()
-                    return
-                }
-
-                val rates = data as List<ExchangeRate>
-                entryService.previewBalanceEntry(book, rates, callback)
-            }
-        }
-
-        val intent = Intent(this, LoadingExchangeRateService::class.java)
-        intent.putExtra(Constants.KEY_RECEIVER, receiver)
-        startService(intent)
-
+        entryService.previewBalanceEntry(book, callback)
         dlgWaiting.show()
     }
 
