@@ -27,9 +27,7 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
                 .select("div[id=right]")
                 .select("table>tbody>tr")
 
-            val rowCount = tableRows.size
-            tableRows.removeAt(rowCount - 1)
-            tableRows.removeAt(rowCount - 2)
+            tableRows.dropLast(2)
             tableRows.removeAt(0)
 
             val rates = mutableListOf<ExchangeRate>()
@@ -48,8 +46,10 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
                 )
             }
 
+            val responseRates = postProcess(bank, rates)
+
             val bundle = Bundle()
-            bundle.putSerializable(Constants.KEY_DATA, rates as Serializable)
+            bundle.putSerializable(Constants.KEY_DATA, responseRates as Serializable)
 
             receiver.send(0, bundle)
         } catch (e: Exception) {
@@ -58,6 +58,59 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
             receiver.send(0, bundle)
         }
 
+    }
+
+    private fun postProcess(bank: Bank, rates: List<ExchangeRate>): List<ExchangeRate> {
+        var newRates = rates
+
+        if (bank == Bank.RICHART) {
+            newRates = rates.filter { r -> r.currencyType != CurrencyType.THB }
+            newRates = calcRichartRate(newRates)
+        }
+
+        return newRates
+    }
+
+    private fun calcRichartRate(rates: List<ExchangeRate>): List<ExchangeRate> {
+        for (rate in rates) {
+            when (rate.currencyType) {
+                CurrencyType.USD -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_USD
+                    rate.debit += Constants.RICHART_DISCOUNT_USD
+                }
+                CurrencyType.JPY -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_JPY
+                    rate.debit += Constants.RICHART_DISCOUNT_JPY
+                }
+                CurrencyType.GBP -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_GBP
+                    rate.debit += Constants.RICHART_DISCOUNT_GBP
+                }
+                CurrencyType.CNY -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_CNY
+                    rate.debit += Constants.RICHART_DISCOUNT_CNY
+                }
+                CurrencyType.EUR -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_EUR
+                    rate.debit += Constants.RICHART_DISCOUNT_EUR
+                }
+                CurrencyType.HKD -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_HKD
+                    rate.debit += Constants.RICHART_DISCOUNT_HKD
+                }
+                CurrencyType.AUD -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_AUD
+                    rate.debit += Constants.RICHART_DISCOUNT_AUD
+                }
+                else -> {
+                    val discount = (rate.credit - rate.debit) / 5
+                    rate.credit -= discount
+                    rate.debit += discount
+                }
+            }
+        }
+
+        return rates
     }
 
 }
