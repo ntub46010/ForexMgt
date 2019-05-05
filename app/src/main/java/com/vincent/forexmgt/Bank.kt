@@ -8,7 +8,7 @@ enum class Bank(
 
     FUBON("富邦銀行", "https://www.findrate.tw/bank/8/#.XHv2PKBS8dU"),
     TAISHIN("台新銀行", "https://www.findrate.tw/bank/9/#.XM5YhthS8dU"),
-    RICHART("Richart", "https://www.findrate.tw/bank/9/#.XM5YhthS8dU"); // Richart沒有泰幣
+    RICHART("台新銀行（Richart）", "https://www.findrate.tw/bank/9/#.XM5YhthS8dU"); // Richart沒有泰幣
 
     companion object {
 
@@ -16,6 +16,16 @@ enum class Bank(
             return values().firstOrNull { bank ->
                 StringUtils.equals(chineseName, bank.chineseName)
             }
+        }
+
+        fun getChineseNames(): List<String> {
+            val names = mutableListOf<String>()
+
+            for (bank in values()) {
+                names.add(bank.chineseName)
+            }
+
+            return names
         }
 
     }
