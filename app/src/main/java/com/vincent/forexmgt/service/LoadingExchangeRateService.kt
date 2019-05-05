@@ -4,22 +4,23 @@ import android.app.IntentService
 import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
+import com.vincent.forexmgt.Bank
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.CurrencyType
 import com.vincent.forexmgt.entity.ExchangeRate
 import org.apache.commons.lang3.StringUtils
-import org.jsoup.Connection
 import org.jsoup.Jsoup
-import java.io.IOException
 import java.io.Serializable
 
 class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
 
     override fun onHandleIntent(intent: Intent?) {
         val receiver = intent?.getParcelableExtra(Constants.KEY_RECEIVER) as ResultReceiver
+        val bankChineseName: String? = intent.getStringExtra(Constants.KEY_BANK_NAME)
+        val bank = Bank.fromChineseName(bankChineseName) ?: Bank.FUBON
 
         try {
-            val response = Jsoup.connect("https://www.findrate.tw/bank/8/#.XHv2PKBS8dU").execute()
+            val response = Jsoup.connect(bank.exchangeRateUrl).execute()
 
             val webContent = response.body()
             val tableRows = Jsoup.parse(webContent)
