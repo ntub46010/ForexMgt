@@ -40,7 +40,12 @@ class ExchangeRateFragment : Fragment() {
         prgBar.visibility = View.VISIBLE
         lstExchangeRate.layoutManager = LinearLayoutManager(context)
         refreshLayout.setColorSchemeColors(resources.getColor(R.color.colorPrimary))
-        refreshLayout.setOnRefreshListener { loadExchangeRate() }
+        refreshLayout.setOnRefreshListener {
+            val bankName = txtBankName.text.toString()
+            loadExchangeRate(Bank.fromChineseName(bankName)!!)
+        }
+
+        txtBankName.text = Bank.FUBON.chineseName
 
         return view
     }
@@ -52,18 +57,23 @@ class ExchangeRateFragment : Fragment() {
         dlgChooseBank = AlertDialog.Builder(context!!)
             .setTitle(getString(R.string.choose_bank))
             .setItems(Bank.getChineseNames().toTypedArray()) { dialogInterface, i ->
+                prgBar.visibility = View.VISIBLE
+                lstExchangeRate.visibility = View.INVISIBLE
                 txtBankName.text = bankNames[i]
+
+                loadExchangeRate(Bank.fromChineseName(bankNames[i])!!)
             }
             .create()
 
-        loadExchangeRate()
+        loadExchangeRate(Bank.FUBON)
     }
 
-    private fun loadExchangeRate() {
+    private fun loadExchangeRate(bank: Bank) {
         val receiver = object : ResultReceiver(Handler()) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 refreshLayout.isRefreshing = false
                 prgBar.visibility = View.INVISIBLE
+                lstExchangeRate.visibility = View.VISIBLE
 
                 val data = resultData?.getSerializable(Constants.KEY_DATA)
                 if (data is Exception) {
@@ -82,8 +92,9 @@ class ExchangeRateFragment : Fragment() {
             }
         }
 
-        val intent = Intent(activity, LoadingExchangeRateService::class.java)
+        val intent = Intent(context, LoadingExchangeRateService::class.java)
         intent.putExtra(Constants.KEY_RECEIVER, receiver)
+        intent.putExtra(Constants.KEY_BANK_NAME, bank.name)
         context?.startService(intent)
     }
 

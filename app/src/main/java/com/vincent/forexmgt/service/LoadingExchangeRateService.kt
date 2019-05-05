@@ -16,8 +16,8 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
 
     override fun onHandleIntent(intent: Intent?) {
         val receiver = intent?.getParcelableExtra(Constants.KEY_RECEIVER) as ResultReceiver
-        val bankChineseName: String? = intent.getStringExtra(Constants.KEY_BANK_NAME)
-        val bank = Bank.fromChineseName(bankChineseName) ?: Bank.FUBON
+        val bankName = intent.getStringExtra(Constants.KEY_BANK_NAME) ?: Bank.FUBON.name
+        val bank = Bank.valueOf(bankName)
 
         try {
             val response = Jsoup.connect(bank.exchangeRateUrl).execute()
