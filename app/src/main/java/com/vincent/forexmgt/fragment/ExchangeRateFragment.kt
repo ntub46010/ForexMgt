@@ -1,6 +1,8 @@
 package com.vincent.forexmgt.fragment
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
@@ -22,6 +24,7 @@ import com.vincent.forexmgt.*
 import com.vincent.forexmgt.adapter.ExchangeRateAdapter
 import com.vincent.forexmgt.entity.ExchangeRate
 import com.vincent.forexmgt.service.LoadingExchangeRateService
+import org.apache.commons.lang3.StringUtils
 
 class ExchangeRateFragment : Fragment() {
 
@@ -32,43 +35,57 @@ class ExchangeRateFragment : Fragment() {
 
     private lateinit var dlgChooseBank: AlertDialog
 
+    private lateinit var selectedBank: Bank
+    private lateinit var sp: SharedPreferences
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val view = inflater.inflate(R.layout.fragment_exchange_rate, container, false)
         ButterKnife.bind(this, view)
 
-        prgBar.visibility = View.VISIBLE
         lstExchangeRate.layoutManager = LinearLayoutManager(context)
         refreshLayout.setColorSchemeColors(resources.getColor(R.color.colorPrimary))
-        refreshLayout.setOnRefreshListener {
-            val bankName = txtBankName.text.toString()
-            loadExchangeRate(Bank.fromChineseName(bankName)!!)
-        }
-
-        txtBankName.text = Bank.FUBON.chineseName
+        refreshLayout.setOnRefreshListener { loadExchangeRate(selectedBank) }
 
         return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        sp = context!!.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+
+        val defBankEng = sp.getString(Constants.KEY_DEFAULT_BROWSE_BANK, Bank.FUBON.name)
+        selectedBank = Bank.valueOf(defBankEng)
+        txtBankName.text = selectedBank.chineseName
 
         val bankNames = Bank.getChineseNames()
         dlgChooseBank = AlertDialog.Builder(context!!)
             .setTitle(getString(R.string.choose_bank))
             .setItems(Bank.getChineseNames().toTypedArray()) { dialogInterface, i ->
+                val bankChineseName = bankNames[i]
+                if (StringUtils.equals(bankChineseName, selectedBank.chineseName)) {
+                    sp.edit()
+                        .putString(Constants.KEY_DEFAULT_BROWSE_BANK, selectedBank.name)
+                        .apply()
+                    Toast.makeText(context, getString(R.string.default_browsing_rate, selectedBank.chineseName), Toast.LENGTH_SHORT).show()
+                    return@setItems
+                }
+
+                selectedBank = Bank.fromChineseName(bankChineseName)!!
                 prgBar.visibility = View.VISIBLE
                 lstExchangeRate.visibility = View.INVISIBLE
-                txtBankName.text = bankNames[i]
-
-                loadExchangeRate(Bank.fromChineseName(bankNames[i])!!)
+                loadExchangeRate(selectedBank)
             }
             .create()
 
-        loadExchangeRate(Bank.FUBON)
+        prgBar.visibility = View.VISIBLE
+        lstExchangeRate.visibility = View.INVISIBLE
+        loadExchangeRate(selectedBank)
     }
 
     private fun loadExchangeRate(bank: Bank) {
+        txtBankName.text = bank.chineseName
+
         val receiver = object : ResultReceiver(Handler()) {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 refreshLayout.isRefreshing = false

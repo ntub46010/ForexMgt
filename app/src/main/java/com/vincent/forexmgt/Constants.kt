@@ -20,6 +20,7 @@ class Constants {
         const val KEY_BOOK = "book"
         const val KEY_DATA = "data"
         const val KEY_BANK_NAME = "bankName"
+        const val KEY_DEFAULT_BROWSE_BANK = "defaultBrowseBank"
 
         const val RICHART_DISCOUNT_USD = 0.03
         const val RICHART_DISCOUNT_JPY = 0.0008

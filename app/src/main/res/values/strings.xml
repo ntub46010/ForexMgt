@@ -30,6 +30,7 @@
     <string name="choose_bank">選擇銀行</string>
     <string name="cost_credit">成本轉入</string>
     <string name="interest_credit">利息轉入</string>
+    <string name="default_browsing_rate">預設查看%1s匯率</string>
 
     <string name="title_create_book">建立帳本</string>
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>

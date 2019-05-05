@@ -26,12 +26,10 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
             val tableRows = Jsoup.parse(webContent)
                 .select("div[id=right]")
                 .select("table>tbody>tr")
-
-            tableRows.dropLast(2)
-            tableRows.removeAt(0)
+                .drop(1)
+                .dropLast(2)
 
             val rates = mutableListOf<ExchangeRate>()
-
             for (row in tableRows) {
                 val tableCells = row.select("td")
                 val currencyCode = StringUtils.split(tableCells[0].select("a").text(), StringUtils.SPACE)[1]
@@ -103,6 +101,7 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
                     rate.debit += Constants.RICHART_DISCOUNT_AUD
                 }
                 else -> {
+                    // 優惠 = ( 牌告 - 中價 ) * 0.4
                     val discount = (rate.credit - rate.debit) / 5
                     rate.credit -= discount
                     rate.debit += discount
