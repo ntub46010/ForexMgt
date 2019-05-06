@@ -59,12 +59,15 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
     }
 
     private fun postProcess(bank: Bank, rates: List<ExchangeRate>): List<ExchangeRate> {
-        var newRates = rates
+        var newRates = rates.toMutableList()
 
         if (bank == Bank.RICHART) {
-            newRates = rates.filter { r -> r.currencyType != CurrencyType.THB }
             newRates = calcRichartRate(newRates)
+                .filter { r -> r.currencyType != CurrencyType.THB }
+                .toMutableList()
         }
+
+        newRates.sortWith(compareBy { it.currencyType?.order })
 
         return newRates
     }
