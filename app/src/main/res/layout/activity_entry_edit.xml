@@ -91,7 +91,7 @@
 
         <Button
                 android:id="@+id/btnSubmit"
-                style="@style/ActionButton"
+                style="@style/BigActionButton"
                 android:layout_below="@id/rgpCreditType"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="30dp"
@@ -99,7 +99,7 @@
 
         <Button
                 android:id="@+id/btnBack"
-                style="@style/ActionButton"
+                style="@style/BigActionButton"
                 android:layout_below="@id/btnSubmit"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/widget_default_spacing"

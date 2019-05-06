@@ -4,35 +4,32 @@ import android.app.IntentService
 import android.content.Intent
 import android.os.Bundle
 import android.os.ResultReceiver
+import com.vincent.forexmgt.Bank
 import com.vincent.forexmgt.Constants
 import com.vincent.forexmgt.CurrencyType
 import com.vincent.forexmgt.entity.ExchangeRate
 import org.apache.commons.lang3.StringUtils
-import org.jsoup.Connection
 import org.jsoup.Jsoup
-import java.io.IOException
 import java.io.Serializable
 
 class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
 
     override fun onHandleIntent(intent: Intent?) {
         val receiver = intent?.getParcelableExtra(Constants.KEY_RECEIVER) as ResultReceiver
+        val bankName = intent.getStringExtra(Constants.KEY_BANK_NAME) ?: Bank.FUBON.name
+        val bank = Bank.valueOf(bankName)
 
         try {
-            val response = Jsoup.connect("https://www.findrate.tw/bank/8/#.XHv2PKBS8dU").execute()
+            val response = Jsoup.connect(bank.exchangeRateUrl).execute()
 
             val webContent = response.body()
             val tableRows = Jsoup.parse(webContent)
                 .select("div[id=right]")
                 .select("table>tbody>tr")
-
-            val rowCount = tableRows.size
-            tableRows.removeAt(rowCount - 1)
-            tableRows.removeAt(rowCount - 2)
-            tableRows.removeAt(0)
+                .drop(1)
+                .dropLast(2)
 
             val rates = mutableListOf<ExchangeRate>()
-
             for (row in tableRows) {
                 val tableCells = row.select("td")
                 val currencyCode = StringUtils.split(tableCells[0].select("a").text(), StringUtils.SPACE)[1]
@@ -47,8 +44,10 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
                 )
             }
 
+            val responseRates = postProcess(bank, rates)
+
             val bundle = Bundle()
-            bundle.putSerializable(Constants.KEY_DATA, rates as Serializable)
+            bundle.putSerializable(Constants.KEY_DATA, responseRates as Serializable)
 
             receiver.send(0, bundle)
         } catch (e: Exception) {
@@ -57,6 +56,63 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
             receiver.send(0, bundle)
         }
 
+    }
+
+    private fun postProcess(bank: Bank, rates: List<ExchangeRate>): List<ExchangeRate> {
+        var newRates = rates.toMutableList()
+
+        if (bank == Bank.RICHART) {
+            newRates = calcRichartRate(newRates)
+                .filter { r -> r.currencyType != CurrencyType.THB }
+                .toMutableList()
+        }
+
+        newRates.sortWith(compareBy { it.currencyType?.order })
+
+        return newRates
+    }
+
+    private fun calcRichartRate(rates: List<ExchangeRate>): List<ExchangeRate> {
+        for (rate in rates) {
+            when (rate.currencyType) {
+                CurrencyType.USD -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_USD
+                    rate.debit += Constants.RICHART_DISCOUNT_USD
+                }
+                CurrencyType.JPY -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_JPY
+                    rate.debit += Constants.RICHART_DISCOUNT_JPY
+                }
+                CurrencyType.GBP -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_GBP
+                    rate.debit += Constants.RICHART_DISCOUNT_GBP
+                }
+                CurrencyType.CNY -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_CNY
+                    rate.debit += Constants.RICHART_DISCOUNT_CNY
+                }
+                CurrencyType.EUR -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_EUR
+                    rate.debit += Constants.RICHART_DISCOUNT_EUR
+                }
+                CurrencyType.HKD -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_HKD
+                    rate.debit += Constants.RICHART_DISCOUNT_HKD
+                }
+                CurrencyType.AUD -> {
+                    rate.credit -= Constants.RICHART_DISCOUNT_AUD
+                    rate.debit += Constants.RICHART_DISCOUNT_AUD
+                }
+                else -> {
+                    // 優惠 = ( 牌告 - 中價 ) * 0.4
+                    val discount = (rate.credit - rate.debit) / 5
+                    rate.credit -= discount
+                    rate.debit += discount
+                }
+            }
+        }
+
+        return rates
     }
 
 }

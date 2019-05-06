@@ -12,9 +12,6 @@ class Constants {
         const val PROPERTY_CREATED_TIME = "createdTime"
         const val PROPERTY_BOOK_ID = "bookId"
         const val PROPERTY_TYPE = "type"
-        const val PROPERTY_FCY_TOTAL_AMT = "fcyTotalAmt"
-        const val PROPERTY_TWD_TOTAL_COST = "twdTotalCost"
-        const val PROPERTY_TWD_PROFIT = "twdProfit"
 
         const val KEY_TITLE = "title"
         const val KEY_RECEIVER = "receiver"
@@ -22,6 +19,16 @@ class Constants {
         const val KEY_ENTRY_TYPE = "entryType"
         const val KEY_BOOK = "book"
         const val KEY_DATA = "data"
+        const val KEY_BANK_NAME = "bankName"
+        const val KEY_DEFAULT_BROWSE_BANK = "defaultBrowseBank"
+
+        const val RICHART_DISCOUNT_USD = 0.03
+        const val RICHART_DISCOUNT_JPY = 0.0008
+        const val RICHART_DISCOUNT_GBP = 0.09
+        const val RICHART_DISCOUNT_CNY = 0.004
+        const val RICHART_DISCOUNT_EUR = 0.08
+        const val RICHART_DISCOUNT_HKD = 0.01
+        const val RICHART_DISCOUNT_AUD = 0.044
 
     }
 }

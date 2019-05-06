@@ -5,5 +5,6 @@
     <dimen name="tab_bar_elevation">4dp</dimen>
     <dimen name="widget_default_spacing">8dp</dimen>
     <dimen name="edit_entry_edit_text_width">250dp</dimen>
+    <dimen name="small_action_button_default_padding">3dp</dimen>
 
 </resources>

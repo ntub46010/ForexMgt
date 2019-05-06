@@ -27,8 +27,10 @@
     <string name="create_failed">新增失敗</string>
     <string name="submit">提交</string>
     <string name="back">返回</string>
+    <string name="choose_bank">選擇銀行</string>
     <string name="cost_credit">成本轉入</string>
     <string name="interest_credit">利息轉入</string>
+    <string name="default_browsing_rate">預設查看%1s匯率</string>
 
     <string name="title_create_book">建立帳本</string>
     <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
@@ -59,6 +61,7 @@
     <string name="label_pv_and_cost">現值 / 成本</string>
     <string name="label_twd">TWD</string>
     <string name="label_spot_rate">即期匯率</string>
+    <string name="label_spot_rate_colon">即期匯率：</string>
     <string name="label_twd_present_value">臺幣現值</string>
     <string name="label_profit">利差</string>
 
