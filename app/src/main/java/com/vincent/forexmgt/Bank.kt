@@ -13,8 +13,8 @@ enum class Bank(
     companion object {
 
         fun fromChineseName(chineseName: String?): Bank? {
-            return values().firstOrNull { bank ->
-                StringUtils.equals(chineseName, bank.chineseName)
+            return values().firstOrNull {
+                StringUtils.equals(it.chineseName, chineseName)
             }
         }
 

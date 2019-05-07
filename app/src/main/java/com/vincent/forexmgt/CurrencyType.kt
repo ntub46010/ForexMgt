@@ -40,12 +40,6 @@ enum class CurrencyType(
             return titles
         }
 
-        fun fromCode(code: String): CurrencyType? {
-            return values().firstOrNull { currencyType ->
-                StringUtils.equals(currencyType.name, code)
-            }
-        }
-
     }
 
 }

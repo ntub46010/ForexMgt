@@ -53,7 +53,7 @@ class EntryEditActivity : AppCompatActivity() {
             finish()
         }
 
-        entryType = EntryType.fromName(bundle.getString(Constants.KEY_ENTRY_TYPE))!!
+        entryType = EntryType.valueOf(bundle.getString(Constants.KEY_ENTRY_TYPE))
         if (entryType == EntryType.CREDIT) {
             rgpCreditType.visibility = View.VISIBLE
             tilFcyAmt.hint = "${getString(R.string.fcy_amt_credit)}（${book.currencyType?.chineseName}）"

@@ -33,7 +33,7 @@ class EntryListFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         val bookId = arguments?.getString(Constants.PROPERTY_BOOK_ID)!!
-        val entryType = EntryType.fromName(arguments?.getString(Constants.KEY_ENTRY_TYPE))!!
+        val entryType = EntryType.valueOf(arguments?.getString(Constants.KEY_ENTRY_TYPE)!!)
         subscribeEntries(bookId, entryType)
     }
 

@@ -79,8 +79,8 @@ class MainActivity : AppCompatActivity() {
         )
 
         val authListener =
-            FirebaseAuth.AuthStateListener { auth ->
-                val firebaseUser = auth.currentUser
+            FirebaseAuth.AuthStateListener {
+                val firebaseUser = it.currentUser
                 if (firebaseUser == null) {
                     val intent = AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -101,8 +101,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNavigationBar() {
-        navBar.setOnNavigationItemSelectedListener { item ->
-            when(item.itemId) {
+        navBar.setOnNavigationItemSelectedListener {
+            when(it.itemId) {
                 R.id.navExchangeRateList -> {
                     if (exchangeRateFragment == null) {
                         exchangeRateFragment = ExchangeRateFragment()

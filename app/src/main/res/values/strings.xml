@@ -42,7 +42,7 @@
     <string name="time">時間</string>
     <string name="fcy_amt_credit">轉入外幣</string>
     <string name="fcy_amt_debit">轉出外幣</string>
-    <string name="twd_amt_credit">獲得臺幣</string>
+    <string name="twd_amt_credit">折合臺幣</string>
     <string name="twd_amt_debit">臺幣價值</string>
 
     <string name="title_create_credit_entry">新增轉入紀錄</string>

@@ -30,12 +30,12 @@ class BookService : Service() {
 
         collection
             .add(book)
-            .addOnSuccessListener { documentRef ->
-                book.defineId(documentRef.id)
+            .addOnSuccessListener {
+                book.defineId(it.id)
                 callback.onExecute(book)
             }
-            .addOnFailureListener { e ->
-                callback.onError(e)
+            .addOnFailureListener {
+                callback.onError(it)
             }
     }
 
@@ -57,16 +57,14 @@ class BookService : Service() {
             .whereEqualTo(Constants.PROPERTY_CREATOR, currentLoginUser?.uid)
             .orderBy(Constants.PROPERTY_CREATED_TIME, Query.Direction.DESCENDING)
             .get()
-            .addOnSuccessListener { querySnapshot ->
-                val books = DocumentConverter.toBooks(querySnapshot)
+            .addOnSuccessListener {
+                val books = DocumentConverter.toBooks(it)
                 callback.onExecute(books)
             }
-            .addOnFailureListener { e ->
-                callback.onError(e)
+            .addOnFailureListener {
+                callback.onError(it)
             }
     }
-
-    fun getBookDoc(id: String) = collection.document(id)
 
     fun setLoginUser(currentLoginUser: FirebaseUser?) {
         this.currentLoginUser = currentLoginUser

@@ -38,7 +38,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
     private fun loadBooks(rateMap: Map<CurrencyType, Double>, returnCb: Callback<AssetReport>) {
         val callback = object : Callback<List<Book>> {
             override fun onExecute(data: List<Book>) {
-                val books = sortBooksByCurrencyType(data)
+                val books = data.sortedBy { it.currencyType?.order }
                 loadEntries(books, rateMap, returnCb)
             }
 
@@ -100,9 +100,9 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
             }
         }
 
-        currencyToBookReportsMap = currencyToBookReportsMap.filter { pair ->
-            !pair.value.isNullOrEmpty()
-        }.toMutableMap()
+        currencyToBookReportsMap = currencyToBookReportsMap
+            .filter { !it.value.isNullOrEmpty() }
+            .toMutableMap()
 
         generateAssetReport(currencyToBookReportsMap, returnCb)
     }
@@ -110,21 +110,19 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
     private fun generateAssetReport(currencyToBookReportsMap: Map<CurrencyType, List<BookAssetReport>>, returnCb: Callback<AssetReport>) {
         val currencyReports = mutableListOf<CurrencyAssetReport>()
 
-        for (currencyType in CurrencyType.values()) {
-            val bookReports = currencyToBookReportsMap[currencyType] ?: continue
-
+        for (pair in currencyToBookReportsMap.entries) {
             var fcyAmt = 0.0
             var twdPV = 0
             var twdCost = 0
 
-            for (bookReport in bookReports) {
+            for (bookReport in pair.value) {
                 fcyAmt += bookReport.fcyAmt
                 twdPV += bookReport.twdPV
                 twdCost += bookReport.twdCost
             }
 
             val currencyReport = CurrencyAssetReport(
-                currencyType,
+                pair.key,
                 fcyAmt,
                 twdPV,
                 0.0
@@ -136,6 +134,8 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
 
             currencyReports.add(currencyReport)
         }
+
+        currencyReports.sortBy { it.currencyType?.order }
 
         val assetReport = AssetReport(currencyReports, currencyToBookReportsMap)
         returnCb.onExecute(assetReport)
@@ -150,7 +150,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
                 twdCost += entry.twdCost!!
                 fcyAmt += entry.fcyAmt
             } else if (entry.type == EntryType.DEBIT) {
-                twdCost -= Math.round(twdCost * (entry.fcyAmt / fcyAmt)).toInt()
+                twdCost -= entry.twdCost!!
                 fcyAmt -= entry.fcyAmt
             }
         }
@@ -169,25 +169,6 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
         }
 
         return rateMap
-    }
-
-    private fun sortBooksByCurrencyType(books: List<Book>): List<Book> {
-        val sortedBooks = mutableListOf<Book>()
-        val bookMap = linkedMapOf<String, MutableList<Book>>()
-
-        for (type in CurrencyType.values()) {
-            bookMap[type.name] = mutableListOf()
-        }
-
-        for (book in books) {
-            bookMap[book.currencyType!!.name]?.add(book)
-        }
-
-        for (bookList in bookMap.values) {
-            sortedBooks.addAll(bookList)
-        }
-
-        return sortedBooks
     }
 
 }

@@ -33,7 +33,7 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
             for (row in tableRows) {
                 val tableCells = row.select("td")
                 val currencyCode = StringUtils.split(tableCells[0].select("a").text(), StringUtils.SPACE)[1]
-                val currencyType = CurrencyType.fromCode(currencyCode)
+                val currencyType = CurrencyType.valueOf(currencyCode)
 
                 rates.add(
                     ExchangeRate(
@@ -63,11 +63,11 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
 
         if (bank == Bank.RICHART) {
             newRates = calcRichartRate(newRates)
-                .filter { r -> r.currencyType != CurrencyType.THB }
+                .filter { it.currencyType != CurrencyType.THB }
                 .toMutableList()
         }
 
-        newRates.sortWith(compareBy { it.currencyType?.order })
+        newRates.sortBy { it.currencyType?.order }
 
         return newRates
     }

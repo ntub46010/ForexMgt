@@ -86,7 +86,7 @@ class BookListFragment : Fragment() {
 
                         val book = Book(
                             edtBookName.text.toString(),
-                            CurrencyType.fromCode(currencyCode),
+                            CurrencyType.valueOf(currencyCode),
                             StringUtils.EMPTY,
                             Date()
                         )

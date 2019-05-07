@@ -59,12 +59,12 @@ class EntryService : Service() {
 
         collection
             .get()
-            .addOnSuccessListener { querySnapshot ->
-                val entries = DocumentConverter.toEntries(querySnapshot)
+            .addOnSuccessListener {
+                val entries = DocumentConverter.toEntries(it)
                 callback.onExecute(entries)
             }
-            .addOnFailureListener { e ->
-                callback.onError(e)
+            .addOnFailureListener {
+                callback.onError(it)
             }
     }
 
@@ -139,8 +139,8 @@ class EntryService : Service() {
                 }
 
                 val fcyTotalAmt = fcyTotalAmtDec.toDouble()
-                val spotRate = exchangeRates.firstOrNull { rate ->
-                    StringUtils.equals(rate.currencyType?.name, book.currencyType?.name)
+                val spotRate = exchangeRates.firstOrNull {
+                    StringUtils.equals(it.currencyType?.name, book.currencyType?.name)
                 }!!
 
                 generateBalanceEntry(book, spotRate, fcyTotalAmt, twdTotalCost, callback)
@@ -182,12 +182,12 @@ class EntryService : Service() {
     private fun insertEntry(entry: Entry, callback: Callback<Entry>) {
         collection
             .add(entry)
-            .addOnSuccessListener { documentRef ->
-                entry.defineId(documentRef.id)
+            .addOnSuccessListener {
+                entry.defineId(it.id)
                 callback.onExecute(entry)
             }
-            .addOnFailureListener { e ->
-                callback.onError(e)
+            .addOnFailureListener {
+                callback.onError(it)
             }
     }
 
