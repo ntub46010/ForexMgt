@@ -67,7 +67,7 @@ class LoadingExchangeRateService : IntentService("LoadingExchangeRateService") {
                 .toMutableList()
         }
 
-        newRates.sortBy { it.currencyType?.order }
+        newRates.sortBy { it.currencyType?.ordinal }
 
         return newRates
     }

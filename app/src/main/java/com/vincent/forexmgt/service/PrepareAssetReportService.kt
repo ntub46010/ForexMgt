@@ -38,7 +38,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
     private fun loadBooks(rateMap: Map<CurrencyType, Double>, returnCb: Callback<AssetReport>) {
         val callback = object : Callback<List<Book>> {
             override fun onExecute(data: List<Book>) {
-                val books = data.sortedBy { it.currencyType?.order }
+                val books = data.sortedBy { it.currencyType?.ordinal }
                 loadEntries(books, rateMap, returnCb)
             }
 
@@ -135,7 +135,7 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
             currencyReports.add(currencyReport)
         }
 
-        currencyReports.sortBy { it.currencyType?.order }
+        currencyReports.sortBy { it.currencyType?.ordinal }
 
         val assetReport = AssetReport(currencyReports, currencyToBookReportsMap)
         returnCb.onExecute(assetReport)
