@@ -83,6 +83,19 @@ class EntryService : Service() {
             }
     }
 
+    private fun loadEntries(bookId: String, callback: Callback<List<Entry>>) {
+        collection
+            .whereEqualTo(Constants.PROPERTY_BOOK_ID, bookId)
+            .get()
+            .addOnSuccessListener {
+                val entries = DocumentConverter.toEntries(it)
+                callback.onExecute(entries)
+            }
+            .addOnFailureListener {
+                callback.onError(it)
+            }
+    }
+
     private fun createDebitEntry(entry: Entry, callback: Callback<Entry>) {
         val loadEntriesCb = object : Callback<List<Entry>> {
             override fun onExecute(data: List<Entry>) {
@@ -116,7 +129,7 @@ class EntryService : Service() {
             }
         }
 
-        loadEntries(setOf(entry.bookId), loadEntriesCb)
+        loadEntries(entry.bookId, loadEntriesCb)
     }
 
     private fun createBalanceEntry(book: Book, exchangeRates: List<ExchangeRate>, callback: Callback<Entry>) {
@@ -151,7 +164,7 @@ class EntryService : Service() {
             }
         }
 
-        loadEntries(setOf(book.obtainId()), loadEntriesCb)
+        loadEntries(book.obtainId(), loadEntriesCb)
     }
 
     private fun generateDebitEntry(entry: Entry, fcyTotalAmt: Double, twdTotalCost: Int, callback: Callback<Entry>) {
