@@ -12,8 +12,7 @@ class Entry(
     var fcyAmt: Double = 0.0,
     var twdAmt: Int = 0,
     var exchangeRate: Double = 0.0,
-    var twdCost: Int? = null,
-    var twdProfit: Int? = null) {
+    var twdCost: Int = 0) {
 
     private var id: String = ""
 

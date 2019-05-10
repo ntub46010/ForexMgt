@@ -108,10 +108,10 @@ class EntryService : Service() {
 
                     if (en.type == EntryType.CREDIT) {
                         fcyTotalAmtDec = fcyTotalAmtDec.add(dec)
-                        twdTotalCost += en.twdCost!!
+                        twdTotalCost += en.twdCost
                     } else if (en.type == EntryType.DEBIT) {
                         fcyTotalAmtDec = fcyTotalAmtDec.subtract(dec)
-                        twdTotalCost -= en.twdCost!!
+                        twdTotalCost -= en.twdCost
                     }
                 }
 
@@ -144,10 +144,10 @@ class EntryService : Service() {
 
                     if (en.type == EntryType.CREDIT) {
                         fcyTotalAmtDec = fcyTotalAmtDec.add(dec)
-                        twdTotalCost += en.twdCost!!
+                        twdTotalCost += en.twdCost
                     } else if (en.type == EntryType.DEBIT) {
                         fcyTotalAmtDec = fcyTotalAmtDec.subtract(dec)
-                        twdTotalCost -= en.twdCost!!
+                        twdTotalCost -= en.twdCost
                     }
                 }
 
@@ -169,13 +169,11 @@ class EntryService : Service() {
 
     private fun generateDebitEntry(entry: Entry, fcyTotalAmt: Double, twdTotalCost: Int, callback: Callback<Entry>) {
         entry.twdCost = Math.round(twdTotalCost * entry.fcyAmt / fcyTotalAmt).toInt()
-        entry.twdProfit = entry.twdAmt - entry.twdCost!!
         insertEntry(entry, callback)
     }
 
     private fun generateBalanceEntry(book: Book, spotRate: ExchangeRate, fcyTotalAmt: Double, twdTotalCost: Int, callback: Callback<Entry>) {
         val presentValue = Math.round(fcyTotalAmt * spotRate.debit).toInt()
-        val profit = presentValue - twdTotalCost
 
         val entry = Entry(
             book.obtainId(),
@@ -184,10 +182,9 @@ class EntryService : Service() {
             book.currencyType,
             fcyTotalAmt,
             presentValue,
-            spotRate.debit
+            spotRate.debit,
+            twdTotalCost
         )
-
-        entry.twdProfit = profit
 
         callback.onExecute(entry)
     }

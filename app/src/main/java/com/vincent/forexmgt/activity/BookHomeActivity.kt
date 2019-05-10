@@ -176,7 +176,7 @@ class BookHomeActivity : AppCompatActivity() {
         txtTwdAmt.text = getString(R.string.template_currency_amount,
             FormatUtils.formatMoney(entry.twdAmt), getString(R.string.label_twd))
         txtProfit.text = getString(R.string.template_currency_amount,
-            FormatUtils.formatMoney(entry.twdProfit!!), getString(R.string.label_twd))
+            FormatUtils.formatMoney(entry.twdAmt - entry.twdCost), getString(R.string.label_twd))
 
         val dlgCreateBalanceEntry = DialogUtils.getPlainDialog(this,
             StringUtils.EMPTY, getString(R.string.desc_create_balance_entry))

@@ -147,10 +147,10 @@ class PrepareAssetReportService : IntentService("PrepareAssetReportService") {
 
         for (entry in entriesInBook) {
             if (entry.type == EntryType.CREDIT) {
-                twdCost += entry.twdCost!!
+                twdCost += entry.twdCost
                 fcyAmt += entry.fcyAmt
             } else if (entry.type == EntryType.DEBIT) {
-                twdCost -= entry.twdCost!!
+                twdCost -= entry.twdCost
                 fcyAmt -= entry.fcyAmt
             }
         }
