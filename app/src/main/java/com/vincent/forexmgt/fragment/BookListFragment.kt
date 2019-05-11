@@ -60,11 +60,34 @@ class BookListFragment : Fragment() {
         val layout = LayoutInflater.from(context).inflate(R.layout.dialog_create_book, null) as RelativeLayout
         val tilBookName = layout.findViewById<TextInputLayout>(R.id.tilBookName)
         val edtBookName = layout.findViewById<EditText>(R.id.edtBookName)
+        val spnBank = layout.findViewById<Spinner>(R.id.spnBank)
         val spnCurrencyType = layout.findViewById<Spinner>(R.id.spnCurrencyType)
 
-        val adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, CurrencyType.getTitles())
+        spnBank.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val bank = Bank.fromChineseName(parent?.selectedItem.toString())!!
+
+                if (spnCurrencyType.adapter != null) {
+                    val adapter = (spnCurrencyType.adapter as ArrayAdapter<String>)
+                    adapter.clear()
+                    adapter.addAll(bank.getSupportCurrencyTitles())
+                    spnCurrencyType.setSelection(0)
+                    return
+                }
+
+                val adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, bank.getSupportCurrencyTitles())
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spnCurrencyType.adapter = adapter
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+        }
+
+        val adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, Bank.getChineseTitles())
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spnCurrencyType.adapter = adapter
+        spnBank.adapter = adapter
 
         dlgCreateBook = DialogUtils.getPlainDialog(context!!, getString(R.string.title_create_book), getString(R.string.desc_create_book))
             .setView(layout)
@@ -81,11 +104,13 @@ class BookListFragment : Fragment() {
                     if (StringUtils.isEmpty(edtBookName.text)) {
                         tilBookName.error = getString(R.string.mandatory_field)
                     } else {
-                        val strSelectedItem = spnCurrencyType.selectedItem.toString()
-                        val currencyCode = StringUtils.split(strSelectedItem, StringUtils.SPACE)[1]
+                        val strSelectedBank = spnBank.selectedItem.toString()
+                        val strSelectedCurrency = spnCurrencyType.selectedItem.toString()
+                        val currencyCode = StringUtils.split(strSelectedCurrency, StringUtils.SPACE)[1]
 
                         val book = Book(
                             edtBookName.text.toString(),
+                            Bank.fromChineseName(strSelectedBank),
                             CurrencyType.valueOf(currencyCode),
                             StringUtils.EMPTY,
                             Date()

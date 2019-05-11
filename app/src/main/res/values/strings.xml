@@ -33,7 +33,7 @@
     <string name="default_browsing_rate">預設查看%1s匯率</string>
 
     <string name="title_create_book">建立帳本</string>
-    <string name="desc_create_book">請輸入帳本名稱並選擇幣別。其中幣別一旦設定完成，便無法再更改。</string>
+    <string name="desc_create_book">請輸入帳本名稱並選擇銀行及幣別。一旦設定完成，便無法再更改。</string>
     <string name="book_name">帳本名稱</string>
     <string name="please_wait">請稍後…</string>
     <string name="desc_create_balance_entry">以下為本帳簿的餘額狀態，確認後可點擊「新增」來儲存紀錄。</string>

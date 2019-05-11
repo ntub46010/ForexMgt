@@ -4,11 +4,34 @@ import org.apache.commons.lang3.StringUtils
 
 enum class Bank(
     val chineseName: String,
-    val exchangeRateUrl: String) {
+    val exchangeRateUrl: String,
+    private val supportCurrency: List<CurrencyType>) {
 
-    FUBON("富邦銀行", "https://www.findrate.tw/bank/8/#.XHv2PKBS8dU"),
-    TAISHIN("台新銀行", "https://www.findrate.tw/bank/9/#.XM5YhthS8dU"),
-    RICHART("台新銀行（Richart）", "https://www.findrate.tw/bank/9/#.XM5YhthS8dU"); // Richart沒有泰幣
+    FUBON("富邦銀行", "https://www.findrate.tw/bank/8/#.XHv2PKBS8dU",
+        listOf(CurrencyType.USD, CurrencyType.CNY, CurrencyType.JPY, CurrencyType.EUR, CurrencyType.HKD, CurrencyType.AUD,
+            CurrencyType.ZAR, CurrencyType.CAD, CurrencyType.GBP, CurrencyType.SGD, CurrencyType.CHF, CurrencyType.NZD,
+            CurrencyType.SEK, CurrencyType.THB)),
+
+    TAISHIN("台新銀行", "https://www.findrate.tw/bank/9/#.XM5YhthS8dU",
+        listOf(CurrencyType.USD, CurrencyType.CNY, CurrencyType.JPY, CurrencyType.EUR, CurrencyType.HKD, CurrencyType.AUD,
+            CurrencyType.ZAR, CurrencyType.CAD, CurrencyType.GBP, CurrencyType.SGD, CurrencyType.CHF, CurrencyType.NZD,
+            CurrencyType.SEK, CurrencyType.THB)),
+
+    RICHART("台新銀行（Richart）", "https://www.findrate.tw/bank/9/#.XM5YhthS8dU",
+        listOf(CurrencyType.USD, CurrencyType.CNY, CurrencyType.JPY, CurrencyType.EUR, CurrencyType.HKD, CurrencyType.AUD,
+            CurrencyType.ZAR, CurrencyType.CAD, CurrencyType.GBP, CurrencyType.SGD, CurrencyType.CHF, CurrencyType.NZD,
+            CurrencyType.SEK));
+
+    fun getSupportCurrencyTitles(): List<String> {
+        val titles = mutableListOf<String>()
+
+        val currencyTypes = supportCurrency.sortedBy { it.ordinal }
+        for (currencyType in currencyTypes) {
+            titles.add("${currencyType.chineseName}${StringUtils.SPACE}${currencyType.name}")
+        }
+
+        return titles
+    }
 
     companion object {
 
@@ -18,14 +41,14 @@ enum class Bank(
             }
         }
 
-        fun getChineseNames(): List<String> {
-            val names = mutableListOf<String>()
+        fun getChineseTitles(): List<String> {
+            val titles = mutableListOf<String>()
 
             for (bank in values()) {
-                names.add(bank.chineseName)
+                titles.add(bank.chineseName)
             }
 
-            return names
+            return titles
         }
 
     }
