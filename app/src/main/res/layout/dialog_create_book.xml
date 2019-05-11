@@ -22,9 +22,17 @@
     </android.support.design.widget.TextInputLayout>
 
     <Spinner
+            android:id="@+id/spnBank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tilBookName"
+            android:layout_marginBottom="@dimen/widget_default_spacing"/>
+
+    <Spinner
             android:id="@+id/spnCurrencyType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tilBookName"/>
+            android:layout_below="@id/spnBank"
+            android:layout_marginTop="@dimen/widget_default_spacing"/>
 
 </RelativeLayout>

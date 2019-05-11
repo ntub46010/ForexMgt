@@ -58,10 +58,10 @@ class ExchangeRateFragment : Fragment() {
         selectedBank = Bank.valueOf(defBankEng)
         txtBankName.text = selectedBank.chineseName
 
-        val bankNames = Bank.getChineseNames()
+        val bankNames = Bank.getChineseTitles()
         dlgChooseBank = AlertDialog.Builder(context!!)
             .setTitle(getString(R.string.choose_bank))
-            .setItems(Bank.getChineseNames().toTypedArray()) { dialogInterface, i ->
+            .setItems(Bank.getChineseTitles().toTypedArray()) { dialogInterface, i ->
                 val bankChineseName = bankNames[i]
                 if (StringUtils.equals(bankChineseName, selectedBank.chineseName)) {
                     sp.edit()
