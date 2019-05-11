@@ -104,11 +104,13 @@ class BookListFragment : Fragment() {
                     if (StringUtils.isEmpty(edtBookName.text)) {
                         tilBookName.error = getString(R.string.mandatory_field)
                     } else {
-                        val strSelectedItem = spnCurrencyType.selectedItem.toString()
-                        val currencyCode = StringUtils.split(strSelectedItem, StringUtils.SPACE)[1]
+                        val strSelectedBank = spnBank.selectedItem.toString()
+                        val strSelectedCurrency = spnCurrencyType.selectedItem.toString()
+                        val currencyCode = StringUtils.split(strSelectedCurrency, StringUtils.SPACE)[1]
 
                         val book = Book(
                             edtBookName.text.toString(),
+                            Bank.fromChineseName(strSelectedBank),
                             CurrencyType.valueOf(currencyCode),
                             StringUtils.EMPTY,
                             Date()

@@ -49,6 +49,7 @@ class EntryService : Service() {
 
         val intent = Intent(this, LoadingExchangeRateService::class.java)
         intent.putExtra(Constants.KEY_RECEIVER, receiver)
+        intent.putExtra(Constants.KEY_BANK_NAME, book.bank?.name)
         startService(intent)
     }
 
